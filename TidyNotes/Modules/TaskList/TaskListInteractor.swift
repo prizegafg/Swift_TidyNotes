@@ -8,75 +8,55 @@
 import Foundation
 import Combine
 
-class TaskListInteractor: TaskListInteractorProtocol {
-
-    private let taskRepository: TaskRepositoryProtocol
-    private var presenter: TaskListPresenterProtocol?
-
-    private var cancellables = Set<AnyCancellable>()
-
-    init(taskRepository: TaskRepositoryProtocol,
-         presenter: TaskListPresenterProtocol?) {
-        self.taskRepository = taskRepository
-        self.presenter = presenter
-    }
+/// Protocol untuk interactor dari TaskList
+protocol TaskListInteractorProtocol {
+    /// Mengambil daftar task dari repository
+    func fetchTasks() -> AnyPublisher<[TaskEntity], TaskError>
     
-    func setPresenter(_ presenter: TaskListPresenterProtocol) {
-        self.presenter = presenter
-    }
-
-    func fetchTasks(for projectId: UUID?) {
-        taskRepository
-            .getTasks(projectId: projectId)
-            .sink(receiveCompletion: { completion in
-                if case .failure(let error) = completion {
-                    self.presenter?.presentError(error.localizedDescription)
-                }
-            }, receiveValue: { tasks in
-                self.presenter?.presentTasks(tasks)
-            })
-            .store(in: &cancellables)
-    }
-
-    func toggleTaskCompletion(_ task: Task) {
-        var updatedTask = task
-        updatedTask.isCompleted.toggle()
-        updatedTask.updatedAt = Date()
-
-        taskRepository
-            .updateTask(updatedTask)
-            .sink(receiveCompletion: { _ in }, receiveValue: { _ in
-                self.fetchTasks(for: task.projectId)
-            })
-            .store(in: &cancellables)
-    }
-
-    func deleteTask(_ task: Task) {
-        taskRepository
-            .deleteTask(task)
-            .sink(receiveCompletion: { _ in }, receiveValue: { _ in
-                self.fetchTasks(for: task.projectId)
-            })
-            .store(in: &cancellables)
-    }
-
-    func addTask(title: String, to projectId: UUID?) {
-        let newTask = Task(
-            id: UUID(),
-            title: title,
-            isCompleted: false,
-            projectId: projectId,
-            createdAt: Date(),
-            updatedAt: Date()
-        )
-
-        taskRepository
-            .addTask(newTask)
-            .sink(receiveCompletion: { _ in }, receiveValue: { _ in
-                self.fetchTasks(for: projectId)
-            })
-            .store(in: &cancellables)
-    }
+    /// Menandai task sebagai selesai/belum selesai
+    func toggleTaskCompletion(task: TaskEntity) -> AnyPublisher<TaskEntity, TaskError>
+    
+    /// Menambahkan task baru
+    func addTask(_ task: TaskEntity) -> AnyPublisher<TaskEntity, TaskError>
+    
+    /// Menghapus task
+    func deleteTask(id: UUID) -> AnyPublisher<Void, TaskError>
 }
 
-
+/// Implementasi dari TaskListInteractor
+final class TaskListInteractor: TaskListInteractorProtocol {
+    private let repository: TaskRepository
+    private var cancellables = Set<AnyCancellable>()
+    
+    /// Initializer dengan dependency injection
+    init(repository: TaskRepository = InMemoryTaskRepository.shared) {
+        self.repository = repository
+    }
+    
+    func fetchTasks() -> AnyPublisher<[TaskEntity], TaskError> {
+        return repository.fetchTasks()
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+    
+    func toggleTaskCompletion(task: TaskEntity) -> AnyPublisher<TaskEntity, TaskError> {
+        var updatedTask = task
+        updatedTask.isCompleted.toggle()
+        
+        return repository.updateTask(updatedTask)
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+    
+    func addTask(_ task: TaskEntity) -> AnyPublisher<TaskEntity, TaskError> {
+        return repository.addTask(task)
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+    
+    func deleteTask(id: UUID) -> AnyPublisher<Void, TaskError> {
+        return repository.deleteTask(id: id)
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+}
