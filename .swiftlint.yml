@@ -1,0 +1,20 @@
+disabled_rules:
+  - trailing_whitespace
+  - line_length
+
+opt_in_rules:
+  - attributes
+  - closure_spacing
+
+included:
+  - TidyNotesApp
+  - TidyNotesCore
+
+excluded:
+  - Pods
+  - Carthage
+
+line_length:
+  warning: 120
+  error: 200
+

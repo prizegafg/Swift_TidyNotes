@@ -8,40 +8,131 @@
 import Foundation
 import SwiftUI
 
+// File: TaskListRouter.swift
+import SwiftUI
+import Combine
+
+/// Protocol Router untuk Task dalam arsitektur VIPER
+protocol TaskListRouterProtocol {
+    func navigateToAddTask()
+    func navigateToEditTask(_ task: TaskEntity)
+}
+
 /// Router untuk navigasi dari TaskList ke layar lain
-final class TaskListRouter {
-    /// Navigasi ke detail task
-    func navigateToTaskDetail(task: TaskEntity) {
-        // Placeholder implementation
-        // Di implementasi nyata, ini akan melakukan navigasi ke TaskDetail module
-        print("Navigate to task detail: \(task.title)")
+final class TaskListRouter: TaskListRouterProtocol {
+    // Coordinator yang akan menangani navigasi aktual di aplikasi
+    private weak var navigationController: UINavigationController?
+    // SwiftUI navigation state
+    private var navigationState: TaskNavigationState?
+    
+    init(navigationController: UINavigationController? = nil, navigationState: TaskNavigationState? = nil) {
+        self.navigationController = navigationController
+        self.navigationState = navigationState
     }
     
     /// Navigasi ke layar tambah task
     func navigateToAddTask() {
-        // Placeholder implementation
-        // Di implementasi nyata, ini akan melakukan navigasi ke AddTask module
-        print("Navigate to add task")
+        if let navigationState = navigationState {
+            // SwiftUI navigation
+            navigationState.showAddTask = true
+        } else if let navigationController = navigationController {
+            // UIKit navigation
+            let addTaskModule = TaskAddEditModule.makeAddTaskView()
+            let hostingController = UIHostingController(rootView: addTaskModule)
+            navigationController.pushViewController(hostingController, animated: true)
+        } else {
+            // Fallback implementation untuk debugging
+            print("Navigate to add task")
+        }
     }
     
-    /// Membuat view untuk TaskList
-    static func makeTaskListView() -> some View {
-        let interactor = TaskListInteractor()
-        let router = TaskListRouter()
-        let intent = TaskListIntent(interactor: interactor, router: router)
-        return TaskListView(intent: intent)
+    /// Navigasi ke layar edit task
+    func navigateToEditTask(_ task: TaskEntity) {
+        if let navigationState = navigationState {
+            // SwiftUI navigation
+            navigationState.selectedTaskForEdit = task
+            navigationState.showEditTask = true
+        } else if let navigationController = navigationController {
+            // UIKit navigation
+            let editTaskModule = TaskAddEditModule.makeEditTaskView(task: task)
+            let hostingController = UIHostingController(rootView: editTaskModule)
+            navigationController.pushViewController(hostingController, animated: true)
+        } else {
+            // Fallback implementation untuk debugging
+            print("Navigate to edit task: \(task.title)")
+        }
     }
 }
 
+/// State untuk navigasi SwiftUI
+class TaskNavigationState: ObservableObject {
+    @Published var showAddTask: Bool = false
+    @Published var showEditTask: Bool = false
+    @Published var selectedTaskForEdit: TaskEntity?
+}
 
 /// Modul untuk TaskList, bertindak sebagai factory untuk TaskList Screen
 enum TaskListModule {
     /// Membuat view TaskList dengan semua dependencies yang diperlukan
     static func makeTaskListView() -> some View {
+        let navigationState = TaskNavigationState()
         let repository = InMemoryTaskRepository.shared
         let interactor = TaskListInteractor(repository: repository)
-        let router = TaskListRouter()
-        let intent = TaskListIntent(interactor: interactor, router: router)
-        return TaskListView(intent: intent)
+        let router = TaskListRouter(navigationState: navigationState)
+        let presenter = TaskListPresenter(interactor: interactor, router: router)
+        
+        return TaskListContainerView(presenter: presenter, navigationState: navigationState)
+    }
+    
+    /// Membuat view TaskList dengan UINavigationController untuk UIKit integration
+    static func makeTaskListView(navigationController: UINavigationController) -> UIViewController {
+        let repository = InMemoryTaskRepository.shared
+        let interactor = TaskListInteractor(repository: repository)
+        let router = TaskListRouter(navigationController: navigationController)
+        let presenter = TaskListPresenter(interactor: interactor, router: router)
+        
+        let taskListView = TaskListView(presenter: presenter)
+        return UIHostingController(rootView: taskListView)
+    }
+}
+
+/// Container view yang mengelola navigasi SwiftUI
+struct TaskListContainerView: View {
+    @ObservedObject var presenter: TaskListPresenter
+    @ObservedObject var navigationState: TaskNavigationState
+    
+    var body: some View {
+        NavigationView {
+            TaskListView(presenter: presenter)
+                .sheet(isPresented: $navigationState.showAddTask) {
+                    TaskAddEditModule.makeAddTaskView()
+                }
+                .sheet(isPresented: $navigationState.showEditTask) {
+                    if let task = navigationState.selectedTaskForEdit {
+                        TaskAddEditModule.makeEditTaskView(task: task)
+                    }
+                }
+        }
+    }
+}
+
+/// Placeholder modul untuk create/edit Task
+enum TaskAddEditModule {
+    static func makeAddTaskView() -> some View {
+        Text("Add Task View")
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(.systemGroupedBackground))
+            .navigationTitle("Add Task")
+    }
+    
+    static func makeEditTaskView(task: TaskEntity) -> some View {
+        VStack {
+            Text("Edit Task: \(task.title)")
+            Text("Description: \(task.description)")
+            Text("Status: \(task.status.rawValue)")
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemGroupedBackground))
+        .navigationTitle("Edit Task")
     }
 }

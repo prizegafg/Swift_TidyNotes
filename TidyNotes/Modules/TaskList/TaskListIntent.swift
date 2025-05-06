@@ -5,193 +5,106 @@
 //  Created by Prizega Fromadia on 29/04/25.
 //
 
-import Foundation
+//import Foundation
+//import Combine
 import Combine
+import Foundation
 
-/// State objek untuk TaskList yang akan digunakan oleh View
-final class TaskListState: ObservableObject {
-    /// Daftar task yang ditampilkan
+class TaskListPresenter: ObservableObject {
+    // Published properties untuk View
     @Published var tasks: [TaskEntity] = []
-    
-    /// State loading untuk menampilkan indikator loading
     @Published var isLoading: Bool = false
+    @Published var error: Error? = nil
+    @Published var selectedTaskId: UUID? = nil
     
-    /// Error yang terjadi (jika ada)
-    @Published var error: TaskError? = nil
-    
-    /// Filter yang aktif (untuk pengembangan selanjutnya)
-    @Published var activeFilter: TaskFilter = .all
-}
-
-/// Enum untuk filter task
-enum TaskFilter {
-    case all
-    case active
-    case completed
-    case dueToday
-    case overdue
-    case byTag(TaskTag)
-}
-
-/// Intent/Presenter untuk TaskList
-final class TaskListIntent: ObservableObject {
-    /// State yang akan diobservasi oleh View
-    @Published private(set) var state = TaskListState()
-    
+    // Dependencies
     private let interactor: TaskListInteractorProtocol
-    private let router: TaskListRouter
-    private var cancellables = Set<AnyCancellable>()
+    private let router: TaskListRouterProtocol
     
-    /// Initializer dengan dependency injection
-    init(
-        interactor: TaskListInteractorProtocol = TaskListInteractor(),
-        router: TaskListRouter = TaskListRouter()
-    ) {
+    init(interactor: TaskListInteractorProtocol, router: TaskListRouterProtocol) {
         self.interactor = interactor
         self.router = router
     }
     
-    /// Mengambil daftar task dari interactor
-    func fetchTasks() {
-        state.isLoading = true
-        state.error = nil
-        
-        interactor.fetchTasks()
-            .sink(
-                receiveCompletion: { [weak self] completion in
-                    guard let self = self else { return }
-                    self.state.isLoading = false
-                    
-                    if case .failure(let error) = completion {
-                        self.state.error = error
-                    }
-                },
-                receiveValue: { [weak self] tasks in
-                    guard let self = self else { return }
-                    self.state.tasks = tasks
-                    self.applyFilter()
-                }
-            )
-            .store(in: &cancellables)
+    // MARK: - View Event Methods
+    
+    func viewDidAppear() {
+        fetchTasks()
     }
     
-    /// Toggle status completed dari task
-    func toggleTaskCompletion(task: TaskEntity) {
-        interactor.toggleTaskCompletion(task: task)
-            .sink(
-                receiveCompletion: { [weak self] completion in
-                    if case .failure(let error) = completion {
-                        self?.state.error = error
-                    }
-                },
-                receiveValue: { [weak self] updatedTask in
-                    guard let self = self else { return }
-                    
-                    // Update task dalam array
-                    if let index = self.state.tasks.firstIndex(where: { $0.id == updatedTask.id }) {
-                        self.state.tasks[index] = updatedTask
-                    }
-                    
-                    self.applyFilter()
-                }
-            )
-            .store(in: &cancellables)
+    func onTaskSelected(_ task: TaskEntity) {
+        selectedTaskId = task.id
     }
     
-    /// Menambahkan task baru
-    func addTask(_ task: TaskEntity) {
-        interactor.addTask(task)
-            .sink(
-                receiveCompletion: { [weak self] completion in
-                    if case .failure(let error) = completion {
-                        self?.state.error = error
-                    }
-                },
-                receiveValue: { [weak self] newTask in
-                    guard let self = self else { return }
-                    self.state.tasks.append(newTask)
-                    self.applyFilter()
-                }
-            )
-            .store(in: &cancellables)
-    }
-    
-    /// Menghapus task
-    func deleteTask(id: UUID) {
-        interactor.deleteTask(id: id)
-            .sink(
-                receiveCompletion: { [weak self] completion in
-                    if case .failure(let error) = completion {
-                        self?.state.error = error
-                    }
-                },
-                receiveValue: { [weak self] _ in
-                    guard let self = self else { return }
-                    self.state.tasks.removeAll { $0.id == id }
-                }
-            )
-            .store(in: &cancellables)
-    }
-    
-    /// Set filter aktif dan apply filter
-    func setFilter(_ filter: TaskFilter) {
-        state.activeFilter = filter
-        applyFilter()
-    }
-    
-    /// Navigasi ke detail task
-    func navigateToTaskDetail(task: TaskEntity) {
-        router.navigateToTaskDetail(task: task)
-    }
-    
-    /// Navigasi ke layar tambah task
-    func navigateToAddTask() {
+    func onAddTaskTapped() {
         router.navigateToAddTask()
     }
     
-    /// Menerapkan filter pada daftar task
-    private func applyFilter() {
-        // Implementasi filter untuk pengembangan selanjutnya
-        // Untuk saat ini hanya menyimpan tasks tanpa filtering
+    func onEditTaskTapped(_ task: TaskEntity) {
+        router.navigateToEditTask(task)
+    }
+    
+    func onDeleteTaskTapped(_ taskId: UUID) {
+        isLoading = true
+        error = nil
         
-        /* Contoh implementasi filter:
-        
-        let filteredTasks: [TaskEntity]
-        let today = Calendar.current.startOfDay(for: Date())
-        
-        switch state.activeFilter {
-        case .all:
-            filteredTasks = state.tasks
-        case .active:
-            filteredTasks = state.tasks.filter { !$0.isCompleted }
-        case .completed:
-            filteredTasks = state.tasks.filter { $0.isCompleted }
-        case .dueToday:
-            filteredTasks = state.tasks.filter { task in
-                guard let dueDate = task.dueDate else { return false }
-                return Calendar.current.isDate(dueDate, inSameDayAs: today)
+        interactor.deleteTask(id: taskId) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                
+                switch result {
+                case .success:
+                    self?.fetchTasks()
+                case .failure(let error):
+                    self?.error = error
+                }
             }
-        case .overdue:
-            filteredTasks = state.tasks.filter { task in
-                guard let dueDate = task.dueDate, !task.isCompleted else { return false }
-                return dueDate < today
-            }
-        case .byTag(let tag):
-            filteredTasks = state.tasks.filter { $0.tag == tag }
         }
+    }
+    
+    func onSetAsPriorityTapped(_ task: TaskEntity) {
+        isLoading = true
+        error = nil
         
-        state.filteredTasks = filteredTasks
-        */
+        interactor.setTaskAsPriority(id: task.id) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                
+                switch result {
+                case .success:
+                    self?.fetchTasks()
+                case .failure(let error):
+                    self?.error = error
+                }
+            }
+        }
     }
     
-    /// Reset kesalahan/error
-    func resetError() {
-        state.error = nil
+    func onDismissErrorTapped() {
+        error = nil
     }
     
-    /// Membersihkan resources saat object deinit
-    deinit {
-        cancellables.forEach { $0.cancel() }
-        cancellables.removeAll()
+    // MARK: - Private Methods
+    
+    private func fetchTasks() {
+        isLoading = true
+        error = nil
+        
+        interactor.fetchAllTasks { [weak self] result in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                
+                switch result {
+                case .success(let tasks):
+                    self?.tasks = tasks.sorted { $0.createdAt > $1.createdAt }
+                    // Jika ada priority task, select itu
+                    if let priorityTask = tasks.first(where: { $0.isPriority }) {
+                        self?.selectedTaskId = priorityTask.id
+                    }
+                case .failure(let error):
+                    self?.error = error
+                }
+            }
+        }
     }
 }

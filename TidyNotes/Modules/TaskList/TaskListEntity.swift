@@ -1,0 +1,30 @@
+//
+//  TaskListEntity.swift
+//  TidyNotes
+//
+//  Created by Prizega Fromadia on 05/05/25.
+//
+
+import Foundation
+
+/// Entity untuk Task dalam arsitektur VIPER
+struct TaskEntity: Identifiable, Equatable {
+    let id: UUID
+    let title: String
+    let description: String
+    var isPriority: Bool
+    let createdAt: Date
+    let dueDate: Date?  // Optional due date
+    var status: TaskStatus
+    
+    static func == (lhs: TaskEntity, rhs: TaskEntity) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
+
+/// Status task
+enum TaskStatus: String, Codable {
+    case todo = "To Do"
+    case inProgress = "In Progress"
+    case done = "Done"
+}

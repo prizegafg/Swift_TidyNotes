@@ -8,12 +8,12 @@
 import SwiftUI
 import Combine
 
-/// View utama untuk menampilkan daftar task
 struct TaskListView: View {
-    @ObservedObject private var intent: TaskListIntent
+    @ObservedObject private var presenter: TaskListPresenter
+    @Environment(\.presentationMode) var presentationMode
     
-    init(intent: TaskListIntent) {
-        self.intent = intent
+    init(presenter: TaskListPresenter) {
+        self.presenter = presenter
     }
     
     var body: some View {
@@ -21,7 +21,7 @@ struct TaskListView: View {
             ZStack {
                 // Main content
                 VStack {
-                    if intent.state.tasks.isEmpty && !intent.state.isLoading {
+                    if presenter.tasks.isEmpty && !presenter.isLoading {
                         emptyStateView
                     } else {
                         taskListView
@@ -29,45 +29,31 @@ struct TaskListView: View {
                 }
                 
                 // Loading indicator
-                if intent.state.isLoading {
+                if presenter.isLoading {
                     loadingView
                 }
                 
                 // Error toast (if there's an error)
-                if intent.state.error != nil {
+                if presenter.error != nil {
                     errorView
                 }
             }
             .navigationTitle("Tasks")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { intent.navigateToAddTask() }) {
+                    Button(action: { presenter.onAddTaskTapped() }) {
                         Image(systemName: "plus")
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Menu {
-                        Button("All", action: { intent.setFilter(.all) })
-                        Button("Active", action: { intent.setFilter(.active) })
-                        Button("Completed", action: { intent.setFilter(.completed) })
-                        Button("Due Today", action: { intent.setFilter(.dueToday) })
-                        Button("Overdue", action: { intent.setFilter(.overdue) })
-                        
-                        Menu("By Tag") {
-                            ForEach(TaskTag.allCases) { tag in
-                                Button(tag.displayName) {
-                                    intent.setFilter(.byTag(tag))
-                                }
-                            }
-                        }
-                    } label: {
-                        Image(systemName: "line.3.horizontal.decrease.circle")
+                    Button("Done") {
+                        presentationMode.wrappedValue.dismiss()
                     }
                 }
             }
             .onAppear {
-                intent.fetchTasks()
+                presenter.viewDidAppear()
             }
         }
     }
@@ -75,29 +61,36 @@ struct TaskListView: View {
     /// View untuk daftar task
     private var taskListView: some View {
         List {
-            ForEach(intent.state.tasks) { task in
+            ForEach(presenter.tasks) { task in
                 TaskRowView(
                     task: task,
-                    onToggleCompletion: { intent.toggleTaskCompletion(task: task) },
-                    onTap: { intent.navigateToTaskDetail(task: task) }
+                    isSelected: task.id == presenter.selectedTaskId,
+                    onSelect: { presenter.onTaskSelected(task) }
                 )
                 .contextMenu {
-                    Button(action: { intent.toggleTaskCompletion(task: task) }) {
-                        Label(
-                            task.isCompleted ? "Mark as Incomplete" : "Mark as Complete",
-                            systemImage: task.isCompleted ? "circle" : "checkmark.circle"
-                        )
+                    if !task.isPriority {
+                        Button(action: { presenter.onSetAsPriorityTapped(task) }) {
+                            Label("Set as Priority", systemImage: "star")
+                        }
                     }
                     
-                    Button(role: .destructive, action: { intent.deleteTask(id: task.id) }) {
-                        Label("Delete", systemImage: "trash")
+                    Button(action: { presenter.onEditTaskTapped(task) }) {
+                        Label("Edit", systemImage: "pencil")
+                    }
+                    
+                    if !task.isPriority {
+                        Button(role: .destructive, action: { presenter.onDeleteTaskTapped(task.id) }) {
+                            Label("Delete", systemImage: "trash")
+                        }
                     }
                 }
             }
             .onDelete { indexSet in
                 for index in indexSet {
-                    let task = intent.state.tasks[index]
-                    intent.deleteTask(id: task.id)
+                    let task = presenter.tasks[index]
+                    if !task.isPriority {
+                        presenter.onDeleteTaskTapped(task.id)
+                    }
                 }
             }
         }
@@ -120,7 +113,7 @@ struct TaskListView: View {
                 .padding(.horizontal, 40)
             
             Button("Add Task") {
-                intent.navigateToAddTask()
+                presenter.onAddTaskTapped()
             }
             .padding(.top, 8)
             .buttonStyle(.borderedProminent)
@@ -162,12 +155,12 @@ struct TaskListView: View {
                 Image(systemName: "exclamationmark.triangle")
                     .foregroundColor(.white)
                 
-                Text(intent.state.error?.localizedDescription ?? "An error occurred")
+                Text(presenter.error?.localizedDescription ?? "An error occurred")
                     .foregroundColor(.white)
                 
                 Spacer()
                 
-                Button(action: { intent.resetError() }) {
+                Button(action: { presenter.onDismissErrorTapped() }) {
                     Image(systemName: "xmark")
                         .foregroundColor(.white)
                 }
@@ -175,90 +168,61 @@ struct TaskListView: View {
             .padding()
             .background(Color.red)
             .cornerRadius(8)
-            .padding()
+            .padding(.horizontal)
+            .padding(.bottom, 8)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+            .animation(.easeInOut, value: presenter.error != nil)
         }
-        .transition(.move(edge: .bottom))
-        .animation(.easeInOut, value: intent.state.error != nil)
     }
 }
 
-/// View untuk menampilkan row task
+/// View untuk row task dalam list
 struct TaskRowView: View {
     let task: TaskEntity
-    let onToggleCompletion: () -> Void
-    let onTap: () -> Void
+    let isSelected: Bool
+    let onSelect: () -> Void
     
     var body: some View {
-        Button(action: onTap) {
-            HStack {
-                Button(action: onToggleCompletion) {
-                    Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
-                        .foregroundColor(task.isCompleted ? .green : .gray)
-                        .font(.system(size: 20))
-                }
-                .buttonStyle(BorderlessButtonStyle())
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(task.title)
+                    .font(.headline)
                 
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(task.title)
-                        .strikethrough(task.isCompleted)
-                        .foregroundColor(task.isCompleted ? .secondary : .primary)
-                    
-                    if let dueDate = task.dueDate {
-                        HStack {
-                            Image(systemName: "calendar")
-                                .font(.caption)
-                            
-                            Text(formatDate(dueDate))
-                                .font(.caption)
-                                .foregroundColor(isOverdue(dueDate) && !task.isCompleted ? .red : .secondary)
-                        }
-                    }
+                if !task.description.isEmpty {
+                    Text(task.description)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .lineLimit(2)
                 }
                 
-                Spacer()
-                
-                if let tag = task.tag {
-                    Text(tag.displayName)
+                // Display due date if available
+                if let dueDate = task.dueDate {
+                    Text("Due: \(dueDate, formatter: DateFormatter.shortDate)")
                         .font(.caption)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 2)
-                        .background(tagColor(for: tag))
-                        .foregroundColor(.white)
-                        .cornerRadius(4)
+                        .foregroundColor(isDueDateApproaching(dueDate) ? .orange : .secondary)
                 }
             }
-            .padding(.vertical, 4)
-            .contentShape(Rectangle())
+            
+            Spacer()
+            
+            if task.isPriority {
+                Image(systemName: "star.fill")
+                    .foregroundColor(.yellow)
+            }
+            
+            if isSelected {
+                Image(systemName: "checkmark")
+                    .foregroundColor(.blue)
+            }
         }
-        .buttonStyle(PlainButtonStyle())
-    }
-    
-    // Format tanggal untuk tampilan
-    private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
-        return formatter.string(from: date)
-    }
-    
-    // Cek apakah task overdue
-    private func isOverdue(_ date: Date) -> Bool {
-        return date < Date()
-    }
-    
-    // Mendapatkan warna berdasarkan tag
-    private func tagColor(for tag: TaskTag) -> Color {
-        switch tag {
-        case .work: return .blue
-        case .personal: return .green
-        case .shopping: return .orange
-        case .health: return .red
-        case .finance: return .purple
-        case .other: return .gray
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onSelect()
         }
+        .padding(.vertical, 4)
     }
-}
-
-#Preview {
-    TaskListRouter.makeTaskListView()
+    
+    private func isDueDateApproaching(_ date: Date) -> Bool {
+        return Date().distance(to: date) < 86400 // Less than 24 hours
+    }
 }
