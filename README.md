@@ -4,30 +4,30 @@ Tidy Notes adalah aplikasi manajemen tugas yang dirancang khusus untuk pengguna 
 
 ✨ Fitur Utama
 
-  ✅ CRUD Task — Buat, lihat, ubah, dan hapus task dengan mudah.
+  - ✅ CRUD Task — Buat, lihat, ubah, dan hapus task dengan mudah.
   
-  🖼️ Tambahkan Gambar — Lampirkan gambar ke tiap task untuk referensi visual.
+  - 🖼️ Tambahkan Gambar — Lampirkan gambar ke tiap task untuk referensi visual.
   
-  🛎️ Reminder & Notifikasi (Coming Soon) — Dapatkan notifikasi sebelum deadline penting.
+  - 🛎️ Reminder & Notifikasi (Coming Soon) — Dapatkan notifikasi sebelum deadline penting.
   
-  ☁️ Cloud Sync via iCloud (Coming Soon) — Simpan dan akses data di seluruh perangkat Apple kamu.
+  - ☁️ Cloud Sync via iCloud (Coming Soon) — Simpan dan akses data di seluruh perangkat Apple kamu.
   
-  🗂️ Property Tambahan (Planned) — Tambahkan label, checkbox, atau status seperti di Notion.
+  - 🗂️ Property Tambahan (Planned) — Tambahkan label, checkbox, atau status seperti di Notion.
   
-  🔍 Pencarian Cepat (Planned) — Cari task berdasarkan judul atau properti lainnya.
+  - 🔍 Pencarian Cepat (Planned) — Cari task berdasarkan judul atau properti lainnya.
 
 
 📱 Teknologi yang Digunakan
 
-  SwiftUI — Tampilan modern dan reaktif.
+  - SwiftUI — Tampilan modern dan reaktif.
   
-  VIPER Architecture — Modular, scalable, dan testable.
+  - VIPER Architecture — Modular, scalable, dan testable.
   
-  Combine — Reactive programming untuk data binding dan event-driven updates.
+  - Combine — Reactive programming untuk data binding dan event-driven updates.
   
-  Core Data — Penyimpanan lokal dengan integrasi ke iCloud.
+  - Core Data — Penyimpanan lokal dengan integrasi ke iCloud.
   
-  iCloud — Sinkronisasi lintas perangkat (on progress).
+  - iCloud — Sinkronisasi lintas perangkat (on progress).
 
 🏗️ Instalasi & Setup
 
