@@ -9,48 +9,174 @@ import Foundation
 import Combine
 
 final class TaskDetailPresenter: ObservableObject {
+    enum Mode {
+        case create
+        case edit
+    }
+    
+    @Published var taskTitle: String = ""
     @Published var noteContent: String = ""
-    @Published var isNoteChanged: Bool = false
+    @Published var dueDate: Date = Date()
+    @Published var hasDueDate: Bool = false
+    @Published var isPriority: Bool = false
+    @Published var taskStatus: TaskStatus = .todo
+    @Published var isTaskChanged: Bool = false
     @Published var lastUpdated: Date?
     @Published var isLoading: Bool = false
     @Published var showError: Bool = false
     @Published var errorMessage: String = ""
-
+    
     private let interactor: TaskDetailInteractor
     private let router: TaskDetailRouter
-    private let taskId: UUID
+    private let taskId: UUID?
     private var currentTask: TaskEntity?
+    private var originalTitle: String = ""
     private var originalContent: String = ""
+    private var originalDueDate: Date?
+    private var originalHasDueDate: Bool = false
+    private var originalIsPriority: Bool = false
+    private var originalStatus: TaskStatus = .todo
     private var cancellables = Set<AnyCancellable>()
-
+    
+    let mode: Mode
+    
+    // Initializer untuk mode edit
     init(taskId: UUID, interactor: TaskDetailInteractor, router: TaskDetailRouter) {
         self.taskId = taskId
         self.interactor = interactor
         self.router = router
+        self.mode = .edit
     }
-
+    
+    // Initializer untuk mode create
+    init(interactor: TaskDetailInteractor, router: TaskDetailRouter) {
+        self.taskId = nil
+        self.interactor = interactor
+        self.router = router
+        self.mode = .create
+        
+        // Atur nilai default untuk task baru
+        self.taskTitle = ""
+        self.noteContent = ""
+        self.dueDate = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
+        self.hasDueDate = false
+        self.isPriority = false
+        self.taskStatus = .todo
+    }
+    
     func viewDidLoad() {
-        fetchTask()
+        if mode == .edit, let taskId = taskId {
+            fetchTask(taskId: taskId)
+        } else {
+            // Untuk mode create, set isTaskChanged = true agar tombol Save aktif
+            isTaskChanged = true
+        }
     }
-
+    
+    func titleChanged(_ newValue: String) {
+        taskTitle = newValue
+        checkIfTaskChanged()
+    }
+    
     func noteContentChanged(_ newValue: String) {
         noteContent = newValue
-        isNoteChanged = newValue.trimmed != originalContent
+        checkIfTaskChanged()
     }
-
-    func saveNote() {
-        guard let task = currentTask else { return }
-        interactor.updateTaskNoteContent(task: task, content: noteContent)
+    
+    func dueDateChanged(_ newValue: Date) {
+        dueDate = newValue
+        checkIfTaskChanged()
+    }
+    
+    func hasDueDateChanged(_ newValue: Bool) {
+        hasDueDate = newValue
+        checkIfTaskChanged()
+    }
+    
+    func priorityChanged(_ newValue: Bool) {
+        isPriority = newValue
+        checkIfTaskChanged()
+    }
+    
+    func statusChanged(_ newValue: TaskStatus) {
+        taskStatus = newValue
+        checkIfTaskChanged()
+    }
+    
+    private func checkIfTaskChanged() {
+        if mode == .create {
+            // Dalam mode create, isTaskChanged akan true jika judul tidak kosong
+            isTaskChanged = !taskTitle.trimmed.isEmpty
+        } else {
+            // Dalam mode edit, check perubahan seperti biasa
+            isTaskChanged = taskTitle.trimmed != originalTitle ||
+                           noteContent.trimmed != originalContent ||
+                           hasDueDate != originalHasDueDate ||
+                           (hasDueDate && originalHasDueDate &&
+                            !Calendar.current.isDate(dueDate, inSameDayAs: originalDueDate ?? Date())) ||
+                           isPriority != originalIsPriority ||
+                           taskStatus != originalStatus
+        }
+    }
+    
+    func saveTask() {
+        if mode == .create {
+            createNewTask()
+        } else {
+            updateExistingTask()
+        }
+    }
+    
+    private func createNewTask() {
+        isLoading = true
+        
+        interactor.createTask(
+            title: taskTitle.trimmed,
+            description: noteContent.trimmed,
+            isPriority: isPriority,
+            dueDate: hasDueDate ? dueDate : nil,
+            status: taskStatus
+        )
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { [weak self] completion in
+            self?.isLoading = false
+            if case .failure(let error) = completion {
+                self?.showError(message: error.localizedDescription)
+            }
+        }, receiveValue: { [weak self] task in
+            self?.router.dismissAndRefreshTaskList()
+        })
+        .store(in: &cancellables)
+    }
+    
+    private func updateExistingTask() {
+        guard var task = currentTask else { return }
+        
+        task.title = taskTitle.trimmed
+        task.description = noteContent.trimmed
+        task.dueDate = hasDueDate ? dueDate : nil
+        task.status = taskStatus
+        task.isPriority = isPriority
+        
+        isLoading = true
+        interactor.updateTask(task: task)
             .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: handleError, receiveValue: updateTask(_:))
+            .sink(receiveCompletion: { [weak self] completion in
+                self?.isLoading = false
+                if case .failure(let error) = completion {
+                    self?.showError(message: error.localizedDescription)
+                }
+            }, receiveValue: { [weak self] task in
+                self?.updateTask(task)
+            })
             .store(in: &cancellables)
     }
-
+    
     func dismiss() {
         router.dismissTaskDetail()
     }
-
-    private func fetchTask() {
+    
+    private func fetchTask(taskId: UUID) {
         isLoading = true
         interactor.fetchTask(taskId: taskId)
             .receive(on: DispatchQueue.main)
@@ -60,33 +186,49 @@ final class TaskDetailPresenter: ObservableObject {
                     self?.showError(message: error.localizedDescription)
                 }
             }, receiveValue: { [weak self] task in
-                self?.currentTask = task
-                self?.noteContent = task.description
-                self?.originalContent = task.description
-                self?.lastUpdated = task.dueDate // atau createdAt jika lebih cocok
-                self?.isNoteChanged = false
+                self?.updateTaskFields(task)
             })
             .store(in: &cancellables)
     }
-
-    private func updateTask(_ task: TaskEntity) {
+    
+    private func updateTaskFields(_ task: TaskEntity) {
         currentTask = task
+        taskTitle = task.title
+        noteContent = task.description
+        hasDueDate = task.dueDate != nil
+        if let taskDueDate = task.dueDate {
+            dueDate = taskDueDate
+        }
+        isPriority = task.isPriority
+        taskStatus = task.status
+        
+        // Store original values
+        originalTitle = task.title
         originalContent = task.description
-        lastUpdated = task.dueDate
-        isNoteChanged = false
+        originalDueDate = task.dueDate
+        originalHasDueDate = task.dueDate != nil
+        originalIsPriority = task.isPriority
+        originalStatus = task.status
+        
+        lastUpdated = task.createdAt
+        isTaskChanged = false
     }
-
+    
+    private func updateTask(_ task: TaskEntity) {
+        updateTaskFields(task)
+    }
+    
     private func handleError(_ completion: Subscribers.Completion<Error>) {
         if case let .failure(error) = completion {
             showError(message: error.localizedDescription)
         }
     }
-
+    
     private func showError(message: String) {
         errorMessage = message
         showError = true
     }
-
+    
     var lastUpdatedFormatted: String {
         guard let lastUpdated = lastUpdated else { return "Belum pernah diperbarui" }
         let formatter = DateFormatter()
@@ -94,5 +236,25 @@ final class TaskDetailPresenter: ObservableObject {
         formatter.timeStyle = .short
         formatter.locale = Locale(identifier: "id_ID")
         return formatter.string(from: lastUpdated)
+    }
+    
+    var formattedDueDate: String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        formatter.locale = Locale(identifier: "id_ID")
+        return formatter.string(from: dueDate)
+    }
+    
+    var statusOptions: [TaskStatus] {
+        return [.todo, .inProgress, .done]
+    }
+    
+    var navigationTitle: String {
+        return mode == .create ? "Tambah Tugas" : "Detail Tugas"
+    }
+    
+    var saveButtonTitle: String {
+        return mode == .create ? "Tambah" : "Simpan"
     }
 }

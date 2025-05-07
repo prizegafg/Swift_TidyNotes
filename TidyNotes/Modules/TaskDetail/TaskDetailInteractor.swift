@@ -10,21 +10,35 @@ import Combine
 
 final class TaskDetailInteractor {
     private let taskRepository: TaskRepository
-
+    
     init(taskRepository: TaskRepository = InMemoryTaskRepository.shared) {
         self.taskRepository = taskRepository
     }
-
+    
     func fetchTask(taskId: UUID) -> AnyPublisher<TaskEntity, Error> {
         return taskRepository.fetchTaskById(taskId)
             .mapError { $0 as Error }
             .eraseToAnyPublisher()
     }
-
-    func updateTaskNoteContent(task: TaskEntity, content: String) -> AnyPublisher<TaskEntity, Error> {
-        var updatedTask = task
-        updatedTask.description = content // misalnya kamu pakai 'description' sebagai catatan
-        return taskRepository.updateTask(updatedTask)
+    
+    func updateTask(task: TaskEntity) -> AnyPublisher<TaskEntity, Error> {
+        return taskRepository.updateTask(task)
+            .mapError { $0 as Error }
+            .eraseToAnyPublisher()
+    }
+    
+    func createTask(title: String, description: String, isPriority: Bool, dueDate: Date?, status: TaskStatus) -> AnyPublisher<TaskEntity, Error> {
+        let newTask = TaskEntity(
+            id: UUID(),
+            title: title,
+            description: description,
+            isPriority: isPriority,
+            createdAt: Date(),
+            dueDate: dueDate,
+            status: status
+        )
+        
+        return taskRepository.addTask(newTask)
             .mapError { $0 as Error }
             .eraseToAnyPublisher()
     }

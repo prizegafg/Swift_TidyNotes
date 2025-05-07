@@ -14,7 +14,7 @@ struct TaskEntity: Identifiable, Equatable {
     var description: String
     var isPriority: Bool
     let createdAt: Date
-    let dueDate: Date?  // Optional due date
+    var dueDate: Date?  // Optional due date
     var status: TaskStatus
     
     static func == (lhs: TaskEntity, rhs: TaskEntity) -> Bool {

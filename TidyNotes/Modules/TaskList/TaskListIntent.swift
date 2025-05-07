@@ -31,6 +31,7 @@ final class TaskListPresenter: ObservableObject {
 
     func onTaskSelected(_ task: TaskEntity) {
         selectedTaskId = task.id
+        router.navigateToTaskDetail(task.id)
     }
 
     func onAddTaskTapped() {
@@ -76,8 +77,10 @@ final class TaskListPresenter: ObservableObject {
         interactor.fetchTasks()
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: handleCompletion, receiveValue: { [weak self] tasks in
+//                self?.tasks = tasks.sorted { $0.createdAt > $1.createdAt }
+//                self?.selectedTaskId = tasks.first(where: { $0.isPriority })?.id
                 self?.tasks = tasks.sorted { $0.createdAt > $1.createdAt }
-                self?.selectedTaskId = tasks.first(where: { $0.isPriority })?.id
+                self?.isLoading = false
             })
             .store(in: &cancellables)
     }
