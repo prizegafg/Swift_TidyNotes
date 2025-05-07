@@ -12,7 +12,13 @@ import Combine
 /// Protocol Router untuk Task dalam arsitektur VIPER
 final class TaskListRouter {
     private weak var navigationController: UINavigationController?
-    private var navigationState: TaskNavigationState?
+    // Gunakan weak reference untuk navigationState
+    private weak var navigationState: TaskNavigationState?
+    
+    // Tambahkan deinit untuk debugging memory leak
+    deinit {
+        print("TaskListRouter deinit")
+    }
 
     init(navigationController: UINavigationController? = nil, navigationState: TaskNavigationState? = nil) {
         self.navigationController = navigationController
@@ -40,4 +46,8 @@ class TaskNavigationState: ObservableObject {
     @Published var showEditTask: Bool = false
     @Published var showTaskDetail: Bool = false
     @Published var selectedTaskForEdit: TaskEntity?
+    
+    deinit {
+        print("TaskNavigationState deinit")
+    }
 }

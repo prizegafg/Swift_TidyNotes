@@ -5,8 +5,6 @@
 //  Created by Prizega Fromadia on 29/04/25.
 //
 
-//import Foundation
-//import Combine
 import Combine
 import Foundation
 
@@ -15,11 +13,19 @@ final class TaskListPresenter: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
     @Published var selectedTaskId: UUID? = nil
+    @Published var showDeleteConfirmation: Bool = false
+    @Published var taskToDelete: UUID? = nil
 
     private let interactor: TaskListInteractor
     private let router: TaskListRouter
     private var cancellables = Set<AnyCancellable>()
 
+    // Tambahkan deinit untuk debugging memory leak
+    deinit {
+        print("TaskListPresenter deinit")
+        cancellables.forEach { $0.cancel() }
+    }
+    
     init(interactor: TaskListInteractor, router: TaskListRouter) {
         self.interactor = interactor
         self.router = router
@@ -43,15 +49,34 @@ final class TaskListPresenter: ObservableObject {
     }
 
     func onDeleteTaskTapped(_ taskId: UUID) {
+//        isLoading = true
+//        errorMessage = nil
+//
+//        interactor.deleteTask(id: taskId)
+//            .receive(on: DispatchQueue.main)
+//            .sink(receiveCompletion: handleCompletion, receiveValue: { [weak self] in
+//                self?.fetchTasks()
+//            })
+//            .store(in: &cancellables)
+        taskToDelete = taskId
+        showDeleteConfirmation = true
+    }
+    
+    func confirmDeleteTask() {
+        guard let taskId = taskToDelete else { return }
+        
         isLoading = true
         errorMessage = nil
-
+        
         interactor.deleteTask(id: taskId)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: handleCompletion, receiveValue: { [weak self] in
                 self?.fetchTasks()
             })
             .store(in: &cancellables)
+        
+        taskToDelete = nil
+        showDeleteConfirmation = false
     }
 
     func onSetAsPriorityTapped(_ task: TaskEntity) {
@@ -75,11 +100,13 @@ final class TaskListPresenter: ObservableObject {
         errorMessage = nil
 
         interactor.fetchTasks()
+            .map { tasks in
+                // Lakukan sorting di background thread
+                tasks.sorted { $0.createdAt > $1.createdAt }
+            }
             .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: handleCompletion, receiveValue: { [weak self] tasks in
-//                self?.tasks = tasks.sorted { $0.createdAt > $1.createdAt }
-//                self?.selectedTaskId = tasks.first(where: { $0.isPriority })?.id
-                self?.tasks = tasks.sorted { $0.createdAt > $1.createdAt }
+            .sink(receiveCompletion: handleCompletion, receiveValue: { [weak self] sortedTasks in
+                self?.tasks = sortedTasks
                 self?.isLoading = false
             })
             .store(in: &cancellables)

@@ -11,7 +11,12 @@ import Combine
 
 final class TaskListInteractor {
     private let repository: TaskRepository
-
+    
+    // Tambahkan deinit untuk debugging memory leak
+    deinit {
+        print("TaskListInteractor deinit")
+    }
+    
     init(repository: TaskRepository = InMemoryTaskRepository.shared) {
         self.repository = repository
     }

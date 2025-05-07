@@ -29,26 +29,26 @@ struct TaskListView: View {
                 errorView
             }
             
-            // Add floating action button for adding tasks
-            VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Button(action: {
-                        presenter.onAddTaskTapped()
-                    }) {
-                        Image(systemName: "plus")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                            .frame(width: 60, height: 60)
-                            .background(Color.blue)
-                            .clipShape(Circle())
-                            .shadow(radius: 4)
-                    }
-                    .padding(.trailing, 20)
-                    .padding(.bottom, 20)
-                }
-            }
+//            VStack {
+//                Spacer()
+//                HStack {
+//                    Spacer()
+//                    Button(action: {
+//                        presenter.onAddTaskTapped()
+//                    }) {
+//                        Image(systemName: "plus")
+//                            .font(.title2)
+//                            .foregroundColor(.white)
+//                            .frame(width: 60, height: 60)
+//                            .background(Color.blue)
+//                            .clipShape(Circle())
+//                            .shadow(radius: 4)
+//                    }
+//                    .padding(.trailing, 20)
+//                    .padding(.bottom, 20)
+//                }
+//            }
+            floatingActionButton
         }
         .navigationTitle("Tasks")
         .onAppear {
@@ -64,6 +64,40 @@ struct TaskListView: View {
                 }
             )
         }
+        .confirmationDialog(
+            "Konfirmasi Hapus",
+            isPresented: $presenter.showDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Ya", role: .destructive) {
+                presenter.confirmDeleteTask()
+            }
+            Button("Tidak", role: .cancel) {}
+        } message: {
+            Text("Apakah Anda yakin akan menghapus task ini?")
+        }
+    }
+    
+    private var floatingActionButton: some View {
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                Button(action: {
+                    presenter.onAddTaskTapped()
+                }) {
+                    Image(systemName: "plus")
+                        .font(.title2)
+                        .foregroundColor(.white)
+                        .frame(width: 60, height: 60)
+                        .background(Color.blue)
+                        .clipShape(Circle())
+                        .shadow(radius: 4)
+                }
+                .padding(.trailing, 20)
+                .padding(.bottom, 20)
+            }
+        }
     }
     
     private var taskListView: some View {
@@ -74,8 +108,32 @@ struct TaskListView: View {
                     isSelected: task.id == presenter.selectedTaskId,
                     onSelect: { presenter.onTaskSelected(task) }
                 )
-                .onTapGesture {
-                    presenter.onTaskSelected(task)
+                // Gunakan swipeActions baru daripada onDelete untuk performa yang lebih baik
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button {
+                        presenter.onDeleteTaskTapped(task.id)
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                    .tint(.red)
+                    
+                    Button {
+                        presenter.onTaskSelected(task)
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                    }
+                    .tint(.blue)
+                    
+                    
+                    
+                    if !task.isPriority {
+                        Button {
+                            presenter.onSetAsPriorityTapped(task)
+                        } label: {
+                            Label("Priority", systemImage: "star")
+                        }
+                        .tint(.yellow)
+                    }
                 }
                 .contextMenu {
                     if !task.isPriority {
@@ -99,15 +157,10 @@ struct TaskListView: View {
                     }
                 }
             }
-            .onDelete { indexSet in
-                for index in indexSet {
-                    let task = presenter.tasks[index]
-                    if !task.isPriority {
-                        presenter.onDeleteTaskTapped(task.id)
-                    }
-                }
-            }
+            // Hapus onDelete handler (diganti dengan swipeActions di atas)
         }
+        // Tambahkan .listStyle untuk performa yang lebih baik
+        .listStyle(PlainListStyle())
     }
     
     private var emptyStateView: some View {
@@ -115,13 +168,16 @@ struct TaskListView: View {
             Image(systemName: "checklist")
                 .font(.system(size: 60))
                 .foregroundColor(.gray)
+            
             Text("No Tasks Yet")
                 .font(.title2)
                 .fontWeight(.medium)
+            
             Text("Add your first task by tapping the + button.")
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
+            
             Button("Add Task") {
                 presenter.onAddTaskTapped()
             }
@@ -136,6 +192,7 @@ struct TaskListView: View {
     private var loadingView: some View {
         ZStack {
             Color.black.opacity(0.4).edgesIgnoringSafeArea(.all)
+            
             VStack(spacing: 16) {
                 ProgressView().scaleEffect(1.5)
                 Text("Loading Tasks...")
@@ -157,9 +214,12 @@ struct TaskListView: View {
             HStack {
                 Image(systemName: "exclamationmark.triangle")
                     .foregroundColor(.white)
+                
                 Text(presenter.errorMessage ?? "An error occurred")
                     .foregroundColor(.white)
+                
                 Spacer()
+                
                 Button(action: {
                     presenter.onDismissErrorTapped()
                 }) {
@@ -183,28 +243,38 @@ struct TaskRowView: View {
     let isSelected: Bool
     let onSelect: () -> Void
     
+    private var isDueDateApproaching: Bool {
+        guard let dueDate = task.dueDate else { return false }
+        return Date().distance(to: dueDate) < 86400
+    }
+    
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text(task.title)
                     .font(.headline)
+                
                 if !task.description.isEmpty {
                     Text(task.description)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .lineLimit(2)
                 }
+                
                 if let dueDate = task.dueDate {
                     Text("Due: \(dueDate, formatter: DateFormatter.shortDate)")
                         .font(.caption)
                         .foregroundColor(isDueDateApproaching(dueDate) ? .orange : .secondary)
                 }
             }
+            
             Spacer()
+            
             if task.isPriority {
                 Image(systemName: "star.fill")
                     .foregroundColor(.yellow)
             }
+            
             if isSelected {
                 Image(systemName: "checkmark")
                     .foregroundColor(.blue)
