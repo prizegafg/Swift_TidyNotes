@@ -7,4 +7,26 @@
 
 import Foundation
 import Combine
-import SwiftUI
+
+final class TaskDetailInteractor {
+    private let taskRepository: TaskRepository
+
+    init(taskRepository: TaskRepository = InMemoryTaskRepository.shared) {
+        self.taskRepository = taskRepository
+    }
+
+    func fetchTask(taskId: UUID) -> AnyPublisher<TaskEntity, Error> {
+        return taskRepository.fetchTaskById(taskId)
+            .mapError { $0 as Error }
+            .eraseToAnyPublisher()
+    }
+
+    func updateTaskNoteContent(task: TaskEntity, content: String) -> AnyPublisher<TaskEntity, Error> {
+        var updatedTask = task
+        updatedTask.description = content // misalnya kamu pakai 'description' sebagai catatan
+        return taskRepository.updateTask(updatedTask)
+            .mapError { $0 as Error }
+            .eraseToAnyPublisher()
+    }
+}
+

@@ -1,8 +1,8 @@
 //
-//  TaskListEntity.swift
+//  TaskEntity.swift
 //  TidyNotes
 //
-//  Created by Prizega Fromadia on 05/05/25.
+//  Created by Prizega Fromadia on 07/05/25.
 //
 
 import Foundation
@@ -10,8 +10,8 @@ import Foundation
 /// Entity untuk Task dalam arsitektur VIPER
 struct TaskEntity: Identifiable, Equatable {
     let id: UUID
-    let title: String
-    let description: String
+    var title: String
+    var description: String
     var isPriority: Bool
     let createdAt: Date
     let dueDate: Date?  // Optional due date

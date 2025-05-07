@@ -7,62 +7,28 @@
 
 import Foundation
 import SwiftUI
-
-// File: TaskListRouter.swift
-import SwiftUI
 import Combine
 
 /// Protocol Router untuk Task dalam arsitektur VIPER
-protocol TaskListRouterProtocol {
-    func navigateToAddTask()
-    func navigateToEditTask(_ task: TaskEntity)
-}
-
-/// Router untuk navigasi dari TaskList ke layar lain
-final class TaskListRouter: TaskListRouterProtocol {
-    // Coordinator yang akan menangani navigasi aktual di aplikasi
+final class TaskListRouter {
     private weak var navigationController: UINavigationController?
-    // SwiftUI navigation state
     private var navigationState: TaskNavigationState?
-    
+
     init(navigationController: UINavigationController? = nil, navigationState: TaskNavigationState? = nil) {
         self.navigationController = navigationController
         self.navigationState = navigationState
     }
-    
-    /// Navigasi ke layar tambah task
+
     func navigateToAddTask() {
-        if let navigationState = navigationState {
-            // SwiftUI navigation
-            navigationState.showAddTask = true
-        } else if let navigationController = navigationController {
-            // UIKit navigation
-            let addTaskModule = TaskAddEditModule.makeAddTaskView()
-            let hostingController = UIHostingController(rootView: addTaskModule)
-            navigationController.pushViewController(hostingController, animated: true)
-        } else {
-            // Fallback implementation untuk debugging
-            print("Navigate to add task")
-        }
+        navigationState?.showAddTask = true
     }
-    
-    /// Navigasi ke layar edit task
+
     func navigateToEditTask(_ task: TaskEntity) {
-        if let navigationState = navigationState {
-            // SwiftUI navigation
-            navigationState.selectedTaskForEdit = task
-            navigationState.showEditTask = true
-        } else if let navigationController = navigationController {
-            // UIKit navigation
-            let editTaskModule = TaskAddEditModule.makeEditTaskView(task: task)
-            let hostingController = UIHostingController(rootView: editTaskModule)
-            navigationController.pushViewController(hostingController, animated: true)
-        } else {
-            // Fallback implementation untuk debugging
-            print("Navigate to edit task: \(task.title)")
-        }
+        navigationState?.selectedTaskForEdit = task
+        navigationState?.showEditTask = true
     }
 }
+
 
 /// State untuk navigasi SwiftUI
 class TaskNavigationState: ObservableObject {

@@ -10,101 +10,82 @@
 import Combine
 import Foundation
 
-class TaskListPresenter: ObservableObject {
-    // Published properties untuk View
+final class TaskListPresenter: ObservableObject {
     @Published var tasks: [TaskEntity] = []
     @Published var isLoading: Bool = false
-    @Published var error: Error? = nil
+    @Published var errorMessage: String? = nil
     @Published var selectedTaskId: UUID? = nil
-    
-    // Dependencies
-    private let interactor: TaskListInteractorProtocol
-    private let router: TaskListRouterProtocol
-    
-    init(interactor: TaskListInteractorProtocol, router: TaskListRouterProtocol) {
+
+    private let interactor: TaskListInteractor
+    private let router: TaskListRouter
+    private var cancellables = Set<AnyCancellable>()
+
+    init(interactor: TaskListInteractor, router: TaskListRouter) {
         self.interactor = interactor
         self.router = router
     }
-    
-    // MARK: - View Event Methods
-    
+
     func viewDidAppear() {
         fetchTasks()
     }
-    
+
     func onTaskSelected(_ task: TaskEntity) {
         selectedTaskId = task.id
     }
-    
+
     func onAddTaskTapped() {
         router.navigateToAddTask()
     }
-    
+
     func onEditTaskTapped(_ task: TaskEntity) {
         router.navigateToEditTask(task)
     }
-    
+
     func onDeleteTaskTapped(_ taskId: UUID) {
         isLoading = true
-        error = nil
-        
-        interactor.deleteTask(id: taskId) { [weak self] result in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                
-                switch result {
-                case .success:
-                    self?.fetchTasks()
-                case .failure(let error):
-                    self?.error = error
-                }
-            }
-        }
+        errorMessage = nil
+
+        interactor.deleteTask(id: taskId)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: handleCompletion, receiveValue: { [weak self] in
+                self?.fetchTasks()
+            })
+            .store(in: &cancellables)
     }
-    
+
     func onSetAsPriorityTapped(_ task: TaskEntity) {
         isLoading = true
-        error = nil
-        
-        interactor.setTaskAsPriority(id: task.id) { [weak self] result in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                
-                switch result {
-                case .success:
-                    self?.fetchTasks()
-                case .failure(let error):
-                    self?.error = error
-                }
-            }
-        }
+        errorMessage = nil
+
+        interactor.setTaskAsPriority(id: task.id)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: handleCompletion, receiveValue: { [weak self] in
+                self?.fetchTasks()
+            })
+            .store(in: &cancellables)
     }
-    
+
     func onDismissErrorTapped() {
-        error = nil
+        errorMessage = nil
     }
-    
-    // MARK: - Private Methods
-    
+
     private func fetchTasks() {
         isLoading = true
-        error = nil
-        
-        interactor.fetchAllTasks { [weak self] result in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                
-                switch result {
-                case .success(let tasks):
-                    self?.tasks = tasks.sorted { $0.createdAt > $1.createdAt }
-                    // Jika ada priority task, select itu
-                    if let priorityTask = tasks.first(where: { $0.isPriority }) {
-                        self?.selectedTaskId = priorityTask.id
-                    }
-                case .failure(let error):
-                    self?.error = error
-                }
-            }
+        errorMessage = nil
+
+        interactor.fetchTasks()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: handleCompletion, receiveValue: { [weak self] tasks in
+                self?.tasks = tasks.sorted { $0.createdAt > $1.createdAt }
+                self?.selectedTaskId = tasks.first(where: { $0.isPriority })?.id
+            })
+            .store(in: &cancellables)
+    }
+
+    private func handleCompletion(_ completion: Subscribers.Completion<Error>) {
+        isLoading = false
+        if case let .failure(error) = completion {
+            errorMessage = error.localizedDescription
         }
     }
 }

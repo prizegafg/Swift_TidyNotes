@@ -34,7 +34,7 @@ struct TaskListView: View {
                 }
                 
                 // Error toast (if there's an error)
-                if presenter.error != nil {
+                if $presenter.error != nil {
                     errorView
                 }
             }
@@ -155,7 +155,7 @@ struct TaskListView: View {
                 Image(systemName: "exclamationmark.triangle")
                     .foregroundColor(.white)
                 
-                Text(presenter.error?.localizedDescription ?? "An error occurred")
+                Text($presenter.error.localizedDescription ?? "An error occurred")
                     .foregroundColor(.white)
                 
                 Spacer()
@@ -171,7 +171,7 @@ struct TaskListView: View {
             .padding(.horizontal)
             .padding(.bottom, 8)
             .transition(.move(edge: .bottom).combined(with: .opacity))
-            .animation(.easeInOut, value: presenter.error != nil)
+            .animation(.easeInOut, value: $presenter.error != nil)
         }
     }
 }
