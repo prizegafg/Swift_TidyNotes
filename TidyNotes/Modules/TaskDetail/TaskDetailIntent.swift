@@ -234,7 +234,7 @@ final class TaskDetailPresenter: ObservableObject {
     }
     
     var lastUpdatedFormatted: String {
-        guard let lastUpdated = lastUpdated else { return "Belum pernah diperbarui" }
+        guard let lastUpdated = lastUpdated else { return "Never been updated" }
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .short

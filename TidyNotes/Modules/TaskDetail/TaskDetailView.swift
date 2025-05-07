@@ -25,11 +25,11 @@ struct TaskDetailView: View {
             .padding()
         }
         .navigationTitle(presenter.navigationTitle)
-        .navigationBarBackButtonHidden(true) 
+        .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                Button("Batal") {
+                Button("Cancel") {
                     presentationMode.wrappedValue.dismiss()
                 }
             }
@@ -67,10 +67,10 @@ struct TaskDetailView: View {
     
     private var titleSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Judul")
+            Text("Title")
                 .font(.headline)
             
-            TextField("Masukkan judul tugas", text: $presenter.taskTitle)
+            TextField("Type Task Title", text: $presenter.taskTitle)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding(.bottom, 4)
                 .onChange(of: presenter.taskTitle) { newValue in
@@ -82,10 +82,10 @@ struct TaskDetailView: View {
     
     private var dueDateSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Tenggat Waktu")
+            Text("Due Date")
                 .font(.headline)
             
-            Toggle("Tetapkan tenggat waktu", isOn: $presenter.hasDueDate)
+            Toggle("Set Due Date", isOn: $presenter.hasDueDate)
                 .onChange(of: presenter.hasDueDate) { newValue in
                     presenter.hasDueDateChanged(newValue)
                 }
@@ -122,10 +122,10 @@ struct TaskDetailView: View {
     
     private var prioritySection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Prioritas")
+            Text("Priority")
                 .font(.headline)
             
-            Toggle("Tugas prioritas", isOn: $presenter.isPriority)
+            Toggle("Priority Task", isOn: $presenter.isPriority)
                 .onChange(of: presenter.isPriority) { newValue in
                     presenter.priorityChanged(newValue)
                 }
@@ -155,14 +155,14 @@ struct TaskDetailView: View {
     private var noteSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("Catatan")
+                Text("Notes")
                     .font(.headline)
                 
                 Spacer()
                 
                 // Hanya tampilkan status "terakhir diperbarui" pada mode edit
                 if presenter.mode == .edit {
-                    Text("Terakhir diperbarui: \(presenter.lastUpdatedFormatted)")
+                    Text("Last Update: \(presenter.lastUpdatedFormatted)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -173,9 +173,10 @@ struct TaskDetailView: View {
                     presenter.noteContentChanged(newValue)
                 }
                 .padding(8)
-                .background(Color(.systemGray6))
-                .cornerRadius(8)
-                .frame(maxWidth: .infinity, minHeight: 150)
+//                .background(Color(.white))
+//                .border(.white)
+                .cornerRadius(10)
+                .frame(maxWidth: .infinity, minHeight: 300)
         }
     }
 }

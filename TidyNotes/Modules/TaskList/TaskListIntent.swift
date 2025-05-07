@@ -49,15 +49,6 @@ final class TaskListPresenter: ObservableObject {
     }
 
     func onDeleteTaskTapped(_ taskId: UUID) {
-//        isLoading = true
-//        errorMessage = nil
-//
-//        interactor.deleteTask(id: taskId)
-//            .receive(on: DispatchQueue.main)
-//            .sink(receiveCompletion: handleCompletion, receiveValue: { [weak self] in
-//                self?.fetchTasks()
-//            })
-//            .store(in: &cancellables)
         taskToDelete = taskId
         showDeleteConfirmation = true
     }

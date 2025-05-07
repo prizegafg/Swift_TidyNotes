@@ -24,53 +24,20 @@
         }
       }
     },
-    "Apakah Anda yakin akan menghapus task ini?" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Are you sure want to delete this task?"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apakah Anda yakin akan menghapus task ini?"
-          }
-        }
-      }
+    "Are you sure want to delete this task?" : {
+
     },
-    "Batal" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cancel"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Batal"
-          }
-        }
-      }
+    "Cancel" : {
+
     },
-    "Catatan" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Notes"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Catatan"
-          }
-        }
-      }
+    "Choose Theme" : {
+
+    },
+    "Delete" : {
+
+    },
+    "Delete Confirmation" : {
+
     },
     "Description: %@" : {
       "localizations" : {
@@ -81,6 +48,12 @@
           }
         }
       }
+    },
+    "Done" : {
+
+    },
+    "Due Date" : {
+
     },
     "Due: %@" : {
       "localizations" : {
@@ -132,72 +105,14 @@
         }
       }
     },
-    "Hapus" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Delete"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hapus"
-          }
-        }
-      }
-    },
-    "Judul" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Title"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Judul"
-          }
-        }
-      }
-    },
-    "Konfirmasi Hapus" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Delete Confirmation"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Konfirmasi Hapus"
-          }
-        }
-      }
+    "Last Update: %@" : {
+
     },
     "Loading Tasks..." : {
 
     },
-    "Masukkan judul tugas" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Input Task Title"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Masukkan Judul Tugas"
-          }
-        }
-      }
+    "No" : {
+
     },
     "No Tasks Yet" : {
       "localizations" : {
@@ -209,44 +124,15 @@
         }
       }
     },
+    "Notes" : {
+
+    },
     "OK" : {
       "localizations" : {
         "id" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "OK"
-          }
-        }
-      }
-    },
-    "Pilih Tema" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choose Theme"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pilih Tema"
-          }
-        }
-      }
-    },
-    "Prioritas" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Priority"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prioritas"
           }
         }
       }
@@ -261,21 +147,8 @@
         }
       }
     },
-    "Selesai" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Done"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Selesai"
-          }
-        }
-      }
+    "Priority Task" : {
+
     },
     "Set as Priority" : {
       "localizations" : {
@@ -287,22 +160,8 @@
         }
       }
     },
-    "Simpan" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Save"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Simpan"
-          }
-        }
-      }
+    "Set Due Date" : {
+
     },
     "Status" : {
       "localizations" : {
@@ -334,101 +193,14 @@
         }
       }
     },
-    "Tenggat Waktu" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Due"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tenggat Waktu"
-          }
-        }
-      }
+    "Title" : {
+
     },
-    "Terakhir diperbarui: %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Last update: %@"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Terakhir diperbarui: %@"
-          }
-        }
-      }
+    "Type Task Title" : {
+
     },
-    "Tetapkan tenggat waktu" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Set Due Date"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tetapkan Tenggat Waktu"
-          }
-        }
-      }
-    },
-    "Tidak" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tidak"
-          }
-        }
-      }
-    },
-    "Tugas prioritas" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Priority Task"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tugas Prioritas"
-          }
-        }
-      }
-    },
-    "Ya" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yes"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ya"
-          }
-        }
-      }
+    "Yes" : {
+
     }
   },
   "version" : "1.0"

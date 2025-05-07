@@ -46,16 +46,16 @@ struct TaskListView: View {
             )
         }
         .confirmationDialog(
-            "Konfirmasi Hapus",
+            "Delete Confirmation",
             isPresented: $presenter.showDeleteConfirmation,
             titleVisibility: .visible
         ) {
-            Button("Ya", role: .destructive) {
+            Button("Yes", role: .destructive) {
                 presenter.confirmDeleteTask()
             }
-            Button("Tidak", role: .cancel) {}
+            Button("No", role: .cancel) {}
         } message: {
-            Text("Apakah Anda yakin akan menghapus task ini?")
+            Text("Are you sure want to delete this task?")
         }
     }
     
@@ -94,7 +94,7 @@ struct TaskListView: View {
                     Button {
                         presenter.onDeleteTaskTapped(task.id)
                     } label: {
-                        Label("Hapus", systemImage: "trash")
+                        Label("Delete", systemImage: "trash")
                     }
                     .tint(.red)
                     
@@ -133,7 +133,7 @@ struct TaskListView: View {
                         Button(role: .destructive, action: {
                             presenter.onDeleteTaskTapped(task.id)
                         }) {
-                            Label("Hapus", systemImage: "trash")
+                            Label("Delete", systemImage: "trash")
                         }
                     }
                 }

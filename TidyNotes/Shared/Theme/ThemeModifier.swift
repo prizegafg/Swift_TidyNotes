@@ -46,8 +46,8 @@ public struct ThemeSelector: View {
                     .padding(.vertical, 4)
                 }
             }
-            .navigationTitle("Pilih Tema")
-            .navigationBarItems(trailing: Button("Selesai") {
+            .navigationTitle("Choose Theme")
+            .navigationBarItems(trailing: Button("Done") {
                 dismiss()
             })
         }
@@ -64,25 +64,3 @@ extension View {
     }
 }
 
-// MARK: - Preview
-struct ThemeModifier_Previews: PreviewProvider {
-    static var previews: some View {
-        Group {
-            ThemeSelector()
-                .withAppTheme()
-                .previewDisplayName("Theme Selector")
-            
-            Text("Preview dengan tema light")
-                .foregroundColor(AppColors.colors(for: false).textPrimary)
-                .padding()
-                .background(AppColors.colors(for: false).background)
-                .previewDisplayName("Light Theme")
-            
-            Text("Preview dengan tema dark")
-                .foregroundColor(AppColors.colors(for: true).textPrimary)
-                .padding()
-                .background(AppColors.colors(for: true).background)
-                .previewDisplayName("Dark Theme")
-        }
-    }
-}
