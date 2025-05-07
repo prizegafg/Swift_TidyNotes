@@ -1,72 +1,74 @@
 # 📝 Tidy Notes
 <p align="justify">
-Tidy Notes adalah aplikasi manajemen tugas yang dirancang khusus untuk pengguna iOS, dengan tampilan sederhana namun fungsional. Aplikasi ini memudahkan kamu mengatur pekerjaan harian, mengelola deadline, dan mencatat ide-ide penting, dengan struktur yang fleksibel seperti Notion namun tetap ringan dan responsif.
+Tidy Notes is a lightweight and flexible task management app for iOS designed with simplicity and extensibility in mind. Whether you're tracking personal to-dos, project deadlines, or daily reminders, Tidy Notes provides a clean and intuitive interface to help you stay organized across all your Apple devices.
+Built with SwiftUI, VIPER architecture, and Combine for reactive data handling, this app is structured for scalability and long-term maintainability. Upcoming features include notification reminders, cloud syncing via iCloud, and rich metadata similar to Notion’s block-based approach.
 </p>
 
-## ✨ Fitur Utama
+---
 
-  -  **✅ CRUD Task** — Buat, lihat, ubah, dan hapus task dengan mudah.
-  
-  - **🖼️ Tambahkan Gambar** — Lampirkan gambar ke tiap task untuk referensi visual.
-  
-  - **🛎️ Reminder & Notifikasi** (Coming Soon) — Dapatkan notifikasi sebelum deadline penting.
-  
-  - **☁️ Cloud Sync via iCloud** (Coming Soon) — Simpan dan akses data di seluruh perangkat Apple kamu.
-  
-  - **🗂️ Property Tambahan** (Planned) — Tambahkan label, checkbox, atau status seperti di Notion.
-  
-  - **🔍 Pencarian Cepat** (Planned) — Cari task berdasarkan judul atau properti lainnya.
+## ✨ Features
 
+  - ✅ **Task CRUD** — Create, read, update, and delete tasks with ease.
+  - 🖼️ **Attach Images** — Add photos to any task for better visual context.
+  - 🛎️ **Deadline Reminders (Coming Soon)** — Get notified before your tasks are due.
+  - ☁️ **iCloud Sync (Coming Soon)** — Access your tasks across devices via iCloud.
+  - 🗂️ **Additional Properties (Planned)** — Add labels, tags, or completion checkboxes like in Notion.
+  - 🔍 **Quick Search (Planned)** — Instantly filter and locate tasks.
+  - 🧱 **Modular Architecture** — Built using VIPER for scalable module-by-module development.
 
-## 📱 Teknologi yang Digunakan
+---
 
-  - **SwiftUI** — Tampilan modern dan reaktif.
-  
-  - **VIPER Architecture** — Modular, scalable, dan testable.
-  
-  - **Combine** — Reactive programming untuk data binding dan event-driven updates.
-  
-  - **Core Data** — Penyimpanan lokal dengan integrasi ke iCloud.
-  
-  - **iCloud** — Sinkronisasi lintas perangkat (on progress).
+## 📱 Tech Stack
 
-## 🏗️ Instalasi & Setup
+  - **SwiftUI** — Declarative UI for Apple platforms.
+  - **VIPER Architecture** — Clean separation of concerns and testable design.
+  - **Combine** — Apple-native reactive programming framework.
+  - **Core Data** — Persistent local storage with iCloud integration.
+  - **iCloud** — CloudKit support for cross-device syncing (in progress).
 
-  Persyaratan
-  
-    - Xcode 15+
-    
-    - iOS 16.0+
-    
-    - macOS Ventura 
-    
-    - Akun Apple Developer 
+---
 
-## 🌐 API dan Backend (Opsional)
-  Untuk versi mendatang, Tidy Notes berencana mendukung API eksternal. Beberapa opsi gratis yang sedang dipertimbangkan untuk backend dan sync tambahan:
-    
-  - Supabase — Open source Firebase alternative
-    
-  - Appwrite — Backend server self-hosted/cloud
-    
-  - Firebase Free Tier — Cocok untuk push notification dan storage
+## 📦 Installation & Setup
 
-## 📦 Struktur Arsitektur (VIPER + Combine)
-  Proyek ini mengadopsi arsitektur VIPER untuk setiap fitur (modul), dengan Combine sebagai media komunikasi antar layer. Contoh:
+### Requirements
+
+  - Xcode 15+
+  - iOS 16.0+
+  - macOS Ventura or newer
+  - Apple Developer Account
+
+--- 
+
+### Getting Started
+
+```bash
+git clone https://github.com/your-username/tidynotes.git
+cd tidynotes
+```
+
+---
+
+## 🧠 Architecture Overview
+  Each feature is encapsulated as a VIPER module, promoting reusability and separation of concerns. Communication between layers is handled using Combine publishers/subscribers.
     
     View ←→ Presenter ←→ Interactor ←→ Repository/Service
                ↑               ↓
              Router         Entity/Model
 
-## 📸 Screenshot
-(Akan ditambahkan nanti untuk tampilan task list, form, dll)
+---
 
+## 🌐 API & Future Backend Options
+While currently offline-first with Core Data, the app is designed to be backend-ready. Potential free-tier services to enable remote storage or sync:
 
-## 🤝 Kontribusi
-  Masih dalam pengembangan awal, namun jika kamu tertarik berkontribusi:
-  Gunakan SwiftLint (planned) untuk standar kode
-  Pull Request sangat diterima!
+- **Supabase** — Firebase alternative with PostgreSQL backend
+- **Appwrite** — Self-hosted or cloud backend-as-a-service
+- **Firebase** — Push notifications, Firestore, and storage
 
-## 📄 Lisensi
-MIT License — bebas digunakan, diubah, dan dikembangkan ulang.
+---
+
+## 📸 Screenshots
+(Coming soon — task list, detail view, image attachments, etc.)
+
+## 📄 License
+This project is licensed under the MIT License — use it, fork it, improve it freely.
 
