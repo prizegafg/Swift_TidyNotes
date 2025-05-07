@@ -49,6 +49,7 @@ Tidy Notes adalah aplikasi manajemen tugas yang dirancang khusus untuk pengguna 
 
 📦 Struktur Arsitektur (VIPER + Combine)
   Proyek ini mengadopsi arsitektur VIPER untuk setiap fitur (modul), dengan Combine sebagai media komunikasi antar layer. Contoh:
+    
     View ←→ Presenter ←→ Interactor ←→ Repository/Service
                ↑               ↓
              Router         Entity/Model
