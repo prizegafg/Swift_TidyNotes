@@ -11,6 +11,10 @@ import Combine
 final class TaskDetailInteractor {
     private let taskRepository: TaskRepository
     
+    deinit {
+        print("TaskDetailInteractor deinit")
+    }
+    
     init(taskRepository: TaskRepository = InMemoryTaskRepository.shared) {
         self.taskRepository = taskRepository
     }

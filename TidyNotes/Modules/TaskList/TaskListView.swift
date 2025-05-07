@@ -29,25 +29,6 @@ struct TaskListView: View {
                 errorView
             }
             
-//            VStack {
-//                Spacer()
-//                HStack {
-//                    Spacer()
-//                    Button(action: {
-//                        presenter.onAddTaskTapped()
-//                    }) {
-//                        Image(systemName: "plus")
-//                            .font(.title2)
-//                            .foregroundColor(.white)
-//                            .frame(width: 60, height: 60)
-//                            .background(Color.blue)
-//                            .clipShape(Circle())
-//                            .shadow(radius: 4)
-//                    }
-//                    .padding(.trailing, 20)
-//                    .padding(.bottom, 20)
-//                }
-//            }
             floatingActionButton
         }
         .navigationTitle("Tasks")
@@ -113,7 +94,7 @@ struct TaskListView: View {
                     Button {
                         presenter.onDeleteTaskTapped(task.id)
                     } label: {
-                        Label("Delete", systemImage: "trash")
+                        Label("Hapus", systemImage: "trash")
                     }
                     .tint(.red)
                     
@@ -152,7 +133,7 @@ struct TaskListView: View {
                         Button(role: .destructive, action: {
                             presenter.onDeleteTaskTapped(task.id)
                         }) {
-                            Label("Delete", systemImage: "trash")
+                            Label("Hapus", systemImage: "trash")
                         }
                     }
                 }

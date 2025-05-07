@@ -40,6 +40,10 @@ final class TaskDetailPresenter: ObservableObject {
     
     let mode: Mode
     
+    deinit {
+        print("TaskDetailPresenter deinit")
+        cancellables.forEach { $0.cancel() }
+    }
     // Initializer untuk mode edit
     init(taskId: UUID, interactor: TaskDetailInteractor, router: TaskDetailRouter) {
         self.taskId = taskId
@@ -251,10 +255,10 @@ final class TaskDetailPresenter: ObservableObject {
     }
     
     var navigationTitle: String {
-        return mode == .create ? "Tambah Tugas" : "Detail Tugas"
+        return mode == .create ? "Add Task" : "Task Detail"
     }
     
     var saveButtonTitle: String {
-        return mode == .create ? "Tambah" : "Simpan"
+        return mode == .create ? "Add" : "Save"
     }
 }

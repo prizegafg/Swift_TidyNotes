@@ -25,6 +25,7 @@ struct TaskDetailView: View {
             .padding()
         }
         .navigationTitle(presenter.navigationTitle)
+        .navigationBarBackButtonHidden(true) 
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
