@@ -38,9 +38,9 @@ Tidy Notes adalah aplikasi manajemen tugas yang dirancang khusus untuk pengguna 
     
     - iOS 16.0+
     
-    - macOS Ventura (untuk pengembangan iCloud)
+    - macOS Ventura 
     
-    - Akun Apple Developer (gratis cukup untuk iCloud testing)
+    - Akun Apple Developer 
 
 ## 🌐 API dan Backend (Opsional)
   Untuk versi mendatang, Tidy Notes berencana mendukung API eksternal. Beberapa opsi gratis yang sedang dipertimbangkan untuk backend dan sync tambahan:
