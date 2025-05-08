@@ -25,6 +25,7 @@ final class TaskDetailPresenter: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var showError: Bool = false
     @Published var errorMessage: String = ""
+    @Published var showDatePicker: Bool = false
     
     private let interactor: TaskDetailInteractor
     private let router: TaskDetailRouter
@@ -78,33 +79,55 @@ final class TaskDetailPresenter: ObservableObject {
     }
     
     func titleChanged(_ newValue: String) {
-        taskTitle = newValue
-        checkIfTaskChanged()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.taskTitle = newValue
+            self.checkIfTaskChanged()
+        }
     }
     
     func noteContentChanged(_ newValue: String) {
-        noteContent = newValue
-        checkIfTaskChanged()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.noteContent = newValue
+            self.checkIfTaskChanged()
+        }
     }
     
     func dueDateChanged(_ newValue: Date) {
-        dueDate = newValue
-        checkIfTaskChanged()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.dueDate = newValue
+            self.checkIfTaskChanged()
+        }
     }
     
     func hasDueDateChanged(_ newValue: Bool) {
-        hasDueDate = newValue
-        checkIfTaskChanged()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.hasDueDate = newValue
+            self.checkIfTaskChanged()
+        }
     }
     
     func priorityChanged(_ newValue: Bool) {
-        isPriority = newValue
-        checkIfTaskChanged()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.isPriority = newValue
+            self.checkIfTaskChanged()
+        }
     }
     
     func statusChanged(_ newValue: TaskStatus) {
-        taskStatus = newValue
-        checkIfTaskChanged()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.taskStatus = newValue
+            self.checkIfTaskChanged()
+        }
+    }
+    
+    func toggleDatePicker() {
+        showDatePicker.toggle()
     }
     
     private func checkIfTaskChanged() {
@@ -129,6 +152,7 @@ final class TaskDetailPresenter: ObservableObject {
         } else {
             updateExistingTask()
         }
+        dismiss()
     }
     
     private func createNewTask() {
@@ -151,6 +175,7 @@ final class TaskDetailPresenter: ObservableObject {
             self?.router.dismissAndRefreshTaskList()
         })
         .store(in: &cancellables)
+        
     }
     
     private func updateExistingTask() {

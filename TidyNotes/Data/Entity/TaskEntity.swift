@@ -8,7 +8,7 @@
 import Foundation
 
 /// Entity untuk Task dalam arsitektur VIPER
-struct TaskEntity: Identifiable, Equatable {
+struct TaskEntity: Identifiable, Equatable, Codable {
     let id: UUID
     var title: String
     var description: String
@@ -28,3 +28,4 @@ enum TaskStatus: String, Codable {
     case inProgress = "In Progress"
     case done = "Done"
 }
+

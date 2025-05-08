@@ -48,5 +48,11 @@ final class TaskDetailRouter {
         // Dismiss view
         dismissTaskDetail()
     }
+    
+    deinit {
+        print("TaskDetailRouter deinit")
+        // Clear closure to avoid retain cycles
+        onTasksUpdated = nil
+    }
 }
 

@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 /// Model yang merepresentasikan project dalam aplikasi
-struct ProjectEntity: Identifiable, Equatable, Hashable {
+struct ProjectEntity: Identifiable, Equatable, Hashable, Codable {
     let id: UUID
     var name: String
     var color: String

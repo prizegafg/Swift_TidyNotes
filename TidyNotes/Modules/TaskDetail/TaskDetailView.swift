@@ -10,8 +10,12 @@ import Combine
 
 struct TaskDetailView: View {
     @ObservedObject var presenter: TaskDetailPresenter
-    @State private var showDatePicker = false
     @Environment(\.presentationMode) var presentationMode
+    @FocusState private var focusedField: FocusField?
+    
+    enum FocusField {
+        case title, notes
+    }
     
     var body: some View {
         ScrollView {
@@ -37,6 +41,7 @@ struct TaskDetailView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(presenter.saveButtonTitle) {
                     presenter.saveTask()
+                    presentationMode.wrappedValue.dismiss()
                 }
                 .disabled(!presenter.isTaskChanged)
             }
@@ -63,6 +68,15 @@ struct TaskDetailView: View {
                 }
             }
         )
+        // Dismiss keyboard when tapping outside textfields
+        .onTapGesture {
+            focusedField = nil
+        }
+        // Custom modifier to fix router dismiss behavior
+        .onDisappear {
+            // Ensure router has a chance to clean up properly
+            presenter.dismiss()
+        }
     }
     
     private var titleSection: some View {
@@ -76,6 +90,11 @@ struct TaskDetailView: View {
                 .onChange(of: presenter.taskTitle) { newValue in
                     presenter.titleChanged(newValue)
                 }
+                .focused($focusedField, equals: .title)
+                .submitLabel(.next)
+                .onSubmit {
+                    focusedField = .notes
+                }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -84,7 +103,6 @@ struct TaskDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Due Date")
                 .font(.headline)
-            
             Toggle("Set Due Date", isOn: $presenter.hasDueDate)
                 .onChange(of: presenter.hasDueDate) { newValue in
                     presenter.hasDueDateChanged(newValue)
@@ -101,19 +119,33 @@ struct TaskDetailView: View {
                     Spacer()
                     
                     Button(action: {
-                        showDatePicker.toggle()
+                        presenter.toggleDatePicker()
                     }) {
                         Image(systemName: "calendar")
                             .foregroundColor(.blue)
                     }
                 }
                 
-                if showDatePicker {
-                    DatePicker("", selection: $presenter.dueDate, displayedComponents: .date)
-                        .datePickerStyle(GraphicalDatePickerStyle())
-                        .onChange(of: presenter.dueDate) { newValue in
-                            presenter.dueDateChanged(newValue)
+                if presenter.showDatePicker {
+                    VStack {
+                        DatePicker("", selection: $presenter.dueDate, displayedComponents: .date)
+                            .datePickerStyle(GraphicalDatePickerStyle())
+                            .onChange(of: presenter.dueDate) { newValue in
+                                presenter.dueDateChanged(newValue)
+                            }
+                        
+                        // Add Done button for date picker
+                        HStack {
+                            Spacer()
+                            Button("Done") {
+                                presenter.toggleDatePicker()
+                            }
+                            .padding(8)
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
                         }
+                    }
                 }
             }
         }
@@ -124,7 +156,6 @@ struct TaskDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Priority")
                 .font(.headline)
-            
             Toggle("Priority Task", isOn: $presenter.isPriority)
                 .onChange(of: presenter.isPriority) { newValue in
                     presenter.priorityChanged(newValue)
@@ -138,7 +169,6 @@ struct TaskDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Status")
                 .font(.headline)
-            
             Picker("Status", selection: $presenter.taskStatus) {
                 ForEach(presenter.statusOptions, id: \.self) { status in
                     Text(status.rawValue).tag(status)
@@ -160,7 +190,6 @@ struct TaskDetailView: View {
                 
                 Spacer()
                 
-                // Hanya tampilkan status "terakhir diperbarui" pada mode edit
                 if presenter.mode == .edit {
                     Text("Last Update: \(presenter.lastUpdatedFormatted)")
                         .font(.caption)
@@ -168,15 +197,25 @@ struct TaskDetailView: View {
                 }
             }
             
-            TextEditor(text: $presenter.noteContent)
-                .onChange(of: presenter.noteContent) { newValue in
-                    presenter.noteContentChanged(newValue)
+            ZStack {
+                if presenter.noteContent.isEmpty {
+                    Text("Enter your notes here...")
+                        .foregroundColor(Color(.placeholderText))
+                        .padding(8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(8)
-//                .background(Color(.white))
-//                .border(.white)
-                .cornerRadius(10)
-                .frame(maxWidth: .infinity, minHeight: 300)
+                
+                TextEditor(text: $presenter.noteContent)
+                    .focused($focusedField, equals: .notes)
+                    .onChange(of: presenter.noteContent) { newValue in
+                        presenter.noteContentChanged(newValue)
+                    }
+                    .padding(8)
+                    .cornerRadius(10)
+                    .frame(maxWidth: .infinity, minHeight: 300)
+                    .background(Color(.systemGray6).opacity(0.5))
+                    .cornerRadius(10)
+            }
         }
     }
 }

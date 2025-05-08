@@ -95,6 +95,9 @@
         }
       }
     },
+    "Enter your notes here..." : {
+
+    },
     "Error" : {
       "localizations" : {
         "id" : {
