@@ -23,7 +23,7 @@ Built with SwiftUI, VIPER architecture, and Combine for reactive data handling, 
   - **SwiftUI** — Declarative UI for Apple platforms.
   - **VIPER Architecture** — Clean separation of concerns and testable design.
   - **Combine** — Apple-native reactive programming framework.
-  - **Core Data** — Persistent local storage with iCloud integration.
+  - **Realm** — Fast, lightweight database for local data persistence.
   - **iCloud** — CloudKit support for cross-device syncing (in progress).
 
 ---
@@ -33,7 +33,7 @@ Built with SwiftUI, VIPER architecture, and Combine for reactive data handling, 
 ### Requirements
 
   - Xcode 15+
-  - iOS 16.0+
+  - iOS 16.1+
   - macOS Ventura or newer
   - Apple Developer Account
 
@@ -60,6 +60,7 @@ cd tidynotes
 ## 🌐 API & Future Backend Options
 While currently offline-first with Core Data, the app is designed to be backend-ready. Potential free-tier services to enable remote storage or sync:
 
+- **MongoDB Realm Cloud** — Sync Realm databases across devices
 - **Supabase** — Firebase alternative with PostgreSQL backend
 - **Appwrite** — Self-hosted or cloud backend-as-a-service
 - **Firebase** — Push notifications, Firestore, and storage
