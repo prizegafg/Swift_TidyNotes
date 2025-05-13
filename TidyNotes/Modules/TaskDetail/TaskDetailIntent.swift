@@ -179,8 +179,27 @@ final class TaskDetailPresenter: ObservableObject {
     }
     
     private func updateExistingTask() {
+//        guard var task = currentTask else { return }
+//        
+//        task.title = taskTitle.trimmed
+//        task.description = noteContent.trimmed
+//        task.dueDate = hasDueDate ? dueDate : nil
+//        task.status = taskStatus
+//        task.isPriority = isPriority
+//        
+//        isLoading = true
+//        interactor.updateTask(task: task)
+//            .receive(on: DispatchQueue.main)
+//            .sink(receiveCompletion: { [weak self] completion in
+//                self?.isLoading = false
+//                if case .failure(let error) = completion {
+//                    self?.showError(message: error.localizedDescription)
+//                }
+//            }, receiveValue: { [weak self] task in
+//                self?.updateTask(task)
+//            })
+//            .store(in: &cancellables)
         guard var task = currentTask else { return }
-        
         task.title = taskTitle.trimmed
         task.description = noteContent.trimmed
         task.dueDate = hasDueDate ? dueDate : nil
@@ -188,15 +207,15 @@ final class TaskDetailPresenter: ObservableObject {
         task.isPriority = isPriority
         
         isLoading = true
-        interactor.updateTask(task: task)
+        interactor.updateTask(task)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
                 self?.isLoading = false
                 if case .failure(let error) = completion {
                     self?.showError(message: error.localizedDescription)
                 }
-            }, receiveValue: { [weak self] task in
-                self?.updateTask(task)
+            }, receiveValue: { [weak self] in
+                self?.router.dismissAndRefreshTaskList()
             })
             .store(in: &cancellables)
     }
@@ -206,8 +225,20 @@ final class TaskDetailPresenter: ObservableObject {
     }
     
     private func fetchTask(taskId: UUID) {
+//        isLoading = true
+//        interactor.fetchTask(taskId: taskId)
+//            .receive(on: DispatchQueue.main)
+//            .sink(receiveCompletion: { [weak self] completion in
+//                self?.isLoading = false
+//                if case .failure(let error) = completion {
+//                    self?.showError(message: error.localizedDescription)
+//                }
+//            }, receiveValue: { [weak self] task in
+//                self?.updateTaskFields(task)
+//            })
+//            .store(in: &cancellables)
         isLoading = true
-        interactor.fetchTask(taskId: taskId)
+        interactor.fetchTask(by: taskId)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
                 self?.isLoading = false
@@ -215,7 +246,11 @@ final class TaskDetailPresenter: ObservableObject {
                     self?.showError(message: error.localizedDescription)
                 }
             }, receiveValue: { [weak self] task in
-                self?.updateTaskFields(task)
+                if let task = task {
+                    self?.updateTaskFields(task)
+                } else {
+                    self?.showError(message: "Task not found")
+                }
             })
             .store(in: &cancellables)
     }

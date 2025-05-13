@@ -9,29 +9,35 @@ import Foundation
 import Combine
 
 final class TaskDetailInteractor {
-    private let taskRepository: TaskRepository
+    private let repository: TaskRepository
     
     deinit {
         print("TaskDetailInteractor deinit")
     }
     
-    init(taskRepository: TaskRepository = InMemoryTaskRepository.shared) {
-        self.taskRepository = taskRepository
+    init(repository: TaskRepositoryProtocol = ServiceLocator.shared.taskRepository) {
+        self.repository = repository as! TaskRepository
     }
     
-    func fetchTask(taskId: UUID) -> AnyPublisher<TaskEntity, Error> {
-        return taskRepository.fetchTaskById(taskId)
+    func fetchTask(by id: UUID) -> AnyPublisher<TaskEntity?, Error> {
+        repository.fetchTask(by: id)
             .mapError { $0 as Error }
             .eraseToAnyPublisher()
     }
     
-    func updateTask(task: TaskEntity) -> AnyPublisher<TaskEntity, Error> {
-        return taskRepository.updateTask(task)
-            .mapError { $0 as Error }
+    func updateTask(_ task: TaskEntity) -> AnyPublisher<Void, Error> {
+        Just(task)
+            .handleEvents(receiveOutput: { self.repository.saveTask($0) })
+            .map { _ in () }
+            .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
     
-    func createTask(title: String, description: String, isPriority: Bool, dueDate: Date?, status: TaskStatus) -> AnyPublisher<TaskEntity, Error> {
+    func createTask(title: String,
+                    description: String,
+                    isPriority: Bool,
+                    dueDate: Date?,
+                    status: TaskStatus) -> AnyPublisher<Void, Error> {
         let newTask = TaskEntity(
             id: UUID(),
             title: title,
@@ -42,8 +48,10 @@ final class TaskDetailInteractor {
             status: status
         )
         
-        return taskRepository.addTask(newTask)
-            .mapError { $0 as Error }
+        return Just(newTask)
+            .handleEvents(receiveOutput: { self.repository.saveTask($0) })
+            .map { _ in () }
+            .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
 }

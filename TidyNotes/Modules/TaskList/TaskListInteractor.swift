@@ -10,51 +10,60 @@ import Foundation
 import Combine
 
 final class TaskListInteractor {
-    private let repository: TaskRepository
+    private let repository: TaskRepositoryProtocol
     
     // Tambahkan deinit untuk debugging memory leak
     deinit {
         print("TaskListInteractor deinit")
     }
     
-    init(repository: TaskRepository = InMemoryTaskRepository.shared) {
+    
+    init(repository: TaskRepositoryProtocol) {
         self.repository = repository
     }
 
     func fetchTasks() -> AnyPublisher<[TaskEntity], Error> {
-        repository.fetchTasks()
+        repository.fetchAllTasks()
             .mapError { $0 as Error }
             .eraseToAnyPublisher()
     }
 
     func deleteTask(id: UUID) -> AnyPublisher<Void, Error> {
-        repository.deleteTask(id: id)
-            .mapError { $0 as Error }
-            .eraseToAnyPublisher()
-    }
+            repository.fetchTask(by: id)
+                .compactMap { $0 }
+                .handleEvents(receiveOutput: { task in
+                    self.repository.deleteTask(task)
+                })
+                .map { _ in () }
+                .mapError { $0 as Error }
+                .eraseToAnyPublisher()
+        }
 
     func setTaskAsPriority(id: UUID) -> AnyPublisher<Void, Error> {
-        repository.fetchTaskById(id)
+        repository.fetchTask(by: id)
+            .compactMap { $0 }
             .flatMap { selectedTask in
-                self.repository.fetchTasks()
+                self.repository.fetchAllTasks()
                     .map { $0.filter { $0.isPriority } }
-                    .flatMap { priorityTasks -> AnyPublisher<Void, TaskError> in
+                    .flatMap { priorityTasks -> AnyPublisher<Void, Never> in
                         let resetAll = priorityTasks.map { task in
                             var updated = task
                             updated.isPriority = false
-                            return self.repository.updateTask(updated).map { _ in () }
+                            self.repository.saveTask(updated)
+                            return Just(()).eraseToAnyPublisher()
                         }
                         return resetAll.isEmpty
-                            ? Just(()).setFailureType(to: TaskError.self).eraseToAnyPublisher()
-                            : Publishers.MergeMany(resetAll).collect().map { _ in () }.eraseToAnyPublisher()
+                        ? Just(()).eraseToAnyPublisher()
+                        : Publishers.MergeMany(resetAll).collect().map { _ in () }.eraseToAnyPublisher()
                     }
-                    .flatMap {
+                    .handleEvents(receiveOutput: {
                         var updated = selectedTask
                         updated.isPriority = true
-                        return self.repository.updateTask(updated).map { _ in () }
-                    }
+                        self.repository.saveTask(updated)
+                    })
             }
             .mapError { $0 as Error }
             .eraseToAnyPublisher()
     }
+    
 }

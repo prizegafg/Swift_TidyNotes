@@ -11,7 +11,7 @@ import UIKit
 enum TaskListModule {
     static func makeTaskListView() -> some View {
         let navigationState = TaskNavigationState()
-        let repository = InMemoryTaskRepository.shared
+        let repository = ServiceLocator.shared.taskRepository
         let interactor = TaskListInteractor(repository: repository)
         let router = TaskListRouter(navigationState: navigationState)
         let presenter = TaskListPresenter(interactor: interactor, router: router)
@@ -19,7 +19,7 @@ enum TaskListModule {
     }
     
     static func makeTaskListView(navigationController: UINavigationController) -> UIViewController {
-        let repository = InMemoryTaskRepository.shared
+        let repository = ServiceLocator.shared.taskRepository
         let interactor = TaskListInteractor(repository: repository)
         let router = TaskListRouter(navigationController: navigationController)
         let presenter = TaskListPresenter(interactor: interactor, router: router)

@@ -19,15 +19,14 @@ final class TaskDetailRouter {
     
     // Factory method untuk task detail (mode edit)
     static func makeTaskDetailView(taskId: UUID) -> some View {
-        let interactor = TaskDetailInteractor(taskRepository: InMemoryTaskRepository.shared)
+        let interactor = TaskDetailInteractor(repository: ServiceLocator.shared.taskRepository)
         let router = TaskDetailRouter()
         let presenter = TaskDetailPresenter(taskId: taskId, interactor: interactor, router: router)
         return TaskDetailView(presenter: presenter)
     }
     
-    // Factory method untuk add task (mode create)
     static func makeAddTaskView(onTasksUpdated: (() -> Void)? = nil) -> some View {
-        let interactor = TaskDetailInteractor(taskRepository: InMemoryTaskRepository.shared)
+        let interactor = TaskDetailInteractor(repository: ServiceLocator.shared.taskRepository)
         let router = TaskDetailRouter()
         let presenter = TaskDetailPresenter(interactor: interactor, router: router)
         router.onTasksUpdated = onTasksUpdated
