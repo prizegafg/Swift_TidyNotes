@@ -15,6 +15,8 @@ final class RealmTaskObject: Object {
     @Persisted var isPriority: Bool = false
     @Persisted var createdAt: Date = Date()
     @Persisted var dueDate: Date?
+    @Persisted var isReminderOn: Bool
+    @Persisted var reminderDate: Date?
     @Persisted var statusRaw: String = TaskStatus.todo.rawValue
 
     var status: TaskStatus {
@@ -30,6 +32,8 @@ final class RealmTaskObject: Object {
         self.isPriority = entity.isPriority
         self.createdAt = entity.createdAt
         self.dueDate = entity.dueDate
+        self.isReminderOn = entity.isReminderOn
+        self.reminderDate = entity.reminderDate
         self.status = entity.status
     }
 
@@ -41,6 +45,8 @@ final class RealmTaskObject: Object {
             isPriority: isPriority,
             createdAt: createdAt,
             dueDate: dueDate,
+            isReminderOn: isReminderOn,
+            reminderDate: reminderDate,
             status: status
         )
     }

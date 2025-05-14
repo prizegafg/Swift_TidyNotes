@@ -95,6 +95,9 @@
         }
       }
     },
+    "Enable Reminder" : {
+
+    },
     "Enter your notes here..." : {
 
     },
@@ -151,6 +154,9 @@
       }
     },
     "Priority Task" : {
+
+    },
+    "Reminder" : {
 
     },
     "Set as Priority" : {

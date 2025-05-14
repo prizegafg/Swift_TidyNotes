@@ -12,6 +12,7 @@ struct TaskDetailView: View {
     @ObservedObject var presenter: TaskDetailPresenter
     @Environment(\.presentationMode) var presentationMode
     @FocusState private var focusedField: FocusField?
+    @State private var showDatePicker = false
     
     enum FocusField {
         case title, notes
@@ -22,6 +23,7 @@ struct TaskDetailView: View {
             VStack(spacing: 20) {
                 titleSection
                 dueDateSection
+                reminderSection
                 prioritySection
                 statusSection
                 noteSection
@@ -151,6 +153,58 @@ struct TaskDetailView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
+    
+    private var reminderSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Reminder")
+                .font(.headline)
+
+            Toggle("Enable Reminder", isOn: $presenter.isReminderOn)
+                .onChange(of: presenter.isReminderOn) { newValue in
+                    presenter.reminderToggleChanged(newValue)
+                }
+
+            if presenter.isReminderOn {
+                HStack {
+                    Text(presenter.reminderDate?.formatted(date: .abbreviated, time: .shortened) ?? "Select Date")
+                        .foregroundColor(.gray)
+                    Spacer()
+                    Button {
+                        presenter.toggleDatePicker()
+                    } label: {
+                        Image(systemName: "calendar.badge.clock")
+                            .foregroundColor(.blue)
+                    }
+                }
+
+                if presenter.showDatePicker {
+                    VStack {
+                        DatePicker(
+                            "",
+                            selection: Binding(
+                                get: { presenter.reminderDate ?? Date() },
+                                set: { presenter.reminderDateChanged($0) }
+                            ),
+                            displayedComponents: [.date, .hourAndMinute]
+                        )
+                        .datePickerStyle(.graphical)
+
+                        HStack {
+                            Spacer()
+                            Button("Done") {
+                                presenter.toggleDatePicker()
+                            }
+                            .padding(8)
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     
     private var prioritySection: some View {
         VStack(alignment: .leading, spacing: 8) {

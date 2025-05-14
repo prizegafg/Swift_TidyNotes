@@ -15,6 +15,8 @@ struct TaskEntity: Identifiable, Equatable, Codable {
     var isPriority: Bool
     let createdAt: Date
     var dueDate: Date?  // Optional due date
+    var isReminderOn: Bool
+    var reminderDate: Date?
     var status: TaskStatus
     
     static func == (lhs: TaskEntity, rhs: TaskEntity) -> Bool {

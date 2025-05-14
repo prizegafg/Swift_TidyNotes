@@ -16,8 +16,19 @@ final class RealmManager {
     private init() {
         do {
             let config = Realm.Configuration(
-                schemaVersion: 1,
-                migrationBlock: { _, _ in }
+                schemaVersion: 2,
+                migrationBlock: { migration, oldSchemaVersion in
+                    // Handle migrasi untuk setiap perubahan skema
+                    if oldSchemaVersion < 2 {
+                        // Otomatis menambahkan properti baru dengan nilai default
+                        migration.enumerateObjects(ofType: "RealmTaskObject") { oldObject, newObject in
+                            // Set nilai default untuk properti baru
+                            newObject?["isReminderOn"] = false
+                            newObject?["reminderDate"] = nil
+                        }
+                    }
+                },
+                deleteRealmIfMigrationNeeded: false
             )
             Realm.Configuration.defaultConfiguration = config
             realm = try Realm()

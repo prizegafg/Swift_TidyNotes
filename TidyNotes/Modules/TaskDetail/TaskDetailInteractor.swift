@@ -37,6 +37,8 @@ final class TaskDetailInteractor {
                     description: String,
                     isPriority: Bool,
                     dueDate: Date?,
+                    isReminderON: Bool,
+                    reminderDate: Date?,
                     status: TaskStatus) -> AnyPublisher<Void, Error> {
         let newTask = TaskEntity(
             id: UUID(),
@@ -45,8 +47,11 @@ final class TaskDetailInteractor {
             isPriority: isPriority,
             createdAt: Date(),
             dueDate: dueDate,
+            isReminderOn: isReminderON,
+            reminderDate: reminderDate,
             status: status
         )
+        
         
         return Just(newTask)
             .handleEvents(receiveOutput: { self.repository.saveTask($0) })

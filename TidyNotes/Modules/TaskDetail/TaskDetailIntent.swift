@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import RealmSwift
 
 final class TaskDetailPresenter: ObservableObject {
     enum Mode {
@@ -26,6 +27,8 @@ final class TaskDetailPresenter: ObservableObject {
     @Published var showError: Bool = false
     @Published var errorMessage: String = ""
     @Published var showDatePicker: Bool = false
+    @Published var isReminderOn: Bool = false
+    @Published var reminderDate: Date?
     
     private let interactor: TaskDetailInteractor
     private let router: TaskDetailRouter
@@ -142,8 +145,12 @@ final class TaskDetailPresenter: ObservableObject {
                            (hasDueDate && originalHasDueDate &&
                             !Calendar.current.isDate(dueDate, inSameDayAs: originalDueDate ?? Date())) ||
                            isPriority != originalIsPriority ||
-                           taskStatus != originalStatus
+                           taskStatus != originalStatus ||
+                           isReminderOn != (currentTask?.isReminderOn ?? false) ||
+                           (reminderDate != currentTask?.reminderDate)
         }
+        
+
     }
     
     func saveTask() {
@@ -163,6 +170,8 @@ final class TaskDetailPresenter: ObservableObject {
             description: noteContent.trimmed,
             isPriority: isPriority,
             dueDate: hasDueDate ? dueDate : nil,
+            isReminderON: isReminderOn,
+            reminderDate: reminderDate,
             status: taskStatus
         )
         .receive(on: DispatchQueue.main)
@@ -175,36 +184,50 @@ final class TaskDetailPresenter: ObservableObject {
             self?.router.dismissAndRefreshTaskList()
         })
         .store(in: &cancellables)
+        if isReminderOn {
+            scheduleReminderIfNeeded(taskId: taskId!.uuidString, title: taskTitle)
+        } else {
+            cancelReminder(taskId: taskId!.uuidString)
+        }
+
         
     }
     
+    func reminderToggleChanged(_ value: Bool) {
+        isReminderOn = value
+        if !value { reminderDate = nil }
+        checkIfTaskChanged()
+    }
+
+    func reminderDateChanged(_ date: Date) {
+        reminderDate = date
+        checkIfTaskChanged()
+    }
+    
+    private func scheduleReminderIfNeeded(taskId: String, title: String) {
+        guard let reminderDate else { return }
+
+        NotificationManager.shared.scheduleReminderNotification(
+            id: taskId,
+            title: title,
+            date: reminderDate
+        )
+    }
+
+    private func cancelReminder(taskId: String) {
+        NotificationManager.shared.cancelNotification(id: taskId)
+    }
+    
     private func updateExistingTask() {
-//        guard var task = currentTask else { return }
-//        
-//        task.title = taskTitle.trimmed
-//        task.description = noteContent.trimmed
-//        task.dueDate = hasDueDate ? dueDate : nil
-//        task.status = taskStatus
-//        task.isPriority = isPriority
-//        
-//        isLoading = true
-//        interactor.updateTask(task: task)
-//            .receive(on: DispatchQueue.main)
-//            .sink(receiveCompletion: { [weak self] completion in
-//                self?.isLoading = false
-//                if case .failure(let error) = completion {
-//                    self?.showError(message: error.localizedDescription)
-//                }
-//            }, receiveValue: { [weak self] task in
-//                self?.updateTask(task)
-//            })
-//            .store(in: &cancellables)
         guard var task = currentTask else { return }
         task.title = taskTitle.trimmed
         task.description = noteContent.trimmed
         task.dueDate = hasDueDate ? dueDate : nil
         task.status = taskStatus
         task.isPriority = isPriority
+        isReminderOn = task.isReminderOn
+        reminderDate = task.reminderDate
+
         
         isLoading = true
         interactor.updateTask(task)
@@ -218,6 +241,7 @@ final class TaskDetailPresenter: ObservableObject {
                 self?.router.dismissAndRefreshTaskList()
             })
             .store(in: &cancellables)
+        
     }
     
     func dismiss() {
@@ -225,18 +249,6 @@ final class TaskDetailPresenter: ObservableObject {
     }
     
     private func fetchTask(taskId: UUID) {
-//        isLoading = true
-//        interactor.fetchTask(taskId: taskId)
-//            .receive(on: DispatchQueue.main)
-//            .sink(receiveCompletion: { [weak self] completion in
-//                self?.isLoading = false
-//                if case .failure(let error) = completion {
-//                    self?.showError(message: error.localizedDescription)
-//                }
-//            }, receiveValue: { [weak self] task in
-//                self?.updateTaskFields(task)
-//            })
-//            .store(in: &cancellables)
         isLoading = true
         interactor.fetchTask(by: taskId)
             .receive(on: DispatchQueue.main)

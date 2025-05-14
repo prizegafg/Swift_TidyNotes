@@ -5,7 +5,7 @@ import re
 target_folder = "TidyNotes"
 modules_folder = os.path.join(target_folder, "Modules")
 output_dir = "AI Integration"
-excluded_dirs = {".xcworkspace", ".xcodeproj", "DerivedData", "__pycache__", "TidyNotesTests", "TidyNotesUITests"}
+excluded_dirs = {".xcworkspace", ".xcodeproj", "DerivedData", "__pycache__", "TidyNotesTests", "TidyNotesUITests", "Carthage"}
 
 # Buat folder output kalau belum ada
 os.makedirs(output_dir, exist_ok=True)
