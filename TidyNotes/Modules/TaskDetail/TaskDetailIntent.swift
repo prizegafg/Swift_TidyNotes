@@ -37,9 +37,12 @@ final class TaskDetailPresenter: ObservableObject {
     private var originalTitle: String = ""
     private var originalContent: String = ""
     private var originalDueDate: Date?
+    private var originalReminderDate: Date?
     private var originalHasDueDate: Bool = false
     private var originalIsPriority: Bool = false
+    private var originalIsReminderOn: Bool = false
     private var originalStatus: TaskStatus = .todo
+    
     private var cancellables = Set<AnyCancellable>()
     
     let mode: Mode
@@ -147,10 +150,19 @@ final class TaskDetailPresenter: ObservableObject {
                            isPriority != originalIsPriority ||
                            taskStatus != originalStatus ||
                            isReminderOn != (currentTask?.isReminderOn ?? false) ||
-                           (reminderDate != currentTask?.reminderDate)
+                           !areReminderDatesEqual(reminderDate, originalReminderDate)
         }
         
 
+    }
+    
+    private func areReminderDatesEqual(_ date1: Date?, _ date2: Date?) -> Bool {
+        guard let date1 = date1, let date2 = date2 else {
+            return date1 == nil && date2 == nil
+        }
+        
+        // Bandingkan dengan komponen menit untuk keakuratan reminder
+        return Calendar.current.isDate(date1, equalTo: date2, toGranularity: .minute)
     }
     
     func saveTask() {
@@ -162,9 +174,9 @@ final class TaskDetailPresenter: ObservableObject {
         dismiss()
     }
     
+
     private func createNewTask() {
         isLoading = true
-        
         interactor.createTask(
             title: taskTitle.trimmed,
             description: noteContent.trimmed,
@@ -180,23 +192,69 @@ final class TaskDetailPresenter: ObservableObject {
             if case .failure(let error) = completion {
                 self?.showError(message: error.localizedDescription)
             }
-        }, receiveValue: { [weak self] task in
-            self?.router.dismissAndRefreshTaskList()
+        }, receiveValue: { [weak self] newTask in
+            guard let self = self else { return }
+            if self.isReminderOn {
+                self.scheduleReminderIfNeeded(taskId: newTask.id.uuidString, title: newTask.title)
+            } else {
+                self.cancelReminder(taskId: newTask.id.uuidString)
+            }
+            self.router.dismissAndRefreshTaskList()
         })
         .store(in: &cancellables)
-        if isReminderOn {
-            scheduleReminderIfNeeded(taskId: taskId!.uuidString, title: taskTitle)
-        } else {
-            cancelReminder(taskId: taskId!.uuidString)
-        }
+    }
 
-        
+    
+    private func updateExistingTask() {
+        guard var task = currentTask else { return }
+        task.title = taskTitle.trimmed
+        task.description = noteContent.trimmed
+        task.dueDate = hasDueDate ? dueDate : nil
+        task.status = taskStatus
+        task.isPriority = isPriority
+        task.isReminderOn = isReminderOn
+        task.reminderDate = reminderDate
+        isLoading = true
+        interactor.updateTask(task)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { [weak self] completion in
+                self?.isLoading = false
+                if case .failure(let error) = completion {
+                    self?.showError(message: error.localizedDescription)
+                }
+            }, receiveValue: { [weak self] in
+                guard let self = self else { return }
+                if self.isReminderOn {
+                    self.scheduleReminderIfNeeded(taskId: task.id.uuidString, title: task.title)
+                } else {
+                    self.cancelReminder(taskId: task.id.uuidString)
+                }
+                self.router.dismissAndRefreshTaskList()
+            })
+            .store(in: &cancellables)
+    }
+
+    
+    func dismiss() {
+        router.dismissTaskDetail()
     }
     
     func reminderToggleChanged(_ value: Bool) {
-        isReminderOn = value
-        if !value { reminderDate = nil }
-        checkIfTaskChanged()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.isReminderOn = value
+            
+            // Jika reminder dimatikan, hapus tanggal reminder
+            if !value {
+                self.reminderDate = nil
+            }
+            // Jika reminder dinyalakan dan belum ada tanggal, berikan default 1 jam dari sekarang
+            else if self.reminderDate == nil {
+                self.reminderDate = Calendar.current.date(byAdding: .minute, value: 15, to: Date())
+            }
+            
+            self.checkIfTaskChanged()
+        }
     }
 
     func reminderDateChanged(_ date: Date) {
@@ -216,36 +274,6 @@ final class TaskDetailPresenter: ObservableObject {
 
     private func cancelReminder(taskId: String) {
         NotificationManager.shared.cancelNotification(id: taskId)
-    }
-    
-    private func updateExistingTask() {
-        guard var task = currentTask else { return }
-        task.title = taskTitle.trimmed
-        task.description = noteContent.trimmed
-        task.dueDate = hasDueDate ? dueDate : nil
-        task.status = taskStatus
-        task.isPriority = isPriority
-        isReminderOn = task.isReminderOn
-        reminderDate = task.reminderDate
-
-        
-        isLoading = true
-        interactor.updateTask(task)
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { [weak self] completion in
-                self?.isLoading = false
-                if case .failure(let error) = completion {
-                    self?.showError(message: error.localizedDescription)
-                }
-            }, receiveValue: { [weak self] in
-                self?.router.dismissAndRefreshTaskList()
-            })
-            .store(in: &cancellables)
-        
-    }
-    
-    func dismiss() {
-        router.dismissTaskDetail()
     }
     
     private func fetchTask(taskId: UUID) {
@@ -277,6 +305,8 @@ final class TaskDetailPresenter: ObservableObject {
         }
         isPriority = task.isPriority
         taskStatus = task.status
+        isReminderOn = task.isReminderOn
+        reminderDate = task.reminderDate
         
         // Store original values
         originalTitle = task.title
@@ -285,6 +315,8 @@ final class TaskDetailPresenter: ObservableObject {
         originalHasDueDate = task.dueDate != nil
         originalIsPriority = task.isPriority
         originalStatus = task.status
+        originalIsReminderOn = task.isReminderOn
+        originalReminderDate = task.reminderDate
         
         lastUpdated = task.createdAt
         isTaskChanged = false

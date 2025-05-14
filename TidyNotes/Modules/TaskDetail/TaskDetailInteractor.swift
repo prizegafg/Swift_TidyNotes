@@ -39,7 +39,8 @@ final class TaskDetailInteractor {
                     dueDate: Date?,
                     isReminderON: Bool,
                     reminderDate: Date?,
-                    status: TaskStatus) -> AnyPublisher<Void, Error> {
+                    status: TaskStatus) -> AnyPublisher<TaskEntity, Error> {
+        
         let newTask = TaskEntity(
             id: UUID(),
             title: title,
@@ -51,11 +52,9 @@ final class TaskDetailInteractor {
             reminderDate: reminderDate,
             status: status
         )
-        
-        
+
         return Just(newTask)
             .handleEvents(receiveOutput: { self.repository.saveTask($0) })
-            .map { _ in () }
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }

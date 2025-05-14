@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "" : {
-
-    },
     "Add Task" : {
       "localizations" : {
         "id" : {
@@ -159,6 +156,15 @@
     "Reminder" : {
 
     },
+    "Select Date" : {
+
+    },
+    "Select Date and Time" : {
+
+    },
+    "Select Due Date" : {
+
+    },
     "Set as Priority" : {
       "localizations" : {
         "id" : {
@@ -170,6 +176,9 @@
       }
     },
     "Set Due Date" : {
+
+    },
+    "Set Reminder" : {
 
     },
     "Status" : {

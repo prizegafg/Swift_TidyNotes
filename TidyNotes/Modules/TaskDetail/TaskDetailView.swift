@@ -12,7 +12,9 @@ struct TaskDetailView: View {
     @ObservedObject var presenter: TaskDetailPresenter
     @Environment(\.presentationMode) var presentationMode
     @FocusState private var focusedField: FocusField?
-    @State private var showDatePicker = false
+    
+    @State private var showDueDatePicker = false
+    @State private var showReminderDatePicker = false
     
     enum FocusField {
         case title, notes
@@ -109,45 +111,29 @@ struct TaskDetailView: View {
                 .onChange(of: presenter.hasDueDate) { newValue in
                     presenter.hasDueDateChanged(newValue)
                 }
-            
             if presenter.hasDueDate {
                 HStack {
                     Text(presenter.formattedDueDate)
                         .padding(.vertical, 8)
                         .padding(.horizontal, 12)
-                        .background(Color(.systemGray6))
+//                        .background(Color(.systemGray6))
                         .cornerRadius(8)
-                    
                     Spacer()
-                    
                     Button(action: {
-                        presenter.toggleDatePicker()
+                        showDueDatePicker.toggle()
                     }) {
                         Image(systemName: "calendar")
                             .foregroundColor(.blue)
                     }
                 }
-                
-                if presenter.showDatePicker {
-                    VStack {
-                        DatePicker("", selection: $presenter.dueDate, displayedComponents: .date)
-                            .datePickerStyle(GraphicalDatePickerStyle())
-                            .onChange(of: presenter.dueDate) { newValue in
-                                presenter.dueDateChanged(newValue)
-                            }
-                        
-                        // Add Done button for date picker
-                        HStack {
-                            Spacer()
-                            Button("Done") {
-                                presenter.toggleDatePicker()
-                            }
-                            .padding(8)
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
+                .sheet(isPresented: $showDueDatePicker) {
+                    DueDatePickerView(
+                        selectedDate: $presenter.dueDate,
+                        isPresented: $showDueDatePicker,
+                        onDateChanged: { newDate in
+                            presenter.dueDateChanged(newDate)
                         }
-                    }
+                    )
                 }
             }
         }
@@ -158,48 +144,42 @@ struct TaskDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Reminder")
                 .font(.headline)
-
             Toggle("Enable Reminder", isOn: $presenter.isReminderOn)
                 .onChange(of: presenter.isReminderOn) { newValue in
                     presenter.reminderToggleChanged(newValue)
+                    
+                    // Inisialisasi reminderDate jika belum ada dan reminder diaktifkan
+                    if newValue && presenter.reminderDate == nil {
+                        let defaultDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date()) ?? Date()
+                        presenter.reminderDateChanged(defaultDate)
+                    }
                 }
-
+            
             if presenter.isReminderOn {
                 HStack {
                     Text(presenter.reminderDate?.formatted(date: .abbreviated, time: .shortened) ?? "Select Date")
-                        .foregroundColor(.gray)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 12)
+//                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
+                    
                     Spacer()
+                    
                     Button {
-                        presenter.toggleDatePicker()
+                        showReminderDatePicker.toggle()
                     } label: {
                         Image(systemName: "calendar.badge.clock")
                             .foregroundColor(.blue)
                     }
                 }
-
-                if presenter.showDatePicker {
-                    VStack {
-                        DatePicker(
-                            "",
-                            selection: Binding(
-                                get: { presenter.reminderDate ?? Date() },
-                                set: { presenter.reminderDateChanged($0) }
-                            ),
-                            displayedComponents: [.date, .hourAndMinute]
-                        )
-                        .datePickerStyle(.graphical)
-
-                        HStack {
-                            Spacer()
-                            Button("Done") {
-                                presenter.toggleDatePicker()
-                            }
-                            .padding(8)
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                        }
-                    }
+                .sheet(isPresented: $showReminderDatePicker) {
+                    ReminderDatePickerView(
+                        selectedDate: Binding(
+                            get: { presenter.reminderDate ?? Date() },
+                            set: { presenter.reminderDateChanged($0) }
+                        ),
+                        isPresented: $showReminderDatePicker
+                    )
                 }
             }
         }

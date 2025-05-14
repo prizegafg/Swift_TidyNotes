@@ -26,8 +26,9 @@ class NotificationManager {
         content.title = "⏰ Reminder"
         content.body = "Don't forget: \(title)"
         content.sound = .default
+        content.categoryIdentifier = "REMINDER_CATEGORY"
 
-        let triggerDate = Calendar.current.date(byAdding: .minute, value: -10, to: date) ?? date
+        let triggerDate = Calendar.current.date(byAdding: .minute, value: 0, to: date) ?? date
 
         let components = Calendar.current.dateComponents(
             [.year, .month, .day, .hour, .minute],
@@ -42,9 +43,27 @@ class NotificationManager {
                 print("🔴 Error scheduling notification: \(error.localizedDescription)")
             }
         }
+        
     }
 
     func cancelNotification(id: String) {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id])
+    }
+    
+    func registerNotificationActions() {
+        let snoozeAction = UNNotificationAction(identifier: "SNOOZE_ACTION",
+                                                title: "Snooze 10 min",
+                                                options: [])
+
+        let closeAction = UNNotificationAction(identifier: "CLOSE_ACTION",
+                                               title: "Turn Off Reminder",
+                                               options: [.destructive])
+
+        let category = UNNotificationCategory(identifier: "REMINDER_CATEGORY",
+                                              actions: [snoozeAction, closeAction],
+                                              intentIdentifiers: [],
+                                              options: [])
+
+        UNUserNotificationCenter.current().setNotificationCategories([category])
     }
 }

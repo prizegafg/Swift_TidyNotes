@@ -16,6 +16,7 @@ protocol TaskRepositoryProtocol {
     func saveTask(_ task: TaskEntity)
     func deleteTask(_ task: TaskEntity)
     func deleteAllTasks()
+    func disableReminder(for id: String)
 }
 
 
@@ -56,5 +57,9 @@ final class TaskRepository: TaskRepositoryProtocol {
 
     func deleteAllTasks() {
         realmManager.deleteAllTasks()
+    }
+    
+    func disableReminder(for id: String) {
+        realmManager.disableReminder(for: id)
     }
 }

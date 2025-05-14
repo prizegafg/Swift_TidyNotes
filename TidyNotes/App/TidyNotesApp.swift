@@ -11,7 +11,9 @@ import SwiftUI
 struct TidyNotesApp: App {
     
     init() {
+        NotificationManager.shared.registerNotificationActions()
         NotificationManager.shared.requestPermissionIfNeeded()
+                _ = NotificationDelegate.shared 
     }
     
     var body: some Scene {

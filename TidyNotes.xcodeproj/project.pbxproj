@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CB2AD9C72DD477CF00B9A269 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CB2AD9C62DD477CF00B9A269 /* RealmSwift */; };
+		CB2AD9C82DD47DB600B9A269 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = CB2AD9C62DD477CF00B9A269 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		CB2AD63F2DC1223D00B9A269 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -22,6 +27,20 @@
 			remoteInfo = TidyNotes;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		CB2AD9C92DD47DB600B9A269 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				CB2AD9C82DD47DB600B9A269 /* RealmSwift in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		CB2AD6292DC1223B00B9A269 /* TidyNotes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TidyNotes.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -52,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB2AD9C72DD477CF00B9A269 /* RealmSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,6 +122,7 @@
 				CB2AD6252DC1223B00B9A269 /* Sources */,
 				CB2AD6262DC1223B00B9A269 /* Frameworks */,
 				CB2AD6272DC1223B00B9A269 /* Resources */,
+				CB2AD9C92DD47DB600B9A269 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -112,6 +133,7 @@
 			);
 			name = TidyNotes;
 			packageProductDependencies = (
+				CB2AD9C62DD477CF00B9A269 /* RealmSwift */,
 			);
 			productName = TidyNotes;
 			productReference = CB2AD6292DC1223B00B9A269 /* TidyNotes.app */;
@@ -197,6 +219,7 @@
 			mainGroup = CB2AD6202DC1223B00B9A269;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				CB2AD9C52DD477CF00B9A269 /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CB2AD62A2DC1223B00B9A269 /* Products */;
@@ -569,6 +592,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CB2AD9C52DD477CF00B9A269 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.49.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CB2AD9C62DD477CF00B9A269 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CB2AD9C52DD477CF00B9A269 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CB2AD6212DC1223B00B9A269 /* Project object */;
 }

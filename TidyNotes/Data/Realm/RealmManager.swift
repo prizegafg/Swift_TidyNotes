@@ -15,19 +15,19 @@ final class RealmManager {
 
     private init() {
         do {
+            let fileManager = FileManager.default
+            let folderURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("TidyNotes")
+
+            if !fileManager.fileExists(atPath: folderURL.path) {
+                try? fileManager.createDirectory(at: folderURL, withIntermediateDirectories: true)
+            }
+
+            let realmFileURL = folderURL.appendingPathComponent("tidynotes.realm")
+
             let config = Realm.Configuration(
+                fileURL: realmFileURL,
                 schemaVersion: 2,
-                migrationBlock: { migration, oldSchemaVersion in
-                    // Handle migrasi untuk setiap perubahan skema
-                    if oldSchemaVersion < 2 {
-                        // Otomatis menambahkan properti baru dengan nilai default
-                        migration.enumerateObjects(ofType: "RealmTaskObject") { oldObject, newObject in
-                            // Set nilai default untuk properti baru
-                            newObject?["isReminderOn"] = false
-                            newObject?["reminderDate"] = nil
-                        }
-                    }
-                },
+                migrationBlock: { _, _ in },
                 deleteRealmIfMigrationNeeded: false
             )
             Realm.Configuration.defaultConfiguration = config
@@ -98,4 +98,13 @@ final class RealmManager {
             realm.delete(all)
         }
     }
+    
+    func disableReminder(for id: String) {
+        guard let object = realm.object(ofType: RealmTaskObject.self, forPrimaryKey: id) else { return }
+        try? realm.write {
+            object.isReminderOn = false
+            object.reminderDate = nil
+        }
+    }
+
 }
