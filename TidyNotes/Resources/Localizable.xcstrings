@@ -24,6 +24,12 @@
     "Are you sure want to delete this task?" : {
 
     },
+    "Belum punya akun? Register" : {
+
+    },
+    "Buat Akun Baru" : {
+
+    },
     "Cancel" : {
 
     },
@@ -92,6 +98,9 @@
         }
       }
     },
+    "Email" : {
+
+    },
     "Enable Reminder" : {
 
     },
@@ -108,10 +117,19 @@
         }
       }
     },
+    "Konfirmasi Password" : {
+
+    },
     "Last Update: %@" : {
 
     },
     "Loading Tasks..." : {
+
+    },
+    "Login" : {
+
+    },
+    "Login Gagal" : {
 
     },
     "No" : {
@@ -140,6 +158,9 @@
         }
       }
     },
+    "Password" : {
+
+    },
     "Priority" : {
       "localizations" : {
         "id" : {
@@ -151,6 +172,12 @@
       }
     },
     "Priority Task" : {
+
+    },
+    "Register" : {
+
+    },
+    "Registrasi Berhasil" : {
 
     },
     "Reminder" : {
@@ -201,6 +228,9 @@
         }
       }
     },
+    "Sudah punya akun? Login" : {
+
+    },
     "Tasks" : {
       "localizations" : {
         "id" : {
@@ -215,6 +245,9 @@
 
     },
     "Type Task Title" : {
+
+    },
+    "Welcome Back 👋" : {
 
     },
     "Yes" : {

@@ -18,7 +18,12 @@ struct TidyNotesApp: App {
     
     var body: some Scene {
         WindowGroup {
-            TaskListModule.makeTaskListView()
+            let session = SessionManager.shared
+            if let user = session.currentUser, user.isLoggedIn {
+                TaskListModule.makeTaskListView()
+            } else {
+                LoginModule.makeLoginView()
+            }
         }
     }
     

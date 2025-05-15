@@ -10,6 +10,7 @@ import RealmSwift
 
 final class RealmTaskObject: Object {
     @Persisted(primaryKey: true) var id: String
+    @Persisted var userId: String
     @Persisted var title: String = ""
     @Persisted var taskDescription: String = ""
     @Persisted var isPriority: Bool = false
@@ -28,6 +29,7 @@ final class RealmTaskObject: Object {
         self.init()
         self.id = entity.id.uuidString
         self.title = entity.title
+        self.userId = entity.userId
         self.taskDescription = entity.description
         self.isPriority = entity.isPriority
         self.createdAt = entity.createdAt
@@ -40,6 +42,7 @@ final class RealmTaskObject: Object {
     func toEntity() -> TaskEntity {
         return TaskEntity(
             id: UUID(uuidString: id) ?? UUID(),
+            userId: userId,
             title: title,
             description: taskDescription,
             isPriority: isPriority,

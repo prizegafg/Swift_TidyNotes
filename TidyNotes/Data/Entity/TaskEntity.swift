@@ -10,6 +10,7 @@ import Foundation
 /// Entity untuk Task dalam arsitektur VIPER
 struct TaskEntity: Identifiable, Equatable, Codable {
     let id: UUID
+    var userId: String
     var title: String
     var description: String
     var isPriority: Bool

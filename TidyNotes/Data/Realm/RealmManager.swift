@@ -40,9 +40,14 @@ final class RealmManager {
 
     // MARK: - CRUD Operations
 
-    func fetchAllTasks() -> [TaskEntity] {
-        let results = realm.objects(RealmTaskObject.self)
+    func fetchAllTasks(forUserId userId: String) -> [TaskEntity] {
+//        let results = realm.objects(RealmTaskObject.self)
+//        return results.map { $0.toEntity() }
+        let results = realm.objects(RealmTaskObject.self).where {
+            $0.userId == userId
+        }
         return results.map { $0.toEntity() }
+        
     }
 
     func fetchTask(by id: UUID) -> TaskEntity? {
@@ -72,6 +77,10 @@ final class RealmManager {
     
     func fetchAllProjects() -> [ProjectEntity] {
         realm.objects(RealmProjectObject.self).map { $0.toEntity() }
+//        let results = realm.objects(RealmTaskObject.self).where {
+//                $0.userId == userId
+//            }
+//            return results.map { $0.toEntity() }
     }
 
     func fetchProject(by id: UUID) -> ProjectEntity? {

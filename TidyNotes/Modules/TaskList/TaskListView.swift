@@ -45,6 +45,14 @@ struct TaskListView: View {
                 }
             )
         }
+        .navigationBarItems(
+            trailing: NavigationLink(
+                destination: SettingsModule.makeSettingsView()
+            ) {
+            Image(systemName: "gear")
+        }
+
+        )
         .confirmationDialog(
             "Delete Confirmation",
             isPresented: $presenter.showDeleteConfirmation,

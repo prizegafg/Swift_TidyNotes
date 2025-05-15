@@ -32,9 +32,14 @@ final class TaskRepository: TaskRepositoryProtocol {
     // MARK: - Fetch
 
     func fetchAllTasks() -> AnyPublisher<[TaskEntity], Never> {
-        let tasks = realmManager.fetchAllTasks()
-        return Just(tasks)
-            .eraseToAnyPublisher()
+//        let tasks = realmManager.fetchAllTasks()
+//        return Just(tasks)
+//            .eraseToAnyPublisher()
+        guard let userId = SessionManager.shared.currentUser?.id else {
+            return Just([]).eraseToAnyPublisher()
+        }
+        let tasks = realmManager.fetchAllTasks(forUserId: userId)
+        return Just(tasks).eraseToAnyPublisher()
     }
 
     func fetchTask(by id: UUID) -> AnyPublisher<TaskEntity?, Never> {

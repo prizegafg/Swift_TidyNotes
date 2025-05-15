@@ -40,9 +40,10 @@ final class TaskDetailInteractor {
                     isReminderON: Bool,
                     reminderDate: Date?,
                     status: TaskStatus) -> AnyPublisher<TaskEntity, Error> {
-        
+        let currentUserId = SessionManager.shared.currentUser?.id ?? "unknown"
         let newTask = TaskEntity(
             id: UUID(),
+            userId: currentUserId,
             title: title,
             description: description,
             isPriority: isPriority,
