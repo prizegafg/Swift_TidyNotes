@@ -117,6 +117,12 @@
         }
       }
     },
+    "Full Name" : {
+
+    },
+    "Info" : {
+
+    },
     "Konfirmasi Password" : {
 
     },
@@ -130,6 +136,9 @@
 
     },
     "Login Gagal" : {
+
+    },
+    "Logout" : {
 
     },
     "No" : {
@@ -161,6 +170,9 @@
     "Password" : {
 
     },
+    "Photo" : {
+
+    },
     "Priority" : {
       "localizations" : {
         "id" : {
@@ -183,6 +195,12 @@
     "Reminder" : {
 
     },
+    "Reset Password" : {
+
+    },
+    "Save Profile" : {
+
+    },
     "Select Date" : {
 
     },
@@ -190,6 +208,9 @@
 
     },
     "Select Due Date" : {
+
+    },
+    "Select Photo" : {
 
     },
     "Set as Priority" : {
@@ -206,6 +227,9 @@
 
     },
     "Set Reminder" : {
+
+    },
+    "Settings" : {
 
     },
     "Status" : {
@@ -245,6 +269,12 @@
 
     },
     "Type Task Title" : {
+
+    },
+    "Upload Gambar" : {
+
+    },
+    "User Info" : {
 
     },
     "Welcome Back 👋" : {

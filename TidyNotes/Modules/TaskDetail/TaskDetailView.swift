@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import PhotosUI
 
 struct TaskDetailView: View {
     @ObservedObject var presenter: TaskDetailPresenter
@@ -15,6 +16,7 @@ struct TaskDetailView: View {
     
     @State private var showDueDatePicker = false
     @State private var showReminderDatePicker = false
+    @State private var selectedItem: PhotosPickerItem?
     
     enum FocusField {
         case title, notes
@@ -28,6 +30,7 @@ struct TaskDetailView: View {
                 reminderSection
                 prioritySection
                 statusSection
+                photoSection
                 noteSection
             }
             .padding()
@@ -197,6 +200,40 @@ struct TaskDetailView: View {
                 .toggleStyle(SwitchToggleStyle(tint: .red))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    private var photoSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Photo")
+                .font(.headline)
+
+            if let image = presenter.selectedImage {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 200)
+                    .cornerRadius(12)
+            } else if let path = presenter.imagePath,
+                      let image = UIImage(contentsOfFile: path) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 200)
+                    .cornerRadius(12)
+            }
+
+            PhotosPicker(selection: $selectedItem, matching: .images) {
+                Label("Upload Gambar", systemImage: "photo")
+            }
+            .onChange(of: selectedItem) { newItem in
+                Task {
+                    if let data = try? await newItem?.loadTransferable(type: Data.self),
+                       let image = UIImage(data: data) {
+                        presenter.setImage(image)
+                    }
+                }
+            }
+        }
     }
     
     private var statusSection: some View {

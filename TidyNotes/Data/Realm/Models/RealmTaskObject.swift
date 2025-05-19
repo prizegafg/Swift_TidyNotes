@@ -18,6 +18,7 @@ final class RealmTaskObject: Object {
     @Persisted var dueDate: Date?
     @Persisted var isReminderOn: Bool
     @Persisted var reminderDate: Date?
+    @Persisted var imagePath: String?
     @Persisted var statusRaw: String = TaskStatus.todo.rawValue
 
     var status: TaskStatus {
@@ -36,6 +37,7 @@ final class RealmTaskObject: Object {
         self.dueDate = entity.dueDate
         self.isReminderOn = entity.isReminderOn
         self.reminderDate = entity.reminderDate
+        self.imagePath = entity.imagePath
         self.status = entity.status
     }
 
@@ -50,6 +52,7 @@ final class RealmTaskObject: Object {
             dueDate: dueDate,
             isReminderOn: isReminderOn,
             reminderDate: reminderDate,
+            imagePath: imagePath,
             status: status
         )
     }

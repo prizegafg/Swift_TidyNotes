@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import RealmSwift
+import SwiftUI
 
 final class TaskDetailPresenter: ObservableObject {
     enum Mode {
@@ -29,6 +30,8 @@ final class TaskDetailPresenter: ObservableObject {
     @Published var showDatePicker: Bool = false
     @Published var isReminderOn: Bool = false
     @Published var reminderDate: Date?
+    @Published var imagePath: String? = nil
+    @Published var selectedImage: UIImage? = nil
     
     private let interactor: TaskDetailInteractor
     private let router: TaskDetailRouter
@@ -184,6 +187,7 @@ final class TaskDetailPresenter: ObservableObject {
             dueDate: hasDueDate ? dueDate : nil,
             isReminderON: isReminderOn,
             reminderDate: reminderDate,
+            imagePath: imagePath ?? "",
             status: taskStatus
         )
         .receive(on: DispatchQueue.main)
@@ -214,6 +218,7 @@ final class TaskDetailPresenter: ObservableObject {
         task.isPriority = isPriority
         task.isReminderOn = isReminderOn
         task.reminderDate = reminderDate
+        task.imagePath = imagePath
         isLoading = true
         interactor.updateTask(task)
             .receive(on: DispatchQueue.main)
@@ -260,6 +265,29 @@ final class TaskDetailPresenter: ObservableObject {
     func reminderDateChanged(_ date: Date) {
         reminderDate = date
         checkIfTaskChanged()
+    }
+    
+    func saveImageToDisk(_ image: UIImage) -> String? {
+        guard let data = image.jpegData(compressionQuality: 0.8) else { return nil }
+        let filename = UUID().uuidString + ".jpg"
+        let url = FileManager.default
+            .urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent(filename)
+        do {
+            try data.write(to: url)
+            return url.path
+        } catch {
+            print("❌ Gagal simpan gambar: \(error)")
+            return nil
+        }
+    }
+
+    func setImage(_ image: UIImage) {
+        selectedImage = image
+        if let path = saveImageToDisk(image) {
+            imagePath = path
+            checkIfTaskChanged()
+        }
     }
     
     private func scheduleReminderIfNeeded(taskId: String, title: String) {
