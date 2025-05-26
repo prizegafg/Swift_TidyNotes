@@ -18,6 +18,6 @@ final class SessionManager {
 
     private init() {
         // Ganti dengan App ID kamu
-        self.realmApp = RealmSwift.App(id: "your-realm-app-id")
+        self.realmApp = RealmSwift.App(id: "tidynotesapp-fjyavvn")
     }
 }

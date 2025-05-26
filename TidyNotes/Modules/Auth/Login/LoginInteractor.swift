@@ -12,7 +12,7 @@ import RealmSwift
 final class LoginInteractor {
     private let app: App
 
-    init(app: App = App(id: "your-realm-app-id")) {
+    init(app: App = App(id: "tidynotesapp-fjyavvn")) {
         self.app = app
     }
 

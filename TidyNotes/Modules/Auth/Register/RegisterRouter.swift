@@ -16,7 +16,9 @@ final class RegisterRouter {
             .flatMap { $0.windows }
             .first { $0.isKeyWindow }
         
-        window?.rootViewController = UIHostingController(rootView: RegisterModule.makeRegisterView())
+        window?.rootViewController = UIHostingController(rootView: LoginModule.makeLoginView())
         window?.makeKeyAndVisible()
+        
+
     }
 }
