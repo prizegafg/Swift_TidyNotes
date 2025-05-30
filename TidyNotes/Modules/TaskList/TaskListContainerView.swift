@@ -38,5 +38,15 @@ struct TaskListContainerView: View {
                     }
                 }
         }
+        
+        .task {
+            if let deepLink = DeepLinkManager.shared.consume() {
+                switch deepLink {
+                case .openTaskDetail(let taskId):
+                    presenter.selectedTaskId = taskId
+                    navigationState.showTaskDetail = true
+                }
+            }
+        }
     }
 }

@@ -29,7 +29,15 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         let id = response.notification.request.identifier
+        let userInfo = response.notification.request.content.userInfo
 
+        if let taskIdString = userInfo["taskId"] as? String,
+           let taskId = UUID(uuidString: taskIdString) {
+            DispatchQueue.main.async {
+                DeepLinkManager.shared.handle(.openTaskDetail(taskId: taskId))
+            }
+        }
+        
         switch response.actionIdentifier {
         case "SNOOZE_ACTION":
             let newDate = Date().addingTimeInterval(600) // 10 menit snooze

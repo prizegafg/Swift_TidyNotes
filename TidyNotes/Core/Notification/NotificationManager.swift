@@ -27,6 +27,7 @@ class NotificationManager {
         content.body = "Don't forget: \(title)"
         content.sound = .default
         content.categoryIdentifier = "REMINDER_CATEGORY"
+        content.userInfo = ["taskId": id]
 
         let triggerDate = Calendar.current.date(byAdding: .minute, value: 0, to: date) ?? date
 
