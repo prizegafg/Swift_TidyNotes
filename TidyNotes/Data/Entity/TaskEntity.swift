@@ -6,30 +6,49 @@
 //
 
 import Foundation
+import RealmSwift
 
-/// Entity untuk Task dalam arsitektur VIPER
-struct TaskEntity: Identifiable, Equatable, Codable {
-    let id: UUID
-    var userId: String
-    var title: String
-    var description: String
-    var isPriority: Bool
-    let createdAt: Date
-    var dueDate: Date?  // Optional due date
-    var isReminderOn: Bool
-    var reminderDate: Date?
-    var imagePath: String?
-    var status: TaskStatus
-    
-    static func == (lhs: TaskEntity, rhs: TaskEntity) -> Bool {
-        return lhs.id == rhs.id
+enum TaskStatus: String, PersistableEnum, Codable, CaseIterable {
+    case todo, inProgress, done
+}
+
+final class TaskEntity: Object, ObjectKeyIdentifiable {
+    @Persisted(primaryKey: true) var id: UUID
+    @Persisted var userId: String
+    @Persisted var title: String
+    @Persisted var descriptionText: String
+    @Persisted var isPriority: Bool
+    @Persisted var createdAt: Date
+    @Persisted var dueDate: Date?
+    @Persisted var isReminderOn: Bool
+    @Persisted var reminderDate: Date?
+    @Persisted var imagePath: String?
+    @Persisted var status: TaskStatus
+
+    convenience init(
+        id: UUID = UUID(),
+        userId: String,
+        title: String,
+        descriptionText: String,
+        isPriority: Bool = false,
+        createdAt: Date = Date(),
+        dueDate: Date? = nil,
+        isReminderOn: Bool = false,
+        reminderDate: Date? = nil,
+        imagePath: String? = nil,
+        status: TaskStatus = .todo
+    ) {
+        self.init()
+        self.id = id
+        self.userId = userId
+        self.title = title
+        self.descriptionText = descriptionText
+        self.isPriority = isPriority
+        self.createdAt = createdAt
+        self.dueDate = dueDate
+        self.isReminderOn = isReminderOn
+        self.reminderDate = reminderDate
+        self.imagePath = imagePath
+        self.status = status
     }
 }
-
-/// Status task
-enum TaskStatus: String, Codable {
-    case todo = "To Do"
-    case inProgress = "In Progress"
-    case done = "Done"
-}
-

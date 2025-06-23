@@ -15,6 +15,8 @@ final class TaskListPresenter: ObservableObject {
     @Published var selectedTaskId: UUID? = nil
     @Published var showDeleteConfirmation: Bool = false
     @Published var taskToDelete: UUID? = nil
+    @Published var searchQuery: String = ""
+    @Published var isSearchVisible: Bool = false
 
     private let interactor: TaskListInteractor
     private let router: TaskListRouter
@@ -29,6 +31,16 @@ final class TaskListPresenter: ObservableObject {
     init(interactor: TaskListInteractor, router: TaskListRouter) {
         self.interactor = interactor
         self.router = router
+    }
+    
+    var filteredTasks: [TaskEntity] {
+        let trimmedQuery = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard !trimmedQuery.isEmpty else { return tasks }
+
+        return tasks.filter { task in
+            task.title.lowercased().contains(trimmedQuery) ||
+            task.description.lowercased().contains(trimmedQuery)
+        }
     }
 
     func viewDidAppear() {
@@ -84,6 +96,13 @@ final class TaskListPresenter: ObservableObject {
 
     func onDismissErrorTapped() {
         errorMessage = nil
+    }
+    
+    func toggleSearch() {
+        isSearchVisible.toggle()
+        if !isSearchVisible {
+            searchQuery = ""
+        }
     }
 
     private func fetchTasks() {

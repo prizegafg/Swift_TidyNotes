@@ -14,44 +14,39 @@ import SwiftUI
 import Combine
 
 final class TaskDetailRouter {
-    // Event yang bisa digunakan untuk memicu refresh pada task list
     var onTasksUpdated: (() -> Void)?
-    
-    // Factory method untuk task detail (mode edit)
+
     static func makeTaskDetailView(taskId: UUID) -> some View {
         let interactor = TaskDetailInteractor(repository: ServiceLocator.shared.taskRepository)
         let router = TaskDetailRouter()
-        let presenter = TaskDetailPresenter(taskId: taskId, interactor: interactor, router: router)
+        let dummyTask = TaskEntity( // Placeholder, akan di-replace di presenter setelah fetch
+            id: taskId, userId: "", title: "", descriptionText: "")
+        let presenter = TaskDetailPresenter(
+            task: dummyTask,
+            interactor: interactor,
+            router: router,
+            mode: .edit
+        )
         return TaskDetailView(presenter: presenter)
     }
-    
-    static func makeAddTaskView(onTasksUpdated: (() -> Void)? = nil) -> some View {
+
+    static func makeAddTaskView(userId: String, onTasksUpdated: (() -> Void)? = nil) -> some View {
         let interactor = TaskDetailInteractor(repository: ServiceLocator.shared.taskRepository)
         let router = TaskDetailRouter()
-        let presenter = TaskDetailPresenter(interactor: interactor, router: router)
+        let newTask = TaskEntity(userId: userId, title: "", descriptionText: "")
+        let presenter = TaskDetailPresenter(
+            task: newTask,
+            interactor: interactor,
+            router: router,
+            mode: .create
+        )
         router.onTasksUpdated = onTasksUpdated
-        return NavigationStack {
-            TaskDetailView(presenter: presenter)
-        }
+        return NavigationStack { TaskDetailView(presenter: presenter) }
     }
-    
-    func dismissTaskDetail() {
-        // Implementasi untuk menutup view
-        // Menggunakan NotificationCenter atau Environment untuk dismiss presentedVC
-    }
-    
+
+    func dismissTaskDetail() {}
     func dismissAndRefreshTaskList() {
-        // Panggil callback untuk refresh task list
         onTasksUpdated?()
-        
-        // Dismiss view
         dismissTaskDetail()
     }
-    
-    deinit {
-        print("TaskDetailRouter deinit")
-        // Clear closure to avoid retain cycles
-        onTasksUpdated = nil
-    }
 }
-

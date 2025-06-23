@@ -7,64 +7,65 @@
 
 import Foundation
 import Combine
+import RealmSwift
 
-
-// MARK: - Task Repository Protocol
 protocol TaskRepositoryProtocol {
-    func fetchAllTasks() -> AnyPublisher<[TaskEntity], Never>
-    func fetchTask(by id: UUID) -> AnyPublisher<TaskEntity?, Never>
-    func saveTask(_ task: TaskEntity)
-    func deleteTask(_ task: TaskEntity)
-    func deleteAllTasks()
-    func disableReminder(for id: String)
+    func fetchTasks(userId: String) -> AnyPublisher<[TaskEntity], Error>
+    func fetchTask(by id: UUID) -> AnyPublisher<TaskEntity?, Error>
+    func saveTask(_ task: TaskEntity) -> AnyPublisher<Void, Error>
+    func deleteTask(_ id: UUID) -> AnyPublisher<Void, Error>
 }
 
-
-// MARK: - Task Repository
 final class TaskRepository: TaskRepositoryProtocol {
+    private let realm: Realm
 
-    private let realmManager: RealmManager
-
-    init(realmManager: RealmManager = .shared) {
-        self.realmManager = realmManager
+    init(realm: Realm = try! Realm()) {
+        self.realm = realm
     }
 
-    // MARK: - Fetch
-
-    func fetchAllTasks() -> AnyPublisher<[TaskEntity], Never> {
-//        let tasks = realmManager.fetchAllTasks()
-//        return Just(tasks)
-//            .eraseToAnyPublisher()
-        guard let userId = SessionManager.shared.currentUser?.id else {
-            return Just([]).eraseToAnyPublisher()
-        }
-        let tasks = realmManager.fetchAllTasks(forUserId: userId)
-        return Just(tasks).eraseToAnyPublisher()
-    }
-
-    func fetchTask(by id: UUID) -> AnyPublisher<TaskEntity?, Never> {
-        let task = realmManager.fetchTask(by: id)
-        return Just(task)
+    func fetchTasks(userId: String) -> AnyPublisher<[TaskEntity], Error> {
+        let results = realm.objects(TaskEntity.self).where { $0.userId == userId }
+        return Just(Array(results))
+            .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
 
-    // MARK: - Create / Update
-
-    func saveTask(_ task: TaskEntity) {
-        realmManager.addOrUpdateTask(task)
+    func fetchTask(by id: UUID) -> AnyPublisher<TaskEntity?, Error> {
+        let task = realm.object(ofType: TaskEntity.self, forPrimaryKey: id)
+        return Just(task)
+            .setFailureType(to: Error.self)
+            .eraseToAnyPublisher()
     }
 
-    // MARK: - Delete
-
-    func deleteTask(_ task: TaskEntity) {
-        realmManager.deleteTask(task)
+    func saveTask(_ task: TaskEntity) -> AnyPublisher<Void, Error> {
+        return Future { promise in
+            do {
+                try self.realm.write {
+                    self.realm.add(task, update: .modified)
+                }
+                promise(.success(()))
+            } catch {
+                promise(.failure(error))
+            }
+        }
+        .eraseToAnyPublisher()
     }
 
-    func deleteAllTasks() {
-        realmManager.deleteAllTasks()
-    }
-    
-    func disableReminder(for id: String) {
-        realmManager.disableReminder(for: id)
+    func deleteTask(_ id: UUID) -> AnyPublisher<Void, Error> {
+        return Future { promise in
+            guard let task = self.realm.object(ofType: TaskEntity.self, forPrimaryKey: id) else {
+                promise(.success(()))
+                return
+            }
+            do {
+                try self.realm.write {
+                    self.realm.delete(task)
+                }
+                promise(.success(()))
+            } catch {
+                promise(.failure(error))
+            }
+        }
+        .eraseToAnyPublisher()
     }
 }
