@@ -14,6 +14,7 @@ protocol TaskRepositoryProtocol {
     func fetchTask(by id: UUID) -> AnyPublisher<TaskEntity?, Error>
     func saveTask(_ task: TaskEntity) -> AnyPublisher<Void, Error>
     func deleteTask(_ id: UUID) -> AnyPublisher<Void, Error>
+    func disableReminder(for id: String) -> AnyPublisher<Void, Error>
 }
 
 final class TaskRepository: TaskRepositoryProtocol {
@@ -64,6 +65,30 @@ final class TaskRepository: TaskRepositoryProtocol {
                 promise(.success(()))
             } catch {
                 promise(.failure(error))
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    func disableReminder(for id: String) -> AnyPublisher<Void, Error> {
+        Future { promise in
+            guard let uuid = UUID(uuidString: id) else {
+                promise(.failure(AppError.invalidUUID))
+                return
+            }
+            do {
+                let realm = try Realm()
+                if let task = realm.object(ofType: TaskEntity.self, forPrimaryKey: uuid) {
+                    try realm.write {
+                        task.isReminderOn = false
+                        task.reminderDate = nil
+                    }
+                    promise(.success(()))
+                } else {
+                    promise(.failure(AppError.notFound))
+                }
+            } catch {
+                promise(.failure(AppError.realmError(error.localizedDescription)))
             }
         }
         .eraseToAnyPublisher()

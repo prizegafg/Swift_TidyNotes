@@ -21,9 +21,10 @@ final class TaskDetailPresenter: ObservableObject {
 
     private let interactor: TaskDetailInteractor
     private let router: TaskDetailRouter
-    private let mode: Mode
     private var originalTask: TaskEntity?
     private var cancellables = Set<AnyCancellable>()
+    
+    let mode: Mode
 
     enum Mode { case create, edit }
 

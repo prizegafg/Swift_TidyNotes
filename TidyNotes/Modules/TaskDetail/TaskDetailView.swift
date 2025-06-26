@@ -18,119 +18,42 @@ struct TaskDetailView: View {
 
     enum FocusField { case title, notes }
 
+    private var titleBinding: Binding<String> {
+        Binding(
+            get: { presenter.task.title },
+            set: { presenter.onTitleChanged($0) }
+        )
+    }
+    private var descBinding: Binding<String> {
+        Binding(
+            get: { presenter.task.descriptionText },
+            set: { presenter.onDescChanged($0) }
+        )
+    }
+    private var dueDateBinding: Binding<Date> {
+        Binding(
+            get: { presenter.task.dueDate ?? Date() },
+            set: { presenter.onDueDateChanged($0) }
+        )
+    }
+    private var reminderDateBinding: Binding<Date> {
+        Binding(
+            get: { presenter.task.reminderDate ?? Date() },
+            set: { presenter.onReminderChanged(true, date: $0) }
+        )
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                TextField("Type Task Title", text: Binding(
-                    get: { presenter.task.title },
-                    set: { presenter.onTitleChanged($0) }
-                ))
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .focused($focusedField, equals: .title)
-                .submitLabel(.next)
-                .onSubmit { focusedField = .notes }
-
-                Toggle("Priority Task", isOn: Binding(
-                    get: { presenter.task.isPriority },
-                    set: { presenter.onPriorityChanged($0) }
-                )).toggleStyle(SwitchToggleStyle(tint: .red))
-
-                Toggle("Set Due Date", isOn: Binding(
-                    get: { presenter.task.dueDate != nil },
-                    set: { $0 ? presenter.onDueDateChanged(presenter.task.dueDate ?? Date()) : presenter.onDueDateChanged(nil) }
-                ))
-                if presenter.task.dueDate != nil {
-                    HStack {
-                        Text(presenter.task.dueDate?.formatted(date: .abbreviated, time: .omitted) ?? "-")
-                        Spacer()
-                        Button {
-                            showDueDatePicker.toggle()
-                        } label: { Image(systemName: "calendar").foregroundColor(.blue) }
-                    }
-                    .sheet(isPresented: $showDueDatePicker) {
-                        DatePicker("Select Due Date", selection: Binding(
-                            get: { presenter.task.dueDate ?? Date() },
-                            set: { presenter.onDueDateChanged($0) }
-                        ), displayedComponents: .date)
-                        .datePickerStyle(.graphical)
-                        .padding()
-                    }
-                }
-
-                Toggle("Enable Reminder", isOn: Binding(
-                    get: { presenter.task.isReminderOn },
-                    set: { presenter.onReminderChanged($0, date: presenter.task.reminderDate) }
-                ))
-                if presenter.task.isReminderOn {
-                    HStack {
-                        Text(presenter.task.reminderDate?.formatted(date: .abbreviated, time: .shortened) ?? "-")
-                        Spacer()
-                        Button { showReminderDatePicker.toggle() } label: {
-                            Image(systemName: "calendar.badge.clock").foregroundColor(.blue)
-                        }
-                    }
-                    .sheet(isPresented: $showReminderDatePicker) {
-                        DatePicker("Reminder Time", selection: Binding(
-                            get: { presenter.task.reminderDate ?? Date() },
-                            set: { presenter.onReminderChanged(true, date: $0) }
-                        ), displayedComponents: [.date, .hourAndMinute])
-                        .datePickerStyle(.graphical)
-                        .padding()
-                    }
-                }
-
-                Picker("Status", selection: Binding(
-                    get: { presenter.task.status },
-                    set: { presenter.onStatusChanged($0) }
-                )) {
-                    ForEach(TaskStatus.allCases, id: \.self) {
-                        Text($0.rawValue.capitalized).tag($0)
-                    }
-                }.pickerStyle(SegmentedPickerStyle())
-
-                // Photo section
-                if let image = presenter.selectedImage {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 200)
-                        .cornerRadius(12)
-                } else if let path = presenter.task.imagePath,
-                          let image = UIImage(contentsOfFile: path) {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 200)
-                        .cornerRadius(12)
-                }
-                PhotosPicker(selection: $selectedItem, matching: .images) {
-                    Label("Upload Gambar", systemImage: "photo")
-                }
-                .onChange(of: selectedItem) { newItem in
-                    Task {
-                        if let data = try? await newItem?.loadTransferable(type: Data.self),
-                           let image = UIImage(data: data) {
-                            presenter.setImage(image)
-                        }
-                    }
-                }
-
-                // Note section
-                TextEditor(text: Binding(
-                    get: { presenter.task.descriptionText },
-                    set: { presenter.onDescChanged($0) }
-                ))
-                .focused($focusedField, equals: .notes)
-                .frame(height: 120)
-                .cornerRadius(8)
-                .padding(.top, 10)
-
-                Button(presenter.mode == .create ? "Add Task" : "Save Task") {
-                    presenter.saveTask()
-                    presentationMode.wrappedValue.dismiss()
-                }
-                .disabled(!presenter.isTaskChanged)
-                .buttonStyle(.borderedProminent)
+                titleSection
+                prioritySection
+                dueDateSection
+                reminderSection
+                statusSection
+                imageSection
+                descSection
+                saveButtonSection
             }
             .padding()
         }
@@ -156,5 +79,128 @@ struct TaskDetailView: View {
             }
         }
         .onTapGesture { focusedField = nil }
+    }
+
+    // MARK: - Subviews
+
+    private var titleSection: some View {
+        TextField("Type Task Title", text: titleBinding)
+            .textFieldStyle(RoundedBorderTextFieldStyle())
+            .focused($focusedField, equals: .title)
+            .submitLabel(.next)
+            .onSubmit { focusedField = .notes }
+    }
+
+    private var prioritySection: some View {
+        Toggle("Priority Task", isOn: Binding(
+            get: { presenter.task.isPriority },
+            set: { presenter.onPriorityChanged($0) }
+        ))
+        .toggleStyle(SwitchToggleStyle(tint: .red))
+    }
+
+    private var dueDateSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Toggle("Set Due Date", isOn: Binding(
+                get: { presenter.task.dueDate != nil },
+                set: { $0 ? presenter.onDueDateChanged(presenter.task.dueDate ?? Date()) : presenter.onDueDateChanged(nil) }
+            ))
+            if presenter.task.dueDate != nil {
+                HStack {
+                    Text(presenter.task.dueDate?.formatted(date: .abbreviated, time: .omitted) ?? "-")
+                    Spacer()
+                    Button {
+                        showDueDatePicker.toggle()
+                    } label: { Image(systemName: "calendar").foregroundColor(.blue) }
+                }
+                .sheet(isPresented: $showDueDatePicker) {
+                    DatePicker("Select Due Date", selection: dueDateBinding, displayedComponents: .date)
+                        .datePickerStyle(.graphical)
+                        .padding()
+                }
+            }
+        }
+    }
+
+    private var reminderSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Toggle("Enable Reminder", isOn: Binding(
+                get: { presenter.task.isReminderOn },
+                set: { presenter.onReminderChanged($0, date: presenter.task.reminderDate) }
+            ))
+            if presenter.task.isReminderOn {
+                HStack {
+                    Text(presenter.task.reminderDate?.formatted(date: .abbreviated, time: .shortened) ?? "-")
+                    Spacer()
+                    Button { showReminderDatePicker.toggle() } label: {
+                        Image(systemName: "calendar.badge.clock").foregroundColor(.blue)
+                    }
+                }
+                .sheet(isPresented: $showReminderDatePicker) {
+                    DatePicker("Reminder Time", selection: reminderDateBinding, displayedComponents: [.date, .hourAndMinute])
+                        .datePickerStyle(.graphical)
+                        .padding()
+                }
+            }
+        }
+    }
+
+    private var statusSection: some View {
+        Picker("Status", selection: Binding(
+            get: { presenter.task.status },
+            set: { presenter.onStatusChanged($0) }
+        )) {
+            ForEach(TaskStatus.allCases, id: \.self) {
+                Text($0.rawValue.capitalized).tag($0)
+            }
+        }
+        .pickerStyle(SegmentedPickerStyle())
+    }
+
+    private var imageSection: some View {
+        VStack(spacing: 8) {
+            if let image = presenter.selectedImage {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 200)
+                    .cornerRadius(12)
+            } else if let path = presenter.task.imagePath,
+                      let image = UIImage(contentsOfFile: path) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 200)
+                    .cornerRadius(12)
+            }
+            PhotosPicker(selection: $selectedItem, matching: .images) {
+                Label("Upload Gambar", systemImage: "photo")
+            }
+            .onChange(of: selectedItem) { newItem in
+                Task {
+                    if let data = try? await newItem?.loadTransferable(type: Data.self),
+                       let image = UIImage(data: data) {
+                        presenter.setImage(image)
+                    }
+                }
+            }
+        }
+    }
+
+    private var descSection: some View {
+        TextEditor(text: descBinding)
+            .focused($focusedField, equals: .notes)
+            .frame(height: 120)
+            .cornerRadius(8)
+            .padding(.top, 10)
+    }
+
+    private var saveButtonSection: some View {
+        Button(presenter.mode == .create ? "Add Task" : "Save Task") {
+            presenter.saveTask()
+            presentationMode.wrappedValue.dismiss()
+        }
+        .disabled(!presenter.isTaskChanged)
+        .buttonStyle(.borderedProminent)
     }
 }

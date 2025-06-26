@@ -46,7 +46,7 @@ final class RealmTaskObject: Object {
             id: UUID(uuidString: id) ?? UUID(),
             userId: userId,
             title: title,
-            description: taskDescription,
+            descriptionText: taskDescription,
             isPriority: isPriority,
             createdAt: createdAt,
             dueDate: dueDate,
