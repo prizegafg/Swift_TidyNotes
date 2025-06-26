@@ -10,12 +10,15 @@ import Combine
 
 final class TaskListPresenter: ObservableObject {
     @Published var tasks: [TaskEntity] = []
+    @Published var filteredTasks: [TaskEntity] = []
+    @Published var searchQuery: String = "" {
+        didSet { filterTasks() }
+    }
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
     @Published var selectedTaskId: UUID?
     @Published var showDeleteConfirmation: Bool = false
     @Published var taskToDelete: UUID?
-    @Published var searchQuery: String = ""
     @Published var isSearchVisible: Bool = false
     
     let userId: String
@@ -45,8 +48,20 @@ final class TaskListPresenter: ObservableObject {
                 }
             }, receiveValue: { [weak self] taskList in
                 self?.tasks = taskList
+                self?.filterTasks()
             })
             .store(in: &cancellables)
+    }
+    func filterTasks() {
+        let query = searchQuery.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        if query.isEmpty {
+            filteredTasks = tasks
+        } else {
+            filteredTasks = tasks.filter {
+                $0.title.lowercased().contains(query) ||
+                $0.descriptionText.lowercased().contains(query)
+            }
+        }
     }
     func onAddTaskTapped() {
         router.navigateToAddTask(userId: userId, onTasksUpdated: { [weak self] in
