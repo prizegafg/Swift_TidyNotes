@@ -23,13 +23,16 @@ struct TaskListContainerView: View {
                     }
                 )
                 .sheet(isPresented: $navigationState.showAddTask) {
-                    TaskDetailRouter.makeAddTaskView(onTasksUpdated: {
-                        presenter.viewDidAppear()
-                    })
+                    TaskDetailRouter.makeAddTaskView(
+                        userId: presenter.userId,
+                        onTasksUpdated: {
+                            presenter.viewDidAppear()
+                        }
+                    )
                 }
                 .sheet(isPresented: $navigationState.showEditTask) {
                     if let task = navigationState.selectedTaskForEdit {
-                        TaskAddEditModule.makeEditTaskView(task: task)
+                        TaskDetailRouter.makeTaskDetailView(taskId: task.id)
                     }
                 }
                 .onAppear {
@@ -38,7 +41,6 @@ struct TaskListContainerView: View {
                     }
                 }
         }
-        
         .task {
             if let deepLink = DeepLinkManager.shared.consume() {
                 switch deepLink {

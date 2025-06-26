@@ -5,127 +5,97 @@
 //  Created by Prizega Fromadia on 29/04/25.
 //
 
-import Combine
 import Foundation
+import Combine
 
 final class TaskListPresenter: ObservableObject {
     @Published var tasks: [TaskEntity] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
-    @Published var selectedTaskId: UUID? = nil
+    @Published var selectedTaskId: UUID?
     @Published var showDeleteConfirmation: Bool = false
-    @Published var taskToDelete: UUID? = nil
+    @Published var taskToDelete: UUID?
     @Published var searchQuery: String = ""
     @Published var isSearchVisible: Bool = false
-
+    
+    let userId: String
+    
     private let interactor: TaskListInteractor
     private let router: TaskListRouter
     private var cancellables = Set<AnyCancellable>()
-
-    // Tambahkan deinit untuk debugging memory leak
-    deinit {
-        print("TaskListPresenter deinit")
-        cancellables.forEach { $0.cancel() }
-    }
     
-    init(interactor: TaskListInteractor, router: TaskListRouter) {
+    init(interactor: TaskListInteractor, router: TaskListRouter, userId: String) {
         self.interactor = interactor
         self.router = router
+        self.userId = userId
     }
     
-    var filteredTasks: [TaskEntity] {
-        let trimmedQuery = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        guard !trimmedQuery.isEmpty else { return tasks }
-
-        return tasks.filter { task in
-            task.title.lowercased().contains(trimmedQuery) ||
-            task.description.lowercased().contains(trimmedQuery)
-        }
-    }
-
     func viewDidAppear() {
-        fetchTasks()
+        selectedTaskId = nil
+        loadTasks()
     }
-
-    func onTaskSelected(_ task: TaskEntity) {
-        selectedTaskId = task.id
-        router.navigateToTaskDetail(task.id)
-    }
-
-    func onAddTaskTapped() {
-        router.navigateToAddTask()
-    }
-
-    func onEditTaskTapped(_ task: TaskEntity) {
-        router.navigateToEditTask(task)
-    }
-
-    func onDeleteTaskTapped(_ taskId: UUID) {
-        taskToDelete = taskId
-        showDeleteConfirmation = true
-    }
-    
-    func confirmDeleteTask() {
-        guard let taskId = taskToDelete else { return }
-        
+    func loadTasks() {
         isLoading = true
-        errorMessage = nil
-        
-        interactor.deleteTask(id: taskId)
+        interactor.fetchAllTasks(for: userId)
             .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: handleCompletion, receiveValue: { [weak self] in
-                self?.fetchTasks()
+            .sink(receiveCompletion: { [weak self] completion in
+                self?.isLoading = false
+                if case let .failure(error) = completion {
+                    self?.errorMessage = error.localizedDescription
+                }
+            }, receiveValue: { [weak self] taskList in
+                self?.tasks = taskList
             })
             .store(in: &cancellables)
-        
-        taskToDelete = nil
-        showDeleteConfirmation = false
     }
-
+    func onAddTaskTapped() {
+        router.navigateToAddTask(userId: userId, onTasksUpdated: { [weak self] in
+            self?.loadTasks()
+        })
+    }
+    func onEditTaskTapped(_ task: TaskEntity) {
+        router.navigateToEditTask(task: task, onTasksUpdated: { [weak self] in
+            self?.loadTasks()
+        })
+    }
+    func onDeleteTaskTapped(_ id: UUID) {
+        showDeleteConfirmation = true
+        taskToDelete = id
+    }
+    func confirmDeleteTask() {
+        guard let id = taskToDelete else { return }
+        isLoading = true
+        interactor.deleteTask(id)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { [weak self] completion in
+                self?.isLoading = false
+                if case let .failure(error) = completion {
+                    self?.errorMessage = error.localizedDescription
+                } else {
+                    self?.loadTasks()
+                }
+            }, receiveValue: { })
+            .store(in: &cancellables)
+    }
     func onSetAsPriorityTapped(_ task: TaskEntity) {
         isLoading = true
-        errorMessage = nil
-
-        interactor.setTaskAsPriority(id: task.id)
+        interactor.setTaskAsPriority(task)
             .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: handleCompletion, receiveValue: { [weak self] in
-                self?.fetchTasks()
-            })
+            .sink(receiveCompletion: { [weak self] completion in
+                self?.isLoading = false
+                if case let .failure(error) = completion {
+                    self?.errorMessage = error.localizedDescription
+                } else {
+                    self?.loadTasks()
+                }
+            }, receiveValue: { })
             .store(in: &cancellables)
     }
-
+    func onTaskSelected(_ task: TaskEntity) {
+        selectedTaskId = task.id
+        onEditTaskTapped(task)
+    }
     func onDismissErrorTapped() {
         errorMessage = nil
-    }
-    
-    func toggleSearch() {
-        isSearchVisible.toggle()
-        if !isSearchVisible {
-            searchQuery = ""
-        }
-    }
-
-    private func fetchTasks() {
-        isLoading = true
-        errorMessage = nil
-
-        interactor.fetchTasks()
-            .map { tasks in
-                // Lakukan sorting di background thread
-                tasks.sorted { $0.createdAt > $1.createdAt }
-            }
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: handleCompletion, receiveValue: { [weak self] sortedTasks in
-                self?.tasks = sortedTasks
-                self?.isLoading = false
-            })
-            .store(in: &cancellables)
-    }
-
-    private func handleCompletion(_ completion: Subscribers.Completion<Error>) {
-        isLoading = false
-        if case let .failure(error) = completion {
-            errorMessage = error.localizedDescription
-        }
     }
 }

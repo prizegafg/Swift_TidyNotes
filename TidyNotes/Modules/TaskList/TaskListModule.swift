@@ -14,7 +14,8 @@ enum TaskListModule {
         let repository = ServiceLocator.shared.taskRepository
         let interactor = TaskListInteractor(repository: repository)
         let router = TaskListRouter(navigationState: navigationState)
-        let presenter = TaskListPresenter(interactor: interactor, router: router)
+        let userId = SessionManager.shared.currentUser?.id ?? ""
+        let presenter = TaskListPresenter(interactor: interactor, router: router, userId: userId)
         return TaskListContainerView(presenter: presenter, navigationState: navigationState)
     }
     
@@ -22,7 +23,8 @@ enum TaskListModule {
         let repository = ServiceLocator.shared.taskRepository
         let interactor = TaskListInteractor(repository: repository)
         let router = TaskListRouter(navigationController: navigationController)
-        let presenter = TaskListPresenter(interactor: interactor, router: router)
+        let userId = SessionManager.shared.currentUser?.id ?? ""
+        let presenter = TaskListPresenter(interactor: interactor, router: router, userId: userId)
         let taskListView = TaskListView(presenter: presenter)
         return UIHostingController(rootView: taskListView)
     }

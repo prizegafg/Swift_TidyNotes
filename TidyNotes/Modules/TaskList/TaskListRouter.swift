@@ -9,45 +9,33 @@ import Foundation
 import SwiftUI
 import Combine
 
-/// Protocol Router untuk Task dalam arsitektur VIPER
 final class TaskListRouter {
     private weak var navigationController: UINavigationController?
-    // Gunakan weak reference untuk navigationState
     private weak var navigationState: TaskNavigationState?
-    
-    // Tambahkan deinit untuk debugging memory leak
-    deinit {
-        print("TaskListRouter deinit")
-    }
+    deinit { print("TaskListRouter deinit") }
 
     init(navigationController: UINavigationController? = nil, navigationState: TaskNavigationState? = nil) {
         self.navigationController = navigationController
         self.navigationState = navigationState
     }
-
-    func navigateToAddTask() {
+    func navigateToAddTask(userId: String, onTasksUpdated: (() -> Void)? = nil) {
         navigationState?.showAddTask = true
+        // Pass userId & callback jika pakai custom view
     }
-
-    func navigateToEditTask(_ task: TaskEntity) {
+    func navigateToEditTask(task: TaskEntity, onTasksUpdated: (() -> Void)? = nil) {
         navigationState?.selectedTaskForEdit = task
         navigationState?.showEditTask = true
+        // Pass callback jika pakai custom view
     }
-    
     func navigateToTaskDetail(_ taskId: UUID) {
         navigationState?.showTaskDetail = true
     }
 }
 
-
-/// State untuk navigasi SwiftUI
 class TaskNavigationState: ObservableObject {
     @Published var showAddTask: Bool = false
     @Published var showEditTask: Bool = false
     @Published var showTaskDetail: Bool = false
     @Published var selectedTaskForEdit: TaskEntity?
-    
-    deinit {
-        print("TaskNavigationState deinit")
-    }
+    deinit { print("TaskNavigationState deinit") }
 }

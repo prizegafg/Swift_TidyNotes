@@ -49,9 +49,9 @@ struct TaskListView: View {
             trailing: NavigationLink(
                 destination: SettingsModule.makeSettingsView()
             ) {
-            Image(systemName: "gear")
-        }
-
+                Image(systemName: "gear")
+            }
+            
         )
         .confirmationDialog(
             "Delete Confirmation",
@@ -232,7 +232,7 @@ struct TaskRowView: View {
     let isSelected: Bool
     let onSelect: () -> Void
     
-    private var isDueDateApproaching: Bool {
+    private var isDueSoon: Bool {
         guard let dueDate = task.dueDate else { return false }
         return Date().distance(to: dueDate) < 86400
     }
@@ -243,8 +243,8 @@ struct TaskRowView: View {
                 Text(task.title)
                     .font(.headline)
                 
-                if !task.description.isEmpty {
-                    Text(task.description)
+                if !task.descriptionText.isEmpty {
+                    Text(task.descriptionText)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .lineLimit(2)
@@ -253,30 +253,21 @@ struct TaskRowView: View {
                 if let dueDate = task.dueDate {
                     Text("Due: \(dueDate, formatter: DateFormatter.shortDate)")
                         .font(.caption)
-                        .foregroundColor(isDueDateApproaching(dueDate) ? .orange : .secondary)
+                        .foregroundColor(isDueSoon ? .orange : .secondary)
                 }
             }
-            
             Spacer()
-            
             if task.isPriority {
                 Image(systemName: "star.fill")
                     .foregroundColor(.yellow)
             }
-            
             if isSelected {
                 Image(systemName: "checkmark")
                     .foregroundColor(.blue)
             }
         }
         .contentShape(Rectangle())
-        .onTapGesture {
-            onSelect()
-        }
+        .onTapGesture { onSelect() }
         .padding(.vertical, 4)
-    }
-    
-    private func isDueDateApproaching(_ date: Date) -> Bool {
-        return Date().distance(to: date) < 86400
     }
 }
