@@ -88,7 +88,6 @@ final class TaskDetailPresenter: ObservableObject {
             .store(in: &cancellables)
     }
 
-    // Bind UI langsung ke entity, misal:
     func onTitleChanged(_ newValue: String) {
         task.title = newValue
         checkIfChanged()

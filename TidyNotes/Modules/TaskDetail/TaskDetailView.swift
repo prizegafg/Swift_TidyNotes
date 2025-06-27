@@ -57,6 +57,7 @@ struct TaskDetailView: View {
             }
             .padding()
         }
+        .withAppTheme()
         .navigationTitle(presenter.mode == .create ? "Add Task" : "Edit Task")
         .alert(isPresented: $presenter.showError) {
             Alert(title: Text("Error"), message: Text(presenter.errorMessage), dismissButton: .default(Text("OK")))

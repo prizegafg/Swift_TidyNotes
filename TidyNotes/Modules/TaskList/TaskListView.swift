@@ -164,6 +164,7 @@ struct TaskListView: View {
             .animation(.easeInOut, value: presenter.errorMessage)
         }
     }
+        
 }
 
 struct TaskRowView: View {

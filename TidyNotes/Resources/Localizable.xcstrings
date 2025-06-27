@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Account" : {
+
+    },
     "Add Task" : {
       "localizations" : {
         "id" : {
@@ -21,6 +24,9 @@
           }
         }
       }
+    },
+    "Appearance" : {
+
     },
     "Belum punya akun? Register" : {
 
@@ -107,9 +113,6 @@
         }
       }
     },
-    "Full Name" : {
-
-    },
     "Info" : {
 
     },
@@ -155,9 +158,6 @@
     "Password" : {
 
     },
-    "Photo" : {
-
-    },
     "Priority" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -184,9 +184,6 @@
     "Reset Password" : {
 
     },
-    "Save Profile" : {
-
-    },
     "Save Task" : {
 
     },
@@ -197,9 +194,6 @@
 
     },
     "Select Due Date" : {
-
-    },
-    "Select Photo" : {
 
     },
     "Set as Priority" : {
@@ -255,13 +249,13 @@
         }
       }
     },
+    "Theme" : {
+
+    },
     "Type Task Title" : {
 
     },
     "Upload Gambar" : {
-
-    },
-    "User Info" : {
 
     },
     "Welcome Back 👋" : {

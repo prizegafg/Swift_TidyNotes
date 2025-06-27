@@ -41,6 +41,7 @@ struct TaskListContainerView: View {
                     }
                 }
         }
+        .withAppTheme()
         .task {
             if let deepLink = DeepLinkManager.shared.consume() {
                 switch deepLink {

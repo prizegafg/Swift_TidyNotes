@@ -9,7 +9,9 @@ import SwiftUI
 
 struct RegisterView: View {
     @ObservedObject var presenter: RegisterPresenter
-
+    @State private var showPassword = false
+    @State private var showConfirmPassword = false
+    
     var body: some View {
         VStack {
             Spacer()
@@ -18,23 +20,53 @@ struct RegisterView: View {
                     .font(.title)
                     .fontWeight(.bold)
                     .padding(.bottom, 16)
-
                 VStack(spacing: 16) {
+                    // --- Email Field ---
                     TextField("Email", text: $presenter.email)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.emailAddress)
                         .autocapitalization(.none)
                         .frame(height: 50)
-
-                    SecureField("Password", text: $presenter.password)
+                    
+                    // --- Password Field + Show/Hide ---
+                    ZStack(alignment: .trailing) {
+                        Group {
+                            if showPassword {
+                                TextField("Password", text: $presenter.password)
+                            } else {
+                                SecureField("Password", text: $presenter.password)
+                            }
+                        }
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .frame(height: 50)
-
-                    SecureField("Konfirmasi Password", text: $presenter.confirmPassword)
+                        
+                        Button(action: { showPassword.toggle() }) {
+                            Image(systemName: showPassword ? "eye.slash.fill" : "eye.fill")
+                                .foregroundColor(.gray)
+                        }
+                        .padding(.trailing, 10)
+                    }
+                    
+                    // --- Confirm Password Field + Show/Hide ---
+                    ZStack(alignment: .trailing) {
+                        Group {
+                            if showConfirmPassword {
+                                TextField("Konfirmasi Password", text: $presenter.confirmPassword)
+                            } else {
+                                SecureField("Konfirmasi Password", text: $presenter.confirmPassword)
+                            }
+                        }
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .frame(height: 50)
+                        
+                        Button(action: { showConfirmPassword.toggle() }) {
+                            Image(systemName: showConfirmPassword ? "eye.slash.fill" : "eye.fill")
+                                .foregroundColor(.gray)
+                        }
+                        .padding(.trailing, 10)
+                    }
                 }
-
+                // --- Register Button ---
                 Button(action: {
                     presenter.onRegisterTapped()
                 }) {
@@ -51,7 +83,7 @@ struct RegisterView: View {
                 .background(Color.green)
                 .foregroundColor(.white)
                 .cornerRadius(10)
-
+                
                 Button("Sudah punya akun? Login") {
                     presenter.onLoginTapped()
                 }
