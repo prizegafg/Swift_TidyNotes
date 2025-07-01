@@ -10,22 +10,25 @@ import Combine
 
 final class TaskDetailInteractor {
     private let repository: TaskRepositoryProtocol
-
+    
     init(repository: TaskRepositoryProtocol = ServiceLocator.shared.taskRepository) {
         self.repository = repository
     }
-
+    
     func fetchTask(by id: UUID) -> AnyPublisher<TaskEntity?, Error> {
         repository.fetchTask(by: id)
     }
-
+    
     func saveTask(_ task: TaskEntity) -> AnyPublisher<Void, Error> {
         repository.saveTask(task)
     }
-
-    func createTask(_ task: TaskEntity) -> AnyPublisher<TaskEntity, Error> {
+    
+    func createTask(_ task: TaskEntity) -> AnyPublisher<Void, Error> {
         repository.saveTask(task)
-            .map { task }
+            .handleEvents(receiveOutput: { _ in
+                // Setelah sukses simpan ke Realm, sync ke Firestore!
+                TaskSyncService.shared.syncTasksToFirestore(for: task.userId)
+            })
             .eraseToAnyPublisher()
     }
 }

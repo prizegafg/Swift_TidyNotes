@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import FirebaseAuth
 
 final class LoginPresenter: ObservableObject {
     @Published var email: String = ""
@@ -34,7 +35,6 @@ final class LoginPresenter: ObservableObject {
             showError(message: "Email dan password wajib diisi.")
             return
         }
-        
         isLoading = true
         interactor.login(email: email, password: password)
             .receive(on: DispatchQueue.main)
@@ -44,7 +44,26 @@ final class LoginPresenter: ObservableObject {
                     self?.showError(message: error.localizedDescription)
                 }
             }, receiveValue: { [weak self] in
-                self?.router.navigateToTaskList()
+                guard let self = self else { return }
+                // Ambil userId Firebase Auth
+                if let userId = Auth.auth().currentUser?.uid {
+                    TaskSyncService.shared.fetchTasksFromFirestoreAndReplaceRealm(for: userId) { success in
+                        if success {
+                            // Setelah sukses sync, masuk ke halaman TaskList
+                            DispatchQueue.main.async {
+                                self.router.navigateToTaskList()
+                            }
+                        } else {
+                            // Kalau sync gagal, tampilkan error atau tetap lanjut (bebas)
+                            DispatchQueue.main.async {
+                                self.showError(message: "Gagal sync data dari cloud.")
+                            }
+                        }
+                    }
+                } else {
+                    // Handle jika userId tidak ditemukan
+                    self.showError(message: "User ID tidak ditemukan.")
+                }
             })
             .store(in: &cancellables)
     }

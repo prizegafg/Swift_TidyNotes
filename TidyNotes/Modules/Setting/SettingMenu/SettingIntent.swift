@@ -18,20 +18,20 @@ final class SettingsPresenter: ObservableObject {
             loadImage()
         }
     }
-
+    
     @Published var showAlert: Bool = false
     @Published var alertMessage: String = ""
-
+    
     private let interactor: SettingsInteractor
     private let router: SettingsRouter
     private var cancellables = Set<AnyCancellable>()
-
+    
     init(interactor: SettingsInteractor, router: SettingsRouter) {
         self.interactor = interactor
         self.router = router
         loadInitialData()
     }
-
+    
     func loadInitialData() {
         let user = interactor.getCurrentUserProfile()
         name = user.name
@@ -40,12 +40,12 @@ final class SettingsPresenter: ObservableObject {
             image = savedImage
         }
     }
-
+    
     func saveProfile() {
         interactor.saveUserProfile(name: name, email: email, image: image)
         showAlert(message: "Profile updated.")
     }
-
+    
     func resetPassword() {
         interactor.resetPassword { [weak self] success, error in
             if success {
@@ -55,17 +55,18 @@ final class SettingsPresenter: ObservableObject {
             }
         }
     }
-
+    
     func logout() {
         interactor.logout { [weak self] error in
             if let error = error {
                 self?.showAlert(message: error.localizedDescription)
             } else {
+                TaskSyncService.shared.clearLocalTasks()
                 self?.router.navigateToLogin()
             }
         }
     }
-
+    
     private func loadImage() {
         guard let item = selectedItem else { return }
         Task {
@@ -77,7 +78,7 @@ final class SettingsPresenter: ObservableObject {
             }
         }
     }
-
+    
     private func showAlert(message: String) {
         alertMessage = message
         showAlert = true
