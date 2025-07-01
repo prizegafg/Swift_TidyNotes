@@ -7,18 +7,12 @@
 
 import Foundation
 import Combine
-import RealmSwift
+import FirebaseAuth
 
 final class RegisterInteractor {
-    private let app: App
-
-    init(app: App = App(id: "tidynotesapp-fjyavvn")) {
-        self.app = app
-    }
-
     func register(email: String, password: String) -> AnyPublisher<Void, Error> {
-        return Future<Void, Error> { promise in
-            self.app.emailPasswordAuth.registerUser(email: email, password: password) { error in
+        Future<Void, Error> { promise in
+            Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
                 if let error = error {
                     promise(.failure(error))
                 } else {

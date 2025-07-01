@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-import RealmSwift
+import FirebaseAuth
 
 final class SettingsInteractor {
     private let app = SessionManager.shared.realmApp
@@ -48,14 +48,12 @@ final class SettingsInteractor {
         }
     }
 
-    func logout() {
-//        try? app.currentUser?.logOut()
-        app.currentUser?.logOut { error in
-            if let error = error {
-                print("Logout error: \(error.localizedDescription)")
-            } else {
-                print("Logout berhasil.")
-            }
+    func logout(completion: @escaping (Error?) -> Void) {
+        do {
+            try Auth.auth().signOut()
+            completion(nil)
+        } catch {
+            completion(error)
         }
     }
 

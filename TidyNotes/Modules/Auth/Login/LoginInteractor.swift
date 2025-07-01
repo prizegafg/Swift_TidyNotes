@@ -8,23 +8,15 @@
 import Foundation
 import Combine
 import RealmSwift
+import FirebaseAuth
 
 final class LoginInteractor {
-    private let app: App
-
-    init(app: App = App(id: "tidynotesapp-fjyavvn")) {
-        self.app = app
-    }
-
     func login(email: String, password: String) -> AnyPublisher<Void, Error> {
-        let credentials = Credentials.emailPassword(email: email, password: password)
-
-        return Future<Void, Error> { promise in
-            self.app.login(credentials: credentials) { result in
-                switch result {
-                case .failure(let error):
+        Future<Void, Error> { promise in
+            Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
+                if let error = error {
                     promise(.failure(error))
-                case .success:
+                } else {
                     promise(.success(()))
                 }
             }

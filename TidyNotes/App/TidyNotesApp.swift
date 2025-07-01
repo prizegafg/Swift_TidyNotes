@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import FirebaseCore
 
 @main
 struct TidyNotesApp: App {
     
     init() {
+        FirebaseApp.configure()
         NotificationManager.shared.registerNotificationActions()
         NotificationManager.shared.requestPermissionIfNeeded()
                 _ = NotificationDelegate.shared 

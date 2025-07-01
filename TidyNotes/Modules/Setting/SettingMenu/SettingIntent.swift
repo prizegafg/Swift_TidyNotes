@@ -57,8 +57,13 @@ final class SettingsPresenter: ObservableObject {
     }
 
     func logout() {
-        interactor.logout()
-        router.navigateToLogin()
+        interactor.logout { [weak self] error in
+            if let error = error {
+                self?.showAlert(message: error.localizedDescription)
+            } else {
+                self?.router.navigateToLogin()
+            }
+        }
     }
 
     private func loadImage() {
