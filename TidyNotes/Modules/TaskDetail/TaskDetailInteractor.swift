@@ -26,7 +26,6 @@ final class TaskDetailInteractor {
     func createTask(_ task: TaskEntity) -> AnyPublisher<Void, Error> {
         repository.saveTask(task)
             .handleEvents(receiveOutput: { _ in
-                // Setelah sukses simpan ke Realm, sync ke Firestore!
                 TaskSyncService.shared.syncTasksToFirestore(for: task.userId)
             })
             .eraseToAnyPublisher()

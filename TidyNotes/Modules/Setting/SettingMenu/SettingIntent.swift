@@ -47,13 +47,7 @@ final class SettingsPresenter: ObservableObject {
     }
     
     func resetPassword() {
-        interactor.resetPassword { [weak self] success, error in
-            if success {
-                self?.showAlert(message: "Password reset email sent.")
-            } else {
-                self?.showAlert(message: error ?? "Failed to send reset email.")
-            }
-        }
+        router.navigateToResetPassword()
     }
     
     func logout() {

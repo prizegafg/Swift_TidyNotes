@@ -14,7 +14,14 @@ struct TaskListView: View {
     var body: some View {
         ZStack {
             VStack {
-                // SearchBar
+                if let username = presenter.userProfile?.username {
+                    HStack {
+                        Text("Hello, \(username)!")
+                            .font(.headline)
+                            .padding(.leading)
+                        Spacer()
+                    }
+                }
                 HStack {
                     Image(systemName: "magnifyingglass")
                     TextField("Cari task...", text: $presenter.searchQuery)
@@ -27,7 +34,6 @@ struct TaskListView: View {
                 .cornerRadius(8)
                 .padding(.top)
                 
-                // List or Empty State
                 if presenter.isLoading {
                     loadingView
                 } else if presenter.filteredTasks.isEmpty {
@@ -62,7 +68,6 @@ struct TaskListView: View {
                 Image(systemName: "gear")
             }
         )
-        // ConfirmationDialog & lainnya tetap sesuai kebutuhan
     }
     
     private var floatingActionButton: some View {
@@ -95,7 +100,6 @@ struct TaskListView: View {
                     isSelected: task.id == presenter.selectedTaskId,
                     onSelect: { presenter.onTaskSelected(task) }
                 )
-                // swipeActions/contextMenu tetap
             }
         }
         .listStyle(PlainListStyle())

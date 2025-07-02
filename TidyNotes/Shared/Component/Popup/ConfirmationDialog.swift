@@ -63,7 +63,6 @@ struct ConfirmationDialog: View {
     }
 }
 
-// Wrapper view untuk menampilkan ConfirmationDialog dengan sheet
 struct ConfirmationDialogContainer: ViewModifier {
     @Binding var isPresented: Bool
     let title: String
@@ -89,7 +88,6 @@ struct ConfirmationDialogContainer: ViewModifier {
     }
 }
 
-// View untuk membuat background sheet transparan
 struct BackgroundClearView: UIViewRepresentable {
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
@@ -102,7 +100,6 @@ struct BackgroundClearView: UIViewRepresentable {
     func updateUIView(_ uiView: UIView, context: Context) {}
 }
 
-// Extension untuk memudahkan penggunaan ConfirmationDialog
 extension View {
     func confirmationDialog(
         isPresented: Binding<Bool>,
@@ -125,7 +122,6 @@ extension View {
     }
 }
 
-// Preview untuk ConfirmationDialog
 struct ConfirmationDialog_Previews: PreviewProvider {
     static var previews: some View {
         ConfirmationDialog(

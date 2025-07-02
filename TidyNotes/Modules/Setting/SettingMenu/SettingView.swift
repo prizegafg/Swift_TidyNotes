@@ -16,9 +16,7 @@ struct SettingsView: View {
     
     var body: some View {
         List {
-            // --- Section Akun, ganti sesuai kebutuhan ---
             Section(header: Text("Account")) {
-                // Contoh isi menu akun
                 HStack {
                     Image(systemName: "person.crop.circle.fill")
                         .foregroundColor(.gray)
@@ -31,7 +29,6 @@ struct SettingsView: View {
                 }
             }
             
-            // --- Section Appearance/Theme ---
             Section(header: Text("Appearance")) {
                 Button {
                     showThemeSelector = true
@@ -53,7 +50,6 @@ struct SettingsView: View {
                 }
             }
             
-            // --- Section Lain (reset password, logout, dll) ---
             Section {
                 Button("Reset Password") {
                     presenter.resetPassword()

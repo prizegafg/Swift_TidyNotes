@@ -7,12 +7,13 @@
 
 import RealmSwift
 
-class UserProfile: Object, ObjectKeyIdentifiable {
+class RealmUserProfile: Object, ObjectKeyIdentifiable {
     @Persisted(primaryKey: true) var _id: ObjectId
-    @Persisted var userId: String // ID dari MongoDB Realm
+    @Persisted var userId: String
     @Persisted var username: String
-    @Persisted var password: String // (⚠️ nanti harus di-hash, bukan plaintext)
+    @Persisted var password: String
     @Persisted var firstName: String
     @Persisted var lastName: String
     @Persisted var email: String
+    @Persisted var profession: String?
 }

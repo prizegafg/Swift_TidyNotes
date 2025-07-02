@@ -18,8 +18,6 @@ final class SettingsInteractor {
     }
 
     func saveUserProfile(name: String, email: String, image: UIImage?) {
-        // Simpan nama atau email ke server (optional - lewat MongoDB)
-        // Simpan gambar ke local
         if let image = image {
             if let data = image.jpegData(compressionQuality: 0.8) {
                 let url = getImageSavePath()
@@ -31,21 +29,6 @@ final class SettingsInteractor {
     func loadSavedImage() -> UIImage? {
         let url = getImageSavePath()
         return UIImage(contentsOfFile: url.path)
-    }
-
-    func resetPassword(completion: @escaping (Bool, String?) -> Void) {
-        guard let email = app.currentUser?.profile.email else {
-            completion(false, "Email tidak ditemukan.")
-            return
-        }
-
-        app.emailPasswordAuth.sendResetPasswordEmail(email) { error in
-            if let error = error {
-                completion(false, error.localizedDescription)
-            } else {
-                completion(true, nil)
-            }
-        }
     }
 
     func logout(completion: @escaping (Error?) -> Void) {

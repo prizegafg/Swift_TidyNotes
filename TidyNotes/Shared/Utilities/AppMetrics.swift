@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-/// Struct untuk menyimpan semua ukuran, jarak, dan radius aplikasi
 public struct AppMetrics {
     // MARK: - Spacing
     public let spacingXS: CGFloat

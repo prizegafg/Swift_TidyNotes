@@ -37,6 +37,9 @@
     "Cari task..." : {
 
     },
+    "Cek email kamu untuk reset password." : {
+
+    },
     "Choose Theme" : {
 
     },
@@ -100,6 +103,9 @@
     "Email" : {
 
     },
+    "Email reset terkirim!" : {
+
+    },
     "Enable Reminder" : {
 
     },
@@ -113,7 +119,16 @@
         }
       }
     },
+    "Hello, %@!" : {
+
+    },
     "Info" : {
+
+    },
+    "Kembali ke Login" : {
+
+    },
+    "Kirim Email Reset" : {
 
     },
     "Konfirmasi Password" : {

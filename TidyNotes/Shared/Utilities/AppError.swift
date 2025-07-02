@@ -27,7 +27,6 @@ enum AppError: Error, LocalizedError {
     case invalidCredentials
     case userAlreadyExists
     
-    // Tambahkan sesuai kebutuhan project kamu
 
     var errorDescription: String? {
         switch self {

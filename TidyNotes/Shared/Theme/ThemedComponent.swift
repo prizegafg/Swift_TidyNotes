@@ -7,11 +7,7 @@
 
 import SwiftUI
 
-/// Kumpulan komponen UI yang telah diberi tema
 public struct ThemedComponents {
-    // MARK: - Button Styles
-    
-    /// Button style utama dengan warna primary
     public struct PrimaryButtonStyle: ButtonStyle {
         public func makeBody(configuration: Configuration) -> some View {
             configuration.label
@@ -37,7 +33,6 @@ public struct ThemedComponents {
         public init() {}
     }
     
-    /// Button style sekunder dengan border
     public struct SecondaryButtonStyle: ButtonStyle {
         public func makeBody(configuration: Configuration) -> some View {
             configuration.label
@@ -59,16 +54,12 @@ public struct ThemedComponents {
         public init() {}
     }
     
-    // MARK: - Text Styles dengan warna
-    
-    /// Text style dengan warna primer
     public struct PrimaryText: View {
         private let text: String
         private let style: TextStyle
         
         public var body: some View {
             Text(text)
-//                .applyTextStyle(style)
                 .foregroundColor(AppColors.current.textPrimary)
         }
         
@@ -78,14 +69,12 @@ public struct ThemedComponents {
         }
     }
     
-    /// Text style dengan warna sekunder
     public struct SecondaryText: View {
         private let text: String
         private let style: TextStyle
         
         public var body: some View {
             Text(text)
-//                .applyTextStyle(style)
                 .foregroundColor(AppColors.current.textSecondary)
         }
         
@@ -95,9 +84,6 @@ public struct ThemedComponents {
         }
     }
     
-    // MARK: - Card Component
-    
-    /// Card dengan style tema
     public struct ThemedCard<Content: View>: View {
         private let content: Content
         private let elevation: CardElevation
@@ -143,9 +129,6 @@ public struct ThemedComponents {
         }
     }
     
-    // MARK: - Text Field
-    
-    /// TextField dengan style tema
     public struct ThemedTextField: View {
         private let placeholder: String
         @Binding private var text: String
@@ -195,7 +178,6 @@ public struct ThemedComponents {
     }
 }
 
-// MARK: - Helper Enums
 public enum TextStyle {
     case largeTitle, title1, title2, title3, headline, body, callout, subheadline, footnote, caption
 }
@@ -204,31 +186,4 @@ public enum CardElevation {
     case low, medium, high
 }
 
-// MARK: - Extensions
-//extension View {
-//    /// Menerapkan style text berdasarkan jenis
-//    func applyTextStyle(_ style: TextStyle) -> some View {
-//        switch style {
-//        case .largeTitle:
-//            return self.largeTitle1Style()
-//        case .title1:
-//            return self.title1Style()
-//        case .title2:
-//            return self.title2Style()
-//        case .title3:
-//            return self.title3Style()
-//        case .headline:
-//            return self.headlineStyle()
-//        case .body:
-//            return self.bodyStyle()
-//        case .callout:
-//            return self.calloutStyle()
-//        case .subheadline:
-//            return self.subheadlineStyle()
-//        case .footnote:
-//            return self.footnoteStyle()
-//        case .caption:
-//            return self.captionStyle()
-//        }
-//    }
-//}
+

@@ -17,4 +17,8 @@ final class SettingsRouter {
         window?.rootViewController = UIHostingController(rootView: LoginModule.makeLoginView())
         window?.makeKeyAndVisible()
     }
+    
+    func navigateToResetPassword() {
+        RootNavigator.shared.replaceRoot(view: ResetPasswordModule.makeResetPasswordView())
+    }
 }

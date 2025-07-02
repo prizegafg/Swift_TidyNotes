@@ -5,10 +5,8 @@
 //  Created by Prizega Fromadia on 05/05/25.
 //
 
-// AppColors.swift
 import SwiftUI
 
-/// Struct untuk menyimpan semua warna aplikasi
 public struct AppColors {
     // MARK: - Primary Colors
     public let primary: Color
@@ -89,68 +87,66 @@ public struct AppColors {
     
     // MARK: - Light Theme Colors
     public static let light = AppColors(
-        primary: Color(hex: "1A73E8"),         // Biru
-        primaryVariant: Color(hex: "0D47A1"),  // Biru gelap
-        secondary: Color(hex: "6C757D"),       // Abu-abu
-        secondaryVariant: Color(hex: "495057"),// Abu-abu gelap
+        primary: Color(hex: "1A73E8"),         // Blue
+        primaryVariant: Color(hex: "0D47A1"),  // Dark Blue
+        secondary: Color(hex: "6C757D"),       // Grey
+        secondaryVariant: Color(hex: "495057"),// Dark Grey
         accent: Color(hex: "009688"),          // Teal
         
-        background: Color(hex: "FFFFFF"),      // Putih
-        surface: Color(hex: "F8F9FA"),         // Abu-abu sangat terang
-        surfaceVariant: Color(hex: "F1F3F4"),  // Abu-abu terang
+        background: Color(hex: "FFFFFF"),      // White
+        surface: Color(hex: "F8F9FA"),         // Bright Grey
+        surfaceVariant: Color(hex: "F1F3F4"),  // Light Grey
         
-        textPrimary: Color(hex: "202124"),     // Hitam
-        textSecondary: Color(hex: "5F6368"),   // Abu-abu
-        textTertiary: Color(hex: "9AA0A6"),    // Abu-abu terang
-        textOnPrimary: Color(hex: "FFFFFF"),   // Putih
-        textOnSecondary: Color(hex: "FFFFFF"), // Putih
+        textPrimary: Color(hex: "202124"),     // Black
+        textSecondary: Color(hex: "5F6368"),   // Grey
+        textTertiary: Color(hex: "9AA0A6"),    // Light Grey
+        textOnPrimary: Color(hex: "FFFFFF"),   // White
+        textOnSecondary: Color(hex: "FFFFFF"), // White
         
-        success: Color(hex: "34A853"),         // Hijau
-        warning: Color(hex: "FBBC05"),         // Kuning
-        error: Color(hex: "EA4335"),           // Merah
-        info: Color(hex: "4285F4"),            // Biru muda
+        success: Color(hex: "34A853"),         // Green
+        warning: Color(hex: "FBBC05"),         // Yellow
+        error: Color(hex: "EA4335"),           // Red
+        info: Color(hex: "4285F4"),            // Light Blue
         
-        border: Color(hex: "DADCE0"),          // Abu-abu terang
-        divider: Color(hex: "E8EAED"),         // Abu-abu sangat terang
+        border: Color(hex: "DADCE0"),          // Bright Grey
+        divider: Color(hex: "E8EAED"),         // Light Bright Grey
         
-        shadow: Color(hex: "000000").opacity(0.1) // Bayangan hitam transparan
+        shadow: Color(hex: "000000").opacity(0.1) // Dark Shadow
     )
     
     // MARK: - Dark Theme Colors
     public static let dark = AppColors(
-        primary: Color(hex: "8AB4F8"),         // Biru muda
-        primaryVariant: Color(hex: "669DF6"),  // Biru
-        secondary: Color(hex: "A8AAAD"),       // Abu-abu terang
-        secondaryVariant: Color(hex: "868B90"),// Abu-abu
-        accent: Color(hex: "80CBC4"),          // Teal muda
+        primary: Color(hex: "8AB4F8"),         // Light Blue
+        primaryVariant: Color(hex: "669DF6"),  // Blue
+        secondary: Color(hex: "A8AAAD"),       // Light Grey
+        secondaryVariant: Color(hex: "868B90"),// Grey
+        accent: Color(hex: "80CBC4"),          // Light Teal
         
-        background: Color(hex: "202124"),      // Hitam
-        surface: Color(hex: "292A2D"),         // Hitam keabu-abuan
-        surfaceVariant: Color(hex: "35363A"),  // Abu-abu gelap
+        background: Color(hex: "202124"),      // Black
+        surface: Color(hex: "292A2D"),         // Greyish Black
+        surfaceVariant: Color(hex: "35363A"),  // Dark Grey
         
-        textPrimary: Color(hex: "E8EAED"),     // Putih
-        textSecondary: Color(hex: "9AA0A6"),   // Abu-abu terang
-        textTertiary: Color(hex: "747775"),    // Abu-abu
-        textOnPrimary: Color(hex: "202124"),   // Hitam
-        textOnSecondary: Color(hex: "202124"), // Hitam
+        textPrimary: Color(hex: "E8EAED"),     // White
+        textSecondary: Color(hex: "9AA0A6"),   // Light Grey
+        textTertiary: Color(hex: "747775"),    // Grey
+        textOnPrimary: Color(hex: "202124"),   // Black
+        textOnSecondary: Color(hex: "202124"), // Black
         
-        success: Color(hex: "81C995"),         // Hijau muda
-        warning: Color(hex: "FDD663"),         // Kuning muda
-        error: Color(hex: "F28B82"),           // Merah muda
-        info: Color(hex: "8AB4F8"),            // Biru muda
+        success: Color(hex: "81C995"),         // Light Green
+        warning: Color(hex: "FDD663"),         // Light Yellow
+        error: Color(hex: "F28B82"),           // Pink
+        info: Color(hex: "8AB4F8"),            // Light Blue
         
-        border: Color(hex: "5F6368"),          // Abu-abu
-        divider: Color(hex: "3C4043"),         // Abu-abu gelap
+        border: Color(hex: "5F6368"),          // Grey
+        divider: Color(hex: "3C4043"),         // Dark Grey
         
-        shadow: Color(hex: "000000").opacity(0.3) // Bayangan hitam lebih gelap
+        shadow: Color(hex: "000000").opacity(0.3) // Dark Shadow
     )
     
-    /// Mendapatkan warna berdasarkan mode tema
     public static func colors(for isDarkMode: Bool) -> AppColors {
         return isDarkMode ? .dark : .light
     }
     
-    /// Mendapatkan warna berdasarkan ThemeManager
     public static var current: AppColors {
         return colors(for: ThemeManager.shared.isDarkMode)
     }
@@ -158,8 +154,6 @@ public struct AppColors {
 
 // MARK: - Color Extension untuk Hex
 extension Color {
-    /// Inisialisasi Color dari nilai hex string
-    /// - Parameter hex: String hex, misalnya "FF0000" untuk merah
     public init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0

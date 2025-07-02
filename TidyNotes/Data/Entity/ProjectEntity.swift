@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 
-/// Model yang merepresentasikan project dalam aplikasi
 struct ProjectEntity: Identifiable, Equatable, Hashable, Codable {
     let id: UUID
     var name: String
@@ -30,7 +29,6 @@ struct ProjectEntity: Identifiable, Equatable, Hashable, Codable {
         self.isDefault = isDefault
     }
     
-    /// Warna UI yang digunakan untuk menampilkan project
     var uiColor: Color {
         switch color {
         case "red": return .red
@@ -45,7 +43,6 @@ struct ProjectEntity: Identifiable, Equatable, Hashable, Codable {
     }
 }
 
-/// Enum error untuk error handling terkait projects
 enum ProjectError: Error, Equatable {
     case fetchFailed
     case createFailed

@@ -45,23 +45,25 @@ final class LoginPresenter: ObservableObject {
                 }
             }, receiveValue: { [weak self] in
                 guard let self = self else { return }
-                // Ambil userId Firebase Auth
                 if let userId = Auth.auth().currentUser?.uid {
+                    UserProfileService.shared.fetchProfile(userId: userId) { profile in
+                        if let profile = profile {
+                            print("Welcome, \(profile.username)")
+                        }
+                    }
+                    
                     TaskSyncService.shared.fetchTasksFromFirestoreAndReplaceRealm(for: userId) { success in
                         if success {
-                            // Setelah sukses sync, masuk ke halaman TaskList
                             DispatchQueue.main.async {
                                 self.router.navigateToTaskList()
                             }
                         } else {
-                            // Kalau sync gagal, tampilkan error atau tetap lanjut (bebas)
                             DispatchQueue.main.async {
                                 self.showError(message: "Gagal sync data dari cloud.")
                             }
                         }
                     }
                 } else {
-                    // Handle jika userId tidak ditemukan
                     self.showError(message: "User ID tidak ditemukan.")
                 }
             })

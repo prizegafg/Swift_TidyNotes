@@ -19,7 +19,7 @@ final class TaskDetailRouter {
     static func makeTaskDetailView(taskId: UUID) -> some View {
         let interactor = TaskDetailInteractor(repository: ServiceLocator.shared.taskRepository)
         let router = TaskDetailRouter()
-        let dummyTask = TaskEntity( // Placeholder, akan di-replace di presenter setelah fetch
+        let dummyTask = TaskEntity( 
             id: taskId, userId: "", title: "", descriptionText: "")
         let presenter = TaskDetailPresenter(
             task: dummyTask,

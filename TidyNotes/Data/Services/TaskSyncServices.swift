@@ -55,8 +55,6 @@ struct TaskSyncService {
                     return
                 }
                 let tasks: [TaskEntity] = documents.compactMap { doc in
-                    // Rebuild your TaskEntity from doc.data()
-                    // Note: Adapt for your TaskEntity init!
                     let data = doc.data()
                     guard
                         let idStr = data["id"] as? String,
@@ -69,7 +67,6 @@ struct TaskSyncService {
                         let statusStr = data["status"] as? String,
                         let status = TaskStatus(rawValue: statusStr)
                     else { return nil }
-                    // Optional fields
                     let dueDate = (data["dueDate"] as? Timestamp)?.dateValue() ?? data["dueDate"] as? Date
                     let isReminderOn = data["isReminderOn"] as? Bool ?? false
                     let reminderDate = (data["reminderDate"] as? Timestamp)?.dateValue() ?? data["reminderDate"] as? Date
@@ -102,7 +99,6 @@ struct TaskSyncService {
                     completion(false)
                     return
                 }
-                // Parsing data Firestore ke TaskEntity
                 var newTasks: [TaskEntity] = []
                 for doc in documents {
                     let data = doc.data()
@@ -137,13 +133,10 @@ struct TaskSyncService {
                     )
                     newTasks.append(task)
                 }
-                // Replace Realm local
                 let realm = try! Realm()
                 try! realm.write {
-                    // Hapus semua data user ini di local (bisa juga .deleteAll() jika hanya 1 user per device)
                     let oldTasks = realm.objects(TaskEntity.self).filter("userId == %@", userId)
                     realm.delete(oldTasks)
-                    // Tambah data baru hasil fetch
                     realm.add(newTasks)
                 }
                 completion(true)

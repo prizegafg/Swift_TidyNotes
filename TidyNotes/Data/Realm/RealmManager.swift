@@ -38,11 +38,7 @@ final class RealmManager {
         }
     }
 
-    // MARK: - CRUD Operations
-
     func fetchAllTasks(forUserId userId: String) -> [TaskEntity] {
-//        let results = realm.objects(RealmTaskObject.self)
-//        return results.map { $0.toEntity() }
         let results = realm.objects(RealmTaskObject.self).where {
             $0.userId == userId
         }

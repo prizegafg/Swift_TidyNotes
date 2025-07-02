@@ -140,7 +140,6 @@ final class TaskDetailPresenter: ObservableObject {
         if let ori = originalTask, mode == .edit {
             isTaskChanged = !isEqual(task, ori)
         } else {
-            // Mode create: berubah jika minimal judul tidak kosong
             isTaskChanged = !task.title.trimmed.isEmpty
         }
     }

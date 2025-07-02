@@ -8,7 +8,6 @@
 import SwiftUI
 import Combine
 
-/// View modifier untuk menerapkan tema ke view
 public struct ThemeModifier: ViewModifier {
     @ObservedObject private var themeManager = ThemeManager.shared
     
@@ -19,7 +18,6 @@ public struct ThemeModifier: ViewModifier {
     }
 }
 
-/// View yang menampilkan selector tema
 public struct ThemeSelector: View {
     @ObservedObject private var themeManager = ThemeManager.shared
     @Environment(\.dismiss) private var dismiss
@@ -56,9 +54,7 @@ public struct ThemeSelector: View {
     public init() {}
 }
 
-// MARK: - View Extensions
 extension View {
-    /// Menerapkan tema aplikasi ke view
     public func withAppTheme() -> some View {
         self.modifier(ThemeModifier())
     }

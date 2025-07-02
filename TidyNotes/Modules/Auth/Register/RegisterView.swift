@@ -21,14 +21,12 @@ struct RegisterView: View {
                     .fontWeight(.bold)
                     .padding(.bottom, 16)
                 VStack(spacing: 16) {
-                    // --- Email Field ---
                     TextField("Email", text: $presenter.email)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.emailAddress)
                         .autocapitalization(.none)
                         .frame(height: 50)
                     
-                    // --- Password Field + Show/Hide ---
                     ZStack(alignment: .trailing) {
                         Group {
                             if showPassword {
@@ -47,7 +45,6 @@ struct RegisterView: View {
                         .padding(.trailing, 10)
                     }
                     
-                    // --- Confirm Password Field + Show/Hide ---
                     ZStack(alignment: .trailing) {
                         Group {
                             if showConfirmPassword {
@@ -66,7 +63,6 @@ struct RegisterView: View {
                         .padding(.trailing, 10)
                     }
                 }
-                // --- Register Button ---
                 Button(action: {
                     presenter.onRegisterTapped()
                 }) {

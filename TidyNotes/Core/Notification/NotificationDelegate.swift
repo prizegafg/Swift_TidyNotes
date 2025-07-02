@@ -9,21 +9,18 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         UNUserNotificationCenter.current().delegate = self
     }
     
-    // Present notification while app is in foreground
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.banner, .sound])
     }
 
-    // Handle notification tap or action
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
         let id = response.notification.request.identifier
         let userInfo = response.notification.request.content.userInfo
         
-        // Deep link to TaskDetail jika ada taskId di userInfo
         if let taskIdString = userInfo["taskId"] as? String,
            let taskId = UUID(uuidString: taskIdString) {
             DispatchQueue.main.async {
@@ -31,10 +28,9 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
             }
         }
         
-        // Handle notification actions
         switch response.actionIdentifier {
         case "SNOOZE_ACTION":
-            let newDate = Date().addingTimeInterval(600) // 10 menit snooze
+            let newDate = Date().addingTimeInterval(600)
             NotificationManager.shared.scheduleReminderNotification(id: id, title: "Snoozed Reminder", date: newDate)
             
         case "CLOSE_ACTION":
@@ -45,7 +41,6 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
             break
         }
         
-        // Call completion handler
         completionHandler()
     }
 }

@@ -20,6 +20,8 @@ final class TaskListPresenter: ObservableObject {
     @Published var showDeleteConfirmation: Bool = false
     @Published var taskToDelete: UUID?
     @Published var isSearchVisible: Bool = false
+    @Published var userProfile: UserProfile?
+
     
     let userId: String
     
@@ -31,6 +33,7 @@ final class TaskListPresenter: ObservableObject {
         self.interactor = interactor
         self.router = router
         self.userId = userId
+        self.userProfile = UserProfileService.loadProfileFromLocal(userId: userId)
     }
     
     func viewDidAppear() {
