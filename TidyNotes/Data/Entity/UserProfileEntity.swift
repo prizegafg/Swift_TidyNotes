@@ -16,7 +16,7 @@ struct UserProfileEntity: Identifiable, Codable {
     var email: String
     var profession: String?
 
-    init(realm: RealmUserProfile) {
+    init(realm: RealmUserProfileObject) {
         self.userId = realm.userId
         self.username = realm.username
         self.firstName = realm.firstName

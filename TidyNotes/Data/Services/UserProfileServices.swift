@@ -46,7 +46,7 @@ class UserProfileService {
 
     static func loadProfileFromLocal(userId: String) -> UserProfileEntity? {
         let realm = try! Realm()
-        if let realmObj = realm.objects(RealmUserProfile.self).filter("userId == %@", userId).first {
+        if let realmObj = realm.objects(RealmUserProfileObject.self).filter("userId == %@", userId).first {
             return UserProfileEntity(realm: realmObj)
         }
         return nil
@@ -54,9 +54,9 @@ class UserProfileService {
 
     static func saveProfileToLocal(_ profile: UserProfileEntity) {
         let realm = try! Realm()
-        var obj = realm.objects(RealmUserProfile.self).filter("userId == %@", profile.userId).first
+        var obj = realm.objects(RealmUserProfileObject.self).filter("userId == %@", profile.userId).first
         if obj == nil {
-            obj = RealmUserProfile()
+            obj = RealmUserProfileObject()
             obj?.userId = profile.userId
         }
         try! realm.write {
@@ -67,7 +67,7 @@ class UserProfileService {
             if let profession = profile.profession, obj?.responds(to: Selector("setProfession:")) ?? false {
                 obj?.setValue(profession, forKey: "profession")
             }
-            if realm.objects(RealmUserProfile.self).filter("userId == %@", profile.userId).first == nil, let obj = obj {
+            if realm.objects(RealmUserProfileObject.self).filter("userId == %@", profile.userId).first == nil, let obj = obj {
                 realm.add(obj)
             }
         }

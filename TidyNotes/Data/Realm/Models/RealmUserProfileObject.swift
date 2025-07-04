@@ -7,7 +7,7 @@
 
 import RealmSwift
 
-class RealmUserProfile: Object, ObjectKeyIdentifiable {
+class RealmUserProfileObject: Object, ObjectKeyIdentifiable {
     @Persisted(primaryKey: true) var _id: ObjectId
     @Persisted var userId: String
     @Persisted var username: String
