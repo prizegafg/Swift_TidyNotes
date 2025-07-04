@@ -20,7 +20,7 @@ final class TaskListPresenter: ObservableObject {
     @Published var showDeleteConfirmation: Bool = false
     @Published var taskToDelete: UUID?
     @Published var isSearchVisible: Bool = false
-    @Published var userProfile: UserProfile?
+    @Published var userProfile: UserProfileEntity?
 
     
     let userId: String

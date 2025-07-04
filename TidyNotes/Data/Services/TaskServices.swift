@@ -8,8 +8,8 @@
 import FirebaseFirestore
 import RealmSwift
 
-struct TaskSyncService {
-    static let shared = TaskSyncService()
+struct TaskService {
+    static let shared = TaskService()
     
     func syncTasksToFirestore(for userId: String) {
         let db = Firestore.firestore()

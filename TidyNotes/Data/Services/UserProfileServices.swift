@@ -14,9 +14,9 @@ class UserProfileService {
     static let shared = UserProfileService()
     private let db = Firestore.firestore()
 
-    func fetchProfile(userId: String, completion: @escaping (UserProfile?) -> Void) {
+    func fetchProfile(userId: String, completion: @escaping (UserProfileEntity?) -> Void) {
         db.collection("users").document(userId).getDocument { doc, error in
-            if let data = doc?.data(), let entity = UserProfile(dict: data) {
+            if let data = doc?.data(), let entity = UserProfileEntity(dict: data) {
                 Self.saveProfileToLocal(entity)
                 completion(entity)
             } else {
@@ -25,7 +25,7 @@ class UserProfileService {
         }
     }
 
-    func saveProfile(_ profile: UserProfile, completion: @escaping (Bool) -> Void) {
+    func saveProfile(_ profile: UserProfileEntity, completion: @escaping (Bool) -> Void) {
         var dict: [String: Any] = [
             "userId": profile.userId,
             "username": profile.username,
@@ -44,15 +44,15 @@ class UserProfileService {
         }
     }
 
-    static func loadProfileFromLocal(userId: String) -> UserProfile? {
+    static func loadProfileFromLocal(userId: String) -> UserProfileEntity? {
         let realm = try! Realm()
         if let realmObj = realm.objects(RealmUserProfile.self).filter("userId == %@", userId).first {
-            return UserProfile(realm: realmObj)
+            return UserProfileEntity(realm: realmObj)
         }
         return nil
     }
 
-    static func saveProfileToLocal(_ profile: UserProfile) {
+    static func saveProfileToLocal(_ profile: UserProfileEntity) {
         let realm = try! Realm()
         var obj = realm.objects(RealmUserProfile.self).filter("userId == %@", profile.userId).first
         if obj == nil {

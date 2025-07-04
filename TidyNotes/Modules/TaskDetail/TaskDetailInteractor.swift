@@ -26,7 +26,7 @@ final class TaskDetailInteractor {
     func createTask(_ task: TaskEntity) -> AnyPublisher<Void, Error> {
         repository.saveTask(task)
             .handleEvents(receiveOutput: { _ in
-                TaskSyncService.shared.syncTasksToFirestore(for: task.userId)
+                TaskService.shared.syncTasksToFirestore(for: task.userId)
             })
             .eraseToAnyPublisher()
     }

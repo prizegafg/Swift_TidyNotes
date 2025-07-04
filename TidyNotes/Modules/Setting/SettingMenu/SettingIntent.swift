@@ -55,7 +55,7 @@ final class SettingsPresenter: ObservableObject {
             if let error = error {
                 self?.showAlert(message: error.localizedDescription)
             } else {
-                TaskSyncService.shared.clearLocalTasks()
+                TaskService.shared.clearLocalTasks()
                 self?.router.navigateToLogin()
             }
         }

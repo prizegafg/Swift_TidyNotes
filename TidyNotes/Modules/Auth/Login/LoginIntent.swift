@@ -52,7 +52,7 @@ final class LoginPresenter: ObservableObject {
                         }
                     }
                     
-                    TaskSyncService.shared.fetchTasksFromFirestoreAndReplaceRealm(for: userId) { success in
+                    TaskService.shared.fetchTasksFromFirestoreAndReplaceRealm(for: userId) { success in
                         if success {
                             DispatchQueue.main.async {
                                 self.router.navigateToTaskList()
