@@ -15,27 +15,31 @@ struct UserProfileEntity: Identifiable, Codable {
     var lastName: String
     var email: String
     var profession: String?
-
-    init(realm: RealmUserProfileObject) {
-        self.userId = realm.userId
-        self.username = realm.username
-        self.firstName = realm.firstName
-        self.lastName = realm.lastName
-        self.email = realm.email
-        self.profession = ""
-    }
-    init?(dict: [String: Any]) {
-        guard let userId = dict["userId"] as? String,
-              let username = dict["username"] as? String,
-              let firstName = dict["firstName"] as? String,
-              let lastName = dict["lastName"] as? String,
-              let email = dict["email"] as? String
-        else { return nil }
+    
+    // Tambahkan initializer explisit, agar error hilang
+    init(
+        userId: String,
+        username: String = "",
+        firstName: String = "",
+        lastName: String = "",
+        email: String = "",
+        profession: String? = nil
+    ) {
         self.userId = userId
         self.username = username
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
-        self.profession = dict["profession"] as? String ?? ""
+        self.profession = profession
+    }
+    
+    // Convenience init untuk mapping dari dictionary (Firestore)
+    init(userId: String, dict: [String: Any]) {
+        self.userId = userId
+        self.username = dict["username"] as? String ?? ""
+        self.firstName = dict["firstName"] as? String ?? ""
+        self.lastName = dict["lastName"] as? String ?? ""
+        self.email = dict["email"] as? String ?? ""
+        self.profession = dict["profession"] as? String
     }
 }

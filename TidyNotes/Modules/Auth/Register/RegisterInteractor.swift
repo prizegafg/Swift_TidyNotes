@@ -10,16 +10,10 @@ import Combine
 import FirebaseAuth
 
 final class RegisterInteractor {
-    func register(email: String, password: String) -> AnyPublisher<Void, Error> {
-        Future<Void, Error> { promise in
-            Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
-                if let error = error {
-                    promise(.failure(error))
-                } else {
-                    promise(.success(()))
-                }
-            }
-        }
-        .eraseToAnyPublisher()
+    func register(email: String, password: String) -> AnyPublisher<String, Error> {
+        UserProfileService.shared.registerWithEmail(email: email, password: password)
+    }
+    func saveUserProfile(_ profile: UserProfileEntity) -> AnyPublisher<Void, Error> {
+        UserProfileRepository.shared.saveUserProfileToCloud(profile)
     }
 }

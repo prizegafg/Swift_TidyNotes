@@ -60,11 +60,11 @@ struct LoginView: View {
                 .foregroundColor(.white)
                 .cornerRadius(10)
                 
-                Button("Belum punya akun? Register") {
+                Button("Don’t have an account? Register") {
                     presenter.onRegisterTapped()
                 }
                 .font(.footnote)
-                .foregroundColor(.green)
+                .foregroundColor(.white)
             }
             .padding(.horizontal, 32)
             Spacer()

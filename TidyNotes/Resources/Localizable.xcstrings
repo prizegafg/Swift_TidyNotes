@@ -119,6 +119,9 @@
         }
       }
     },
+    "First Name" : {
+
+    },
     "Hello, %@!" : {
 
     },
@@ -132,6 +135,9 @@
 
     },
     "Konfirmasi Password" : {
+
+    },
+    "Last Name" : {
 
     },
     "Loading Tasks..." : {
@@ -182,6 +188,9 @@
       }
     },
     "Priority Task" : {
+
+    },
+    "Profession" : {
 
     },
     "Register" : {
@@ -268,6 +277,9 @@
 
     },
     "Upload Gambar" : {
+
+    },
+    "Username" : {
 
     }
   },

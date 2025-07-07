@@ -9,67 +9,83 @@ import Foundation
 import RealmSwift
 import FirebaseFirestore
 import FirebaseAuth
+import Combine
 
-class UserProfileService {
+
+final class UserProfileService {
     static let shared = UserProfileService()
-    private let db = Firestore.firestore()
-
-    func fetchProfile(userId: String, completion: @escaping (UserProfileEntity?) -> Void) {
-        db.collection("users").document(userId).getDocument { doc, error in
-            if let data = doc?.data(), let entity = UserProfileEntity(dict: data) {
-                Self.saveProfileToLocal(entity)
-                completion(entity)
-            } else {
-                completion(Self.loadProfileFromLocal(userId: userId))
+    
+    
+    func registerWithEmail(email: String, password: String) -> AnyPublisher<String, Error> {
+        Future<String, Error> { promise in
+            Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
+                if let error = error {
+                    promise(.failure(error))
+                } else if let uid = authResult?.user.uid {
+                    promise(.success(uid))
+                } else {
+                    promise(.failure(AppError.unknown))
+                }
             }
         }
+        .eraseToAnyPublisher()
     }
-
-    func saveProfile(_ profile: UserProfileEntity, completion: @escaping (Bool) -> Void) {
-        var dict: [String: Any] = [
-            "userId": profile.userId,
-            "username": profile.username,
-            "firstName": profile.firstName,
-            "lastName": profile.lastName,
-            "email": profile.email
-        ]
-        if let prof = profile.profession {
-            dict["profession"] = prof
-        }
-        db.collection("users").document(profile.userId).setData(dict) { error in
-            if error == nil {
-                Self.saveProfileToLocal(profile)
-            }
-            completion(error == nil)
-        }
-    }
-
+    
     static func loadProfileFromLocal(userId: String) -> UserProfileEntity? {
-        let realm = try! Realm()
-        if let realmObj = realm.objects(RealmUserProfileObject.self).filter("userId == %@", userId).first {
-            return UserProfileEntity(realm: realmObj)
+        do {
+            let realm = try Realm()
+            guard let obj = realm.objects(RealmUserProfileObject.self).filter("userId == %@", userId).first else { return nil }
+            return obj.toEntity()
+        } catch {
+            print("❌ Gagal load profile dari local: \(error)")
+            return nil
         }
-        return nil
     }
-
+    
     static func saveProfileToLocal(_ profile: UserProfileEntity) {
-        let realm = try! Realm()
-        var obj = realm.objects(RealmUserProfileObject.self).filter("userId == %@", profile.userId).first
-        if obj == nil {
-            obj = RealmUserProfileObject()
-            obj?.userId = profile.userId
+        do {
+            let realm = try Realm()
+            if let existing = realm.objects(RealmUserProfileObject.self).filter("userId == %@", profile.userId).first {
+                try realm.write {
+                    existing.username = profile.username
+                    existing.firstName = profile.firstName
+                    existing.lastName = profile.lastName
+                    existing.email = profile.email
+                    existing.profession = profile.profession
+                }
+            } else {
+                let object = RealmUserProfileObject(entity: profile)
+                try realm.write {
+                    realm.add(object)
+                }
+            }
+        } catch {
+            print("❌ Gagal simpan profile ke local: \(error)")
         }
-        try! realm.write {
-            obj?.username = profile.username
-            obj?.firstName = profile.firstName
-            obj?.lastName = profile.lastName
-            obj?.email = profile.email
-            if let profession = profile.profession, obj?.responds(to: Selector("setProfession:")) ?? false {
-                obj?.setValue(profession, forKey: "profession")
+    }
+    
+    
+
+    static func fetchUserProfileFromFirestore(userId: String, completion: @escaping (Result<UserProfileEntity, Error>) -> Void) {
+        let db = Firestore.firestore()
+        db.collection("users").document(userId).getDocument { doc, error in
+            if let error = error {
+                completion(.failure(AppError.networkError(error.localizedDescription)))
+                return
             }
-            if realm.objects(RealmUserProfileObject.self).filter("userId == %@", profile.userId).first == nil, let obj = obj {
-                realm.add(obj)
+            guard let data = doc?.data() else {
+                completion(.failure(AppError.notFound))
+                return
             }
+            let profile = UserProfileEntity(
+                userId: userId,
+                username: data["username"] as? String ?? "",
+                firstName: data["firstName"] as? String ?? "",
+                lastName: data["lastName"] as? String ?? "",
+                email: data["email"] as? String ?? "",
+                profession: data["profession"] as? String
+            )
+            completion(.success(profile))
         }
     }
 }

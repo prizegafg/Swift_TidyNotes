@@ -45,26 +45,41 @@ final class LoginPresenter: ObservableObject {
                 }
             }, receiveValue: { [weak self] in
                 guard let self = self else { return }
-                if let userId = Auth.auth().currentUser?.uid {
-                    UserProfileService.shared.fetchProfile(userId: userId) { profile in
-                        if let profile = profile {
-                            print("Welcome, \(profile.username)")
-                        }
-                    }
-                    
-                    TaskService.shared.fetchTasksFromFirestoreAndReplaceRealm(for: userId) { success in
-                        if success {
-                            DispatchQueue.main.async {
-                                self.router.navigateToTaskList()
+                guard let userId = Auth.auth().currentUser?.uid else {
+                    self.showError(message: "User ID tidak ditemukan.")
+                    return
+                }
+                if SessionManager.shared.isFirstLogin {
+                    UserProfileService.fetchUserProfileFromFirestore(userId: userId) { result in
+                        switch result {
+                        case .success(let profile):
+                            UserProfileService.saveProfileToLocal(profile)
+                            SessionManager.shared.currentUser = profile
+                            SessionManager.shared.markFirstLoginCompleted()
+                            TaskService.shared.fetchTasksFromFirestoreAndReplaceRealm(for: userId) { success in
+                                DispatchQueue.main.async {
+                                    if success {
+                                        self.router.navigateToTaskList()
+                                    } else {
+                                        self.showError(message: "Gagal sync data dari cloud.")
+                                    }
+                                }
                             }
-                        } else {
+                        case .failure(let error):
                             DispatchQueue.main.async {
-                                self.showError(message: "Gagal sync data dari cloud.")
+                                self.showError(message: error.localizedDescription)
                             }
                         }
                     }
                 } else {
-                    self.showError(message: "User ID tidak ditemukan.")
+                    // 2nd/dst: Langsung load dari local Realm
+                    if let profile = UserProfileService.loadProfileFromLocal(userId: userId) {
+                        SessionManager.shared.currentUser = profile
+                        // lanjut sync task, dst (bisa dari local/atau optional sync ke cloud)
+                        self.router.navigateToTaskList()
+                    } else {
+                        self.showError(message: "Data user tidak ditemukan di local.")
+                    }
                 }
             })
             .store(in: &cancellables)

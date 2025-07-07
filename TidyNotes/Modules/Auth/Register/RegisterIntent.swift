@@ -9,6 +9,10 @@ import Foundation
 import Combine
 
 final class RegisterPresenter: ObservableObject {
+    @Published var username: String = ""
+    @Published var firstName: String = ""
+    @Published var lastName: String = ""
+    @Published var profession: String = ""
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var confirmPassword: String = ""
@@ -27,12 +31,18 @@ final class RegisterPresenter: ObservableObject {
     }
 
     func onRegisterTapped() {
-        guard !email.trimmed.isEmpty, !password.trimmed.isEmpty else {
-            showError(message: "Email dan password wajib diisi.")
+        guard !username.trimmed.isEmpty,
+              !firstName.trimmed.isEmpty,
+              !lastName.trimmed.isEmpty,
+              !profession.trimmed.isEmpty,
+              !email.trimmed.isEmpty,
+              !password.trimmed.isEmpty else {
+            showError(message: "All field must be filled")
             return
         }
+        
         guard password == confirmPassword else {
-            showError(message: "Password dan konfirmasi tidak cocok.")
+            showError(message: "Password and repeat password do not match.")
             return
         }
 
@@ -44,7 +54,7 @@ final class RegisterPresenter: ObservableObject {
                 if case .failure(let error) = completion {
                     self?.showError(message: error.localizedDescription)
                 }
-            }, receiveValue: { [weak self] in
+            }, receiveValue: { _ in [weak self]; in
                 self?.showSuccess = true
             })
             .store(in: &cancellables)

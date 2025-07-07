@@ -10,11 +10,11 @@ import UIKit
 import FirebaseAuth
 
 final class SettingsInteractor {
-    private let app = SessionManager.shared.realmApp
+    private let app = SessionManager.shared
 
     func getCurrentUserProfile() -> (name: String, email: String) {
         let user = app.currentUser
-        return (user?.profile.name ?? "", user?.profile.email ?? "")
+        return (user?.username ?? "", user?.email ?? "")
     }
 
     func saveUserProfile(name: String, email: String, image: UIImage?) {

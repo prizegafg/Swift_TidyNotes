@@ -10,6 +10,7 @@ import RealmSwift
 
 struct TaskService {
     static let shared = TaskService()
+    private let db = Firestore.firestore()
     
     func syncTasksToFirestore(for userId: String) {
         let db = Firestore.firestore()
@@ -90,35 +91,34 @@ struct TaskService {
     }
     
     func fetchTasksFromFirestoreAndReplaceRealm(for userId: String, completion: @escaping (Bool) -> Void) {
-        let db = Firestore.firestore()
         db.collection("tasks")
             .whereField("userId", isEqualTo: userId)
             .getDocuments { snapshot, error in
-                guard let documents = snapshot?.documents, error == nil else {
-                    print("Error fetching: \(error?.localizedDescription ?? "-")")
+                guard error == nil, let documents = snapshot?.documents else {
+                    print("❌ Firestore fetch error: \(error?.localizedDescription ?? "-")")
                     completion(false)
                     return
                 }
-                var newTasks: [TaskEntity] = []
-                for doc in documents {
+
+                // Inline parsing tanpa extension
+                let tasks: [TaskEntity] = documents.compactMap { doc in
                     let data = doc.data()
                     guard
-                        let idStr = data["id"] as? String,
-                        let id = UUID(uuidString: idStr),
                         let userId = data["userId"] as? String,
-                        let title = data["title"] as? String,
-                        let descriptionText = data["descriptionText"] as? String,
-                        let isPriority = data["isPriority"] as? Bool,
-                        let createdAt = (data["createdAt"] as? Timestamp)?.dateValue() ?? data["createdAt"] as? Date,
-                        let statusStr = data["status"] as? String,
-                        let status = TaskStatus(rawValue: statusStr)
-                    else { continue }
-                    let dueDate = (data["dueDate"] as? Timestamp)?.dateValue() ?? data["dueDate"] as? Date
+                        let title = data["title"] as? String
+                    else { return nil }
+                    let id = UUID(uuidString: doc.documentID) ?? UUID()
+                    let descriptionText = data["descriptionText"] as? String ?? ""
+                    let isPriority = data["isPriority"] as? Bool ?? false
+                    let statusRaw = data["status"] as? String ?? TaskStatus.todo.rawValue
+                    let status = TaskStatus(rawValue: statusRaw) ?? .todo
+                    let createdAt: Date = (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+                    let dueDate: Date? = (data["dueDate"] as? Timestamp)?.dateValue()
                     let isReminderOn = data["isReminderOn"] as? Bool ?? false
-                    let reminderDate = (data["reminderDate"] as? Timestamp)?.dateValue() ?? data["reminderDate"] as? Date
+                    let reminderDate: Date? = (data["reminderDate"] as? Timestamp)?.dateValue()
                     let imagePath = data["imagePath"] as? String
-                    
-                    let task = TaskEntity(
+
+                    return TaskEntity(
                         id: id,
                         userId: userId,
                         title: title,
@@ -131,17 +131,25 @@ struct TaskService {
                         imagePath: imagePath,
                         status: status
                     )
-                    newTasks.append(task)
                 }
-                let realm = try! Realm()
-                try! realm.write {
+
+                do {
+                    let realm = try Realm()
                     let oldTasks = realm.objects(TaskEntity.self).filter("userId == %@", userId)
-                    realm.delete(oldTasks)
-                    realm.add(newTasks)
+                    try realm.write {
+                        realm.delete(oldTasks)
+                        for task in tasks {
+                            realm.add(task, update: .all)
+                        }
+                    }
+                    completion(true)
+                } catch {
+                    print("❌ Realm error: \(error)")
+                    completion(false)
                 }
-                completion(true)
             }
     }
+
     
     func clearLocalTasks() {
         let realm = try! Realm()

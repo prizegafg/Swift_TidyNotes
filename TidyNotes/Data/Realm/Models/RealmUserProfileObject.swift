@@ -16,4 +16,25 @@ class RealmUserProfileObject: Object, ObjectKeyIdentifiable {
     @Persisted var lastName: String
     @Persisted var email: String
     @Persisted var profession: String?
+    
+    convenience init(entity: UserProfileEntity) {
+        self.init()
+        self.userId = entity.userId
+        self.username = entity.username
+        self.firstName = entity.firstName
+        self.lastName = entity.lastName
+        self.email = entity.email
+        self.profession = entity.profession
+    }
+    
+    func toEntity() -> UserProfileEntity {
+        UserProfileEntity(
+            userId: userId,
+            username: username,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            profession: profession
+        )
+    }
 }

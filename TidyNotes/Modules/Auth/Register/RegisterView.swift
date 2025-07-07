@@ -16,11 +16,25 @@ struct RegisterView: View {
         VStack {
             Spacer()
             VStack(spacing: 24) {
-                Text("Buat Akun Baru")
+                Text("Create New Account")
                     .font(.title)
                     .fontWeight(.bold)
                     .padding(.bottom, 16)
                 VStack(spacing: 16) {
+                    TextField("Username", text: $presenter.username)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .autocapitalization(.none)
+                        .frame(height: 50)
+                    TextField("First Name", text: $presenter.firstName)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .frame(height: 50)
+                    TextField("Last Name", text: $presenter.lastName)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .frame(height: 50)
+                    
+                    TextField("Profession", text: $presenter.profession)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(height: 50)
                     TextField("Email", text: $presenter.email)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.emailAddress)
@@ -48,9 +62,9 @@ struct RegisterView: View {
                     ZStack(alignment: .trailing) {
                         Group {
                             if showConfirmPassword {
-                                TextField("Konfirmasi Password", text: $presenter.confirmPassword)
+                                TextField("Repeat Password", text: $presenter.confirmPassword)
                             } else {
-                                SecureField("Konfirmasi Password", text: $presenter.confirmPassword)
+                                SecureField("Repeat Password", text: $presenter.confirmPassword)
                             }
                         }
                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -80,7 +94,7 @@ struct RegisterView: View {
                 .foregroundColor(.white)
                 .cornerRadius(10)
                 
-                Button("Sudah punya akun? Login") {
+                Button("Already Have Account? Login") {
                     presenter.onLoginTapped()
                 }
                 .font(.footnote)

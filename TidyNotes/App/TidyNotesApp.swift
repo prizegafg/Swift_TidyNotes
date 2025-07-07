@@ -7,6 +7,7 @@
 
 import SwiftUI
 import FirebaseCore
+import FirebaseAuth
 
 @main
 struct TidyNotesApp: App {
@@ -15,18 +16,44 @@ struct TidyNotesApp: App {
         FirebaseApp.configure()
         NotificationManager.shared.registerNotificationActions()
         NotificationManager.shared.requestPermissionIfNeeded()
-                _ = NotificationDelegate.shared 
+        _ = NotificationDelegate.shared
     }
     
     var body: some Scene {
         WindowGroup {
-            let session = SessionManager.shared
-            if let user = session.currentUser, user.isLoggedIn {
+            RootView()
+                .withAppTheme()
+        }
+    }
+    
+}
+
+struct RootView: View {
+    @State private var isLoggedIn: Bool = false
+    @State private var checked: Bool = false
+    
+    var body: some View {
+        if checked {
+            if isLoggedIn {
                 TaskListModule.makeTaskListView()
             } else {
                 LoginModule.makeLoginView()
             }
+        } else {
+            ProgressView()
+                .onAppear {
+                    if let user = Auth.auth().currentUser {
+                        if SessionManager.shared.isLoggedIn() {
+                            isLoggedIn = true
+                        } else {
+                            isLoggedIn = false
+                        }
+                    } else {
+                        isLoggedIn = false
+                    }
+                    checked = true
+                }
         }
+        
     }
-    
 }
