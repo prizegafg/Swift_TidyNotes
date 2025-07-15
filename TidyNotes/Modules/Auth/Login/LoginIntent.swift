@@ -32,7 +32,7 @@ final class LoginPresenter: ObservableObject {
     
     func onLoginTapped() {
         guard !email.trimmed.isEmpty, !password.trimmed.isEmpty else {
-            showError(message: "Email dan password wajib diisi.")
+            showError(message: "Email and Password must be filled")
             return
         }
         isLoading = true
@@ -46,39 +46,21 @@ final class LoginPresenter: ObservableObject {
             }, receiveValue: { [weak self] in
                 guard let self = self else { return }
                 guard let userId = Auth.auth().currentUser?.uid else {
-                    self.showError(message: "User ID tidak ditemukan.")
+                    self.showError(message: "User ID not found.")
                     return
                 }
-                if SessionManager.shared.isFirstLogin {
-                    UserProfileService.fetchUserProfileFromFirestore(userId: userId) { result in
-                        switch result {
-                        case .success(let profile):
-                            UserProfileService.saveProfileToLocal(profile)
-                            SessionManager.shared.currentUser = profile
-                            SessionManager.shared.markFirstLoginCompleted()
-                            TaskService.shared.fetchTasksFromFirestoreAndReplaceRealm(for: userId) { success in
-                                DispatchQueue.main.async {
-                                    if success {
-                                        self.router.navigateToTaskList()
-                                    } else {
-                                        self.showError(message: "Gagal sync data dari cloud.")
-                                    }
-                                }
-                            }
-                        case .failure(let error):
-                            DispatchQueue.main.async {
-                                self.showError(message: error.localizedDescription)
-                            }
-                        }
-                    }
-                } else {
-                    // 2nd/dst: Langsung load dari local Realm
-                    if let profile = UserProfileService.loadProfileFromLocal(userId: userId) {
+                UserProfileService.fetchUserProfileFromFirestore(userId: userId) { result in
+                    switch result {
+                    case .success(let profile):
+                        UserProfileService.saveProfileToLocal(profile)
                         SessionManager.shared.currentUser = profile
-                        // lanjut sync task, dst (bisa dari local/atau optional sync ke cloud)
-                        self.router.navigateToTaskList()
-                    } else {
-                        self.showError(message: "Data user tidak ditemukan di local.")
+                        DispatchQueue.main.async {
+                            self.router.navigateToTaskList()
+                        }
+                    case .failure(let error):
+                        DispatchQueue.main.async {
+                            self.showError(message: error.localizedDescription)
+                        }
                     }
                 }
             })

@@ -46,6 +46,9 @@
     "Create New Account" : {
 
     },
+    "Create User Success" : {
+
+    },
     "Description: %@" : {
       "localizations" : {
         "id" : {
@@ -194,9 +197,6 @@
 
     },
     "Register" : {
-
-    },
-    "Registrasi Berhasil" : {
 
     },
     "Reminder Time" : {

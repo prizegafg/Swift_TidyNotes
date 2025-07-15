@@ -36,18 +36,26 @@ struct RootView: View {
         if checked {
             if isLoggedIn {
                 TaskListModule.makeTaskListView()
+                    .onAppear {
+                        if let userId = Auth.auth().currentUser?.uid {
+                            UserProfileService.fetchUserProfileFromFirestore(userId: userId) { result in
+                                if case let .success(profile) = result {
+                                    UserProfileService.saveProfileToLocal(profile)
+                                    SessionManager.shared.currentUser = profile
+                                }
+                            }
+                        }
+                    }
             } else {
                 LoginModule.makeLoginView()
             }
         } else {
             ProgressView()
                 .onAppear {
-                    if let user = Auth.auth().currentUser {
-                        if SessionManager.shared.isLoggedIn() {
-                            isLoggedIn = true
-                        } else {
-                            isLoggedIn = false
-                        }
+                    if let user = Auth.auth().currentUser,
+                       let profile = UserProfileService.loadProfileFromLocal(userId: user.uid) {
+                        SessionManager.shared.currentUser = profile
+                        isLoggedIn = true
                     } else {
                         isLoggedIn = false
                     }
