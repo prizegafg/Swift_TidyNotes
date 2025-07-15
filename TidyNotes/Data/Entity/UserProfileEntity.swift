@@ -9,14 +9,13 @@ import Foundation
 
 struct UserProfileEntity: Identifiable, Codable {
     var id: String { userId }
-    let userId: String
+    var userId: String
     var username: String
     var firstName: String
     var lastName: String
     var email: String
     var profession: String?
     
-    // Tambahkan initializer explisit, agar error hilang
     init(
         userId: String,
         username: String = "",
@@ -33,7 +32,6 @@ struct UserProfileEntity: Identifiable, Codable {
         self.profession = profession
     }
     
-    // Convenience init untuk mapping dari dictionary (Firestore)
     init(userId: String, dict: [String: Any]) {
         self.userId = userId
         self.username = dict["username"] as? String ?? ""

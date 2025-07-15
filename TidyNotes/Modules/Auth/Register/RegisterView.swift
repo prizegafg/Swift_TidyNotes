@@ -98,7 +98,7 @@ struct RegisterView: View {
                     presenter.onLoginTapped()
                 }
                 .font(.footnote)
-                .foregroundColor(.blue)
+                .foregroundColor(.white)
             }
             .padding(.horizontal, 32)
             Spacer()
@@ -107,7 +107,7 @@ struct RegisterView: View {
         .alert(isPresented: $presenter.showError) {
             Alert(title: Text("Error"), message: Text(presenter.errorMessage), dismissButton: .default(Text("OK")))
         }
-        .alert("Registrasi Berhasil", isPresented: $presenter.showSuccess) {
+        .alert("Create User Success", isPresented: $presenter.showSuccess) {
             Button("OK", role: .cancel) {
                 presenter.onLoginTapped()
             }

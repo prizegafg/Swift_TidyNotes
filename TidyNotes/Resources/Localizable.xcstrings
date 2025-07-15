@@ -25,13 +25,10 @@
         }
       }
     },
+    "Already Have Account? Login" : {
+
+    },
     "Appearance" : {
-
-    },
-    "Belum punya akun? Register" : {
-
-    },
-    "Buat Akun Baru" : {
 
     },
     "Cari task..." : {
@@ -46,6 +43,9 @@
     "Coba cari dengan kata lain atau tambah task baru." : {
 
     },
+    "Create New Account" : {
+
+    },
     "Description: %@" : {
       "localizations" : {
         "id" : {
@@ -55,6 +55,9 @@
           }
         }
       }
+    },
+    "Don’t have an account? Register" : {
+
     },
     "Done" : {
 
@@ -134,9 +137,6 @@
     "Kirim Email Reset" : {
 
     },
-    "Konfirmasi Password" : {
-
-    },
     "Last Name" : {
 
     },
@@ -202,6 +202,9 @@
     "Reminder Time" : {
 
     },
+    "Repeat Password" : {
+
+    },
     "Reset Password" : {
 
     },
@@ -256,9 +259,6 @@
           }
         }
       }
-    },
-    "Sudah punya akun? Login" : {
-
     },
     "Tasks" : {
       "localizations" : {

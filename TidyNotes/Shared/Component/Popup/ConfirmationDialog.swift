@@ -105,8 +105,8 @@ extension View {
         isPresented: Binding<Bool>,
         title: String,
         message: String,
-        confirmText: String = "Ya",
-        cancelText: String = "Tidak",
+        confirmText: String = "Yes",
+        cancelText: String = "No",
         onConfirm: @escaping () -> Void
     ) -> some View {
         self.modifier(
@@ -125,10 +125,10 @@ extension View {
 struct ConfirmationDialog_Previews: PreviewProvider {
     static var previews: some View {
         ConfirmationDialog(
-            title: "Konfirmasi",
-            message: "Apakah Anda yakin akan menghapus task ini?",
-            confirmText: "Ya",
-            cancelText: "Tidak",
+            title: "Confirmation",
+            message: "Are you sure want to delete this task?",
+            confirmText: "Yes",
+            cancelText: "No",
             onConfirm: {},
             onCancel: {}
         )

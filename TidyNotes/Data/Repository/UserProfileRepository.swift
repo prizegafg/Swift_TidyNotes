@@ -17,7 +17,7 @@ final class UserProfileRepository {
     func saveUserProfileToCloud(_ profile: UserProfileEntity) -> AnyPublisher<Void, Error> {
         let db = Firestore.firestore()
         let data: [String: Any] = [
-            "id": profile.id,
+            "userId": profile.id,
             "email": profile.email,
             "username": profile.username,
             "firstName": profile.firstName,
