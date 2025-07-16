@@ -14,7 +14,7 @@ struct LoginView: View {
         VStack {
             Spacer()
             VStack(spacing: 24) {
-                Text("Login")
+                Text("Login".localizedDescription)
                     .font(.title)
                     .fontWeight(.bold)
                     .padding(.bottom, 16)
@@ -28,9 +28,9 @@ struct LoginView: View {
                     ZStack(alignment: .trailing) {
                         Group {
                             if presenter.showPassword {
-                                TextField("Password", text: $presenter.password)
+                                TextField("Password".localizedDescription, text: $presenter.password)
                             } else {
-                                SecureField("Password", text: $presenter.password)
+                                SecureField("Password".localizedDescription, text: $presenter.password)
                             }
                         }
                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -51,7 +51,7 @@ struct LoginView: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                             .frame(maxWidth: .infinity)
                     } else {
-                        Text("Login")
+                        Text("Login".localizedDescription)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
                     }
@@ -60,7 +60,7 @@ struct LoginView: View {
                 .foregroundColor(.white)
                 .cornerRadius(10)
                 
-                Button("Don’t have an account? Register") {
+                Button("Don’t have an account? Register".localizedDescription) {
                     presenter.onRegisterTapped()
                 }
                 .font(.footnote)

@@ -58,7 +58,7 @@ struct TaskDetailView: View {
             .padding()
         }
         .withAppTheme()
-        .navigationTitle(presenter.mode == .create ? "Add Task" : "Edit Task")
+        .navigationTitle(presenter.mode == .create ? "Add Task".localizedDescription : "Edit Task".localizedDescription)
         .alert(isPresented: $presenter.showError) {
             Alert(title: Text("Error"), message: Text(presenter.errorMessage), dismissButton: .default(Text("OK")))
         }
@@ -85,7 +85,7 @@ struct TaskDetailView: View {
     // MARK: - Subviews
 
     private var titleSection: some View {
-        TextField("Type Task Title", text: titleBinding)
+        TextField("Type Task Title".localizedDescription, text: titleBinding)
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .focused($focusedField, equals: .title)
             .submitLabel(.next)
@@ -93,7 +93,7 @@ struct TaskDetailView: View {
     }
 
     private var prioritySection: some View {
-        Toggle("Priority Task", isOn: Binding(
+        Toggle("Priority Task".localizedDescription, isOn: Binding(
             get: { presenter.task.isPriority },
             set: { presenter.onPriorityChanged($0) }
         ))
@@ -102,7 +102,7 @@ struct TaskDetailView: View {
 
     private var dueDateSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Toggle("Set Due Date", isOn: Binding(
+            Toggle("Set Due Date".localizedDescription, isOn: Binding(
                 get: { presenter.task.dueDate != nil },
                 set: { $0 ? presenter.onDueDateChanged(presenter.task.dueDate ?? Date()) : presenter.onDueDateChanged(nil) }
             ))
@@ -115,7 +115,7 @@ struct TaskDetailView: View {
                     } label: { Image(systemName: "calendar").foregroundColor(.blue) }
                 }
                 .sheet(isPresented: $showDueDatePicker) {
-                    DatePicker("Select Due Date", selection: dueDateBinding, displayedComponents: .date)
+                    DatePicker("Select Due Date".localizedDescription, selection: dueDateBinding, displayedComponents: .date)
                         .datePickerStyle(.graphical)
                         .padding()
                 }
@@ -125,7 +125,7 @@ struct TaskDetailView: View {
 
     private var reminderSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Toggle("Enable Reminder", isOn: Binding(
+            Toggle("Enable Reminder".localizedDescription, isOn: Binding(
                 get: { presenter.task.isReminderOn },
                 set: { presenter.onReminderChanged($0, date: presenter.task.reminderDate) }
             ))
@@ -138,7 +138,7 @@ struct TaskDetailView: View {
                     }
                 }
                 .sheet(isPresented: $showReminderDatePicker) {
-                    DatePicker("Reminder Time", selection: reminderDateBinding, displayedComponents: [.date, .hourAndMinute])
+                    DatePicker("Reminder Time".localizedDescription, selection: reminderDateBinding, displayedComponents: [.date, .hourAndMinute])
                         .datePickerStyle(.graphical)
                         .padding()
                 }
@@ -147,7 +147,7 @@ struct TaskDetailView: View {
     }
 
     private var statusSection: some View {
-        Picker("Status", selection: Binding(
+        Picker("Status".localizedDescription, selection: Binding(
             get: { presenter.task.status },
             set: { presenter.onStatusChanged($0) }
         )) {
@@ -175,7 +175,7 @@ struct TaskDetailView: View {
                     .cornerRadius(12)
             }
             PhotosPicker(selection: $selectedItem, matching: .images) {
-                Label("Upload Gambar", systemImage: "photo")
+                Label("Upload Picture".localizedDescription, systemImage: "photo")
             }
             .onChange(of: selectedItem) { newItem in
                 Task {
@@ -197,7 +197,7 @@ struct TaskDetailView: View {
     }
 
     private var saveButtonSection: some View {
-        Button(presenter.mode == .create ? "Add Task" : "Save Task") {
+        Button(presenter.mode == .create ? "Add Task".localizedDescription : "Save Task".localizedDescription) {
             presenter.saveTask()
             presentationMode.wrappedValue.dismiss()
         }

@@ -10,7 +10,7 @@ import Combine
 import PhotosUI
 
 final class SettingsPresenter: ObservableObject {
-    @Published var name: String = ""
+    @Published var username: String = ""
     @Published var email: String = ""
     @Published var image: UIImage? = nil
     @Published var selectedItem: PhotosPickerItem? = nil {
@@ -21,33 +21,93 @@ final class SettingsPresenter: ObservableObject {
     
     @Published var showAlert: Bool = false
     @Published var alertMessage: String = ""
+    @Published var language: String = LanguageManager.shared.currentLanguage
+    @Published var theme: ThemeMode = ThemeManager.shared.selectedThemeMode
+    @Published var faceIDEnabled: Bool = false
+    @Published var showLogoutDialog = false
+    @Published var showLanguageDropdown: Bool = false
+    @Published var showThemeDropdown: Bool = false
     
     private let interactor: SettingsInteractor
     private let router: SettingsRouter
     private var cancellables = Set<AnyCancellable>()
     
+    var languageOptions: [String] {
+        LanguageManager.shared.supportedLanguages.map { $0.name.localizedDescription }
+    }
+    
+    var selectedLanguageLocalized: String {
+        // Ambil display name dari code, lalu localize
+        if let original = LanguageManager.shared.supportedLanguages.first(where: { $0.code == language }) {
+            return original.name.localizedDescription
+        }
+        // fallback: tampilkan bahasa pertama
+        return LanguageManager.shared.supportedLanguages.first?.name.localizedDescription ?? ""
+    }
+    
+    var themeOptions: [String] {
+        ThemeMode.allCases.map { $0.rawValue }
+    }
+    
     init(interactor: SettingsInteractor, router: SettingsRouter) {
         self.interactor = interactor
         self.router = router
+        
+        let key = "app_language"
+        if let saved = UserDefaults.standard.string(forKey: key) {
+            language = saved
+        } else {
+            let systemLang = Locale.current.languageCode ?? "en"
+            language = systemLang // "en" or "id"
+        }
         loadInitialData()
     }
     
     func loadInitialData() {
         let user = interactor.getCurrentUserProfile()
-        name = user.name
+        username = user.name
         email = user.email
         if let savedImage = interactor.loadSavedImage() {
             image = savedImage
         }
     }
     
-    func saveProfile() {
-        interactor.saveUserProfile(name: name, email: email, image: image)
-        showAlert(message: "Profile updated.")
+    func onEditProfileTapped() {
     }
     
-    func resetPassword() {
-        router.navigateToResetPassword()
+    func onLanguageTapped() {
+        showLanguageDropdown.toggle()
+    }
+    
+    func onThemeTapped() {
+        showThemeDropdown.toggle()
+    }
+    
+    func selectLanguage(_ localizedName: String) {
+        if let original = LanguageManager.shared.supportedLanguages.first(where: { $0.name.localizedDescription == localizedName }) {
+            LanguageManager.shared.setLanguage(original.code)
+            language = original.code
+        }
+        showLanguageDropdown = false
+    }
+    
+    func selectTheme(_ name: String) {
+        if let mode = ThemeMode(rawValue: name) {
+            theme = mode
+            ThemeManager.shared.setTheme(mode)
+        }
+        showThemeDropdown = false
+    }
+    
+    func onPasswordTapped() {
+    }
+    
+    func onFaceIDToggled(_ enabled: Bool) {
+        faceIDEnabled = enabled
+    }
+    
+    func onLogoutTapped() {
+        showLogoutDialog = true
     }
     
     func logout() {

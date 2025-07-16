@@ -16,23 +16,23 @@ struct RegisterView: View {
         VStack {
             Spacer()
             VStack(spacing: 24) {
-                Text("Create New Account")
+                Text("Create New Account".localizedDescription)
                     .font(.title)
                     .fontWeight(.bold)
                     .padding(.bottom, 16)
                 VStack(spacing: 16) {
-                    TextField("Username", text: $presenter.username)
+                    TextField("Username".localizedDescription, text: $presenter.username)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .autocapitalization(.none)
                         .frame(height: 50)
-                    TextField("First Name", text: $presenter.firstName)
+                    TextField("First Name".localizedDescription, text: $presenter.firstName)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .frame(height: 50)
-                    TextField("Last Name", text: $presenter.lastName)
+                    TextField("Last Name".localizedDescription, text: $presenter.lastName)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .frame(height: 50)
                     
-                    TextField("Profession", text: $presenter.profession)
+                    TextField("Profession".localizedDescription, text: $presenter.profession)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .frame(height: 50)
                     TextField("Email", text: $presenter.email)
@@ -44,9 +44,9 @@ struct RegisterView: View {
                     ZStack(alignment: .trailing) {
                         Group {
                             if showPassword {
-                                TextField("Password", text: $presenter.password)
+                                TextField("Password".localizedDescription, text: $presenter.password)
                             } else {
-                                SecureField("Password", text: $presenter.password)
+                                SecureField("Password".localizedDescription, text: $presenter.password)
                             }
                         }
                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -62,9 +62,9 @@ struct RegisterView: View {
                     ZStack(alignment: .trailing) {
                         Group {
                             if showConfirmPassword {
-                                TextField("Repeat Password", text: $presenter.confirmPassword)
+                                TextField("Repeat Password".localizedDescription, text: $presenter.confirmPassword)
                             } else {
-                                SecureField("Repeat Password", text: $presenter.confirmPassword)
+                                SecureField("Repeat Password".localizedDescription, text: $presenter.confirmPassword)
                             }
                         }
                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -85,7 +85,7 @@ struct RegisterView: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                             .frame(maxWidth: .infinity)
                     } else {
-                        Text("Register")
+                        Text("Register".localizedDescription)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
                     }
@@ -94,7 +94,7 @@ struct RegisterView: View {
                 .foregroundColor(.white)
                 .cornerRadius(10)
                 
-                Button("Already Have Account? Login") {
+                Button("Already Have Account? Login".localizedDescription) {
                     presenter.onLoginTapped()
                 }
                 .font(.footnote)
@@ -107,7 +107,7 @@ struct RegisterView: View {
         .alert(isPresented: $presenter.showError) {
             Alert(title: Text("Error"), message: Text(presenter.errorMessage), dismissButton: .default(Text("OK")))
         }
-        .alert("Create User Success", isPresented: $presenter.showSuccess) {
+        .alert("Create User Success".localizedDescription, isPresented: $presenter.showSuccess) {
             Button("OK", role: .cancel) {
                 presenter.onLoginTapped()
             }

@@ -1,10 +1,22 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "Account" : {
+    "" : {
 
     },
+    "Account" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Akun"
+          }
+        }
+      }
+    },
     "Add Task" : {
+      "extractionState" : "manual",
       "localizations" : {
         "id" : {
           "stringUnit" : {
@@ -14,40 +26,79 @@
         }
       }
     },
-    "Add your first task by tapping the + button." : {
-      "extractionState" : "stale",
+    "Already Have Account? Login" : {
+      "extractionState" : "manual",
       "localizations" : {
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tambahkan task pertamamu dengan menyentuh tombol +"
+            "value" : "Sudah punya akun? Login"
           }
         }
       }
     },
-    "Already Have Account? Login" : {
-
+    "Are you sure you want to logout?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apakah kamu yakin akan keluar?"
+          }
+        }
+      }
     },
-    "Appearance" : {
-
+    "Back to Login" : {
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kembali ke Login"
+          }
+        }
+      }
     },
-    "Cari task..." : {
-
-    },
-    "Cek email kamu untuk reset password." : {
-
+    "Check your email to reset password" : {
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cek Email untuk reset password"
+          }
+        }
+      }
     },
     "Choose Theme" : {
-
-    },
-    "Coba cari dengan kata lain atau tambah task baru." : {
-
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pilih Tema"
+          }
+        }
+      }
     },
     "Create New Account" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buat Akun Baru"
+          }
+        }
+      }
     },
     "Create User Success" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sukses Membuat User"
+          }
+        }
+      }
     },
     "Description: %@" : {
       "localizations" : {
@@ -60,10 +111,25 @@
       }
     },
     "Don’t have an account? Register" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Belum punya akun? Register"
+          }
+        }
+      }
     },
     "Done" : {
-
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selesai"
+          }
+        }
+      }
     },
     "Due: %@" : {
       "localizations" : {
@@ -75,13 +141,13 @@
         }
       }
     },
-    "Edit" : {
-      "extractionState" : "stale",
+    "Edit profile" : {
+      "extractionState" : "manual",
       "localizations" : {
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Edit"
+            "value" : "Edit Profil"
           }
         }
       }
@@ -107,13 +173,25 @@
       }
     },
     "Email" : {
-
-    },
-    "Email reset terkirim!" : {
-
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email"
+          }
+        }
+      }
     },
     "Enable Reminder" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nyalakan Pengingat"
+          }
+        }
+      }
     },
     "Error" : {
       "localizations" : {
@@ -126,42 +204,99 @@
       }
     },
     "First Name" : {
-
-    },
-    "Hello, %@!" : {
-
-    },
-    "Info" : {
-
-    },
-    "Kembali ke Login" : {
-
-    },
-    "Kirim Email Reset" : {
-
-    },
-    "Last Name" : {
-
-    },
-    "Loading Tasks..." : {
-
-    },
-    "Login" : {
-
-    },
-    "Logout" : {
-
-    },
-    "No tasks found" : {
-
-    },
-    "No Tasks Yet" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Belum Ada Task"
+            "value" : "Nama Depan"
+          }
+        }
+      }
+    },
+    "Hello, %@!" : {
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hello, %@"
+          }
+        }
+      }
+    },
+    "Language" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bahasa"
+          }
+        }
+      }
+    },
+    "Last Name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nama Belakang"
+          }
+        }
+      }
+    },
+    "Loading Tasks..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menunggu Tasks…"
+          }
+        }
+      }
+    },
+    "Login" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masuk"
+          }
+        }
+      }
+    },
+    "Login with Face ID" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masuk dengan Face ID"
+          }
+        }
+      }
+    },
+    "Logout" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keluar"
+          }
+        }
+      }
+    },
+    "No tasks found" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tidak Ada Tugas Ditemukan"
           }
         }
       }
@@ -177,70 +312,187 @@
       }
     },
     "Password" : {
-
-    },
-    "Priority" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prioritas"
+            "value" : "Kata Sandi"
+          }
+        }
+      }
+    },
+    "Password Reset" : {
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset Kata Sandi"
           }
         }
       }
     },
     "Priority Task" : {
-
-    },
-    "Profession" : {
-
-    },
-    "Register" : {
-
-    },
-    "Reminder Time" : {
-
-    },
-    "Repeat Password" : {
-
-    },
-    "Reset Password" : {
-
-    },
-    "Save Task" : {
-
-    },
-    "Select Date" : {
-
-    },
-    "Select Date and Time" : {
-
-    },
-    "Select Due Date" : {
-
-    },
-    "Set as Priority" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tetapkan Sebagai Prioritas"
+            "value" : "Task Prioritas"
+          }
+        }
+      }
+    },
+    "Profession" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pekerjaan"
+          }
+        }
+      }
+    },
+    "Register" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daftar"
+          }
+        }
+      }
+    },
+    "Reminder Time" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waktu Pengingat"
+          }
+        }
+      }
+    },
+    "Repeat Password" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ulangi Kata Sandi"
+          }
+        }
+      }
+    },
+    "Reset email send!" : {
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email reset terkirim!"
+          }
+        }
+      }
+    },
+    "Save Task" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simpan Tugas"
+          }
+        }
+      }
+    },
+    "Search task..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cari Tugas…"
+          }
+        }
+      }
+    },
+    "Select Date" : {
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pilih Tanggal"
+          }
+        }
+      }
+    },
+    "Select Date and Time" : {
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pilih Tanggal dan Waktu"
+          }
+        }
+      }
+    },
+    "Select Due Date" : {
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pilih Deadline"
+          }
+        }
+      }
+    },
+    "Send Reset Email" : {
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kirim Email Reset"
           }
         }
       }
     },
     "Set Due Date" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tentukan Deadline"
+          }
+        }
+      }
     },
     "Set Reminder" : {
-
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tentukan Pengingat"
+          }
+        }
+      }
     },
     "Settings" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pengaturan"
+          }
+        }
+      }
     },
     "Status" : {
+      "extractionState" : "manual",
       "localizations" : {
         "id" : {
           "stringUnit" : {
@@ -261,26 +513,59 @@
       }
     },
     "Tasks" : {
+      "extractionState" : "manual",
       "localizations" : {
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pekerjaan"
+            "value" : "Tugas"
           }
         }
       }
     },
     "Theme" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tema"
+          }
+        }
+      }
+    },
+    "Try search with other keyword or create a task" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coba cari dengan kata kunci lain atau buat tugas baru"
+          }
+        }
+      }
     },
     "Type Task Title" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tuliskan Judul Task"
+          }
+        }
+      }
     },
-    "Upload Gambar" : {
-
-    },
-    "Username" : {
-
+    "Upload Picture" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upload Gambar"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

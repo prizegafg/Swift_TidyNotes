@@ -12,7 +12,7 @@ struct ResetPasswordView: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            Text("Reset Password")
+            Text("Password Reset")
                 .font(.title)
                 .fontWeight(.bold)
                 .padding(.top, 40)
@@ -30,7 +30,7 @@ struct ResetPasswordView: View {
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .frame(maxWidth: .infinity)
                 } else {
-                    Text("Kirim Email Reset")
+                    Text("Send Reset Email")
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
                 }
@@ -39,7 +39,7 @@ struct ResetPasswordView: View {
             .foregroundColor(.white)
             .cornerRadius(10)
             .padding(.horizontal)
-            Button("Kembali ke Login") {
+            Button("Back to Login") {
                 presenter.onLoginTapped()
             }
             .font(.footnote)
@@ -48,12 +48,12 @@ struct ResetPasswordView: View {
         .alert(isPresented: $presenter.showError) {
             Alert(title: Text("Error"), message: Text(presenter.errorMessage), dismissButton: .default(Text("OK")))
         }
-        .alert("Email reset terkirim!", isPresented: $presenter.showSuccess) {
+        .alert("Reset email send!", isPresented: $presenter.showSuccess) {
             Button("OK", role: .cancel) {
                 presenter.onLoginTapped()
             }
         } message: {
-            Text("Cek email kamu untuk reset password.")
+            Text("Check your email to reset password")
         }
         Spacer()
     }

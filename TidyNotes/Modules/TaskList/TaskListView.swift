@@ -24,7 +24,7 @@ struct TaskListView: View {
                 }
                 HStack {
                     Image(systemName: "magnifyingglass")
-                    TextField("Cari task...", text: $presenter.searchQuery)
+                    TextField("Search task...".localizedDescription, text: $presenter.searchQuery)
                         .autocapitalization(.none)
                         .disableAutocorrection(true)
                         .padding(.vertical, 8)
@@ -47,7 +47,7 @@ struct TaskListView: View {
             }
             floatingActionButton
         }
-        .navigationTitle("Tasks")
+        .navigationTitle("Tasks".localizedDescription)
         .onAppear {
             presenter.viewDidAppear()
             presenter.selectedTaskId = nil
@@ -110,11 +110,11 @@ struct TaskListView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 50))
                 .foregroundColor(.gray)
-            Text("No tasks found")
+            Text("No tasks found".localizedDescription)
                 .font(.title3)
                 .fontWeight(.medium)
                 .foregroundColor(.secondary)
-            Text("Coba cari dengan kata lain atau tambah task baru.")
+            Text("Try search with other keyword or create a task".localizedDescription)
                 .font(.footnote)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -130,7 +130,7 @@ struct TaskListView: View {
             Color.black.opacity(0.4).edgesIgnoringSafeArea(.all)
             VStack(spacing: 16) {
                 ProgressView().scaleEffect(1.5)
-                Text("Loading Tasks...")
+                Text("Loading Tasks...".localizedDescription)
                     .font(.headline)
                     .foregroundColor(.white)
             }
