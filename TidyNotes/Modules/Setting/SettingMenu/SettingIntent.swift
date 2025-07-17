@@ -8,6 +8,7 @@
 import SwiftUI
 import Combine
 import PhotosUI
+import LocalAuthentication
 
 final class SettingsPresenter: ObservableObject {
     @Published var username: String = ""
@@ -23,7 +24,7 @@ final class SettingsPresenter: ObservableObject {
     @Published var alertMessage: String = ""
     @Published var language: String = LanguageManager.shared.currentLanguage
     @Published var theme: ThemeMode = ThemeManager.shared.selectedThemeMode
-    @Published var faceIDEnabled: Bool = false
+    @Published var faceIDEnabled: Bool = UserDefaults.standard.isFaceIDEnabled
     @Published var showLogoutDialog = false
     @Published var showLanguageDropdown: Bool = false
     @Published var showThemeDropdown: Bool = false
@@ -103,7 +104,29 @@ final class SettingsPresenter: ObservableObject {
     }
     
     func onFaceIDToggled(_ enabled: Bool) {
-        faceIDEnabled = enabled
+        if enabled {
+            guard BiometricAuthHelper.shared.isBiometricAvailable() else {
+                showAlert(message: "Device does not support Face ID / Touch ID.".localizedDescription)
+                faceIDEnabled = false
+                UserDefaults.standard.isFaceIDEnabled = false
+                return
+            }
+            BiometricAuthHelper.shared.authenticateUser { [weak self] success, errorMsg in
+                if success {
+                    self?.faceIDEnabled = true
+                    UserDefaults.standard.isFaceIDEnabled = true
+                } else {
+                    self?.faceIDEnabled = false
+                    UserDefaults.standard.isFaceIDEnabled = false
+                    if let msg = errorMsg {
+                        self?.showAlert(message: msg)
+                    }
+                }
+            }
+        } else {
+            faceIDEnabled = false
+            UserDefaults.standard.isFaceIDEnabled = false
+        }
     }
     
     func onLogoutTapped() {

@@ -48,7 +48,22 @@
         }
       }
     },
+    "Authenticating with Face ID..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menverifikasi dengan Face ID…"
+          }
+        }
+      }
+    },
+    "Authentication Failed" : {
+
+    },
     "Back to Login" : {
+      "extractionState" : "manual",
       "localizations" : {
         "id" : {
           "stringUnit" : {
@@ -59,6 +74,7 @@
       }
     },
     "Check your email to reset password" : {
+      "extractionState" : "manual",
       "localizations" : {
         "id" : {
           "stringUnit" : {
@@ -106,6 +122,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Deskripsi: %@"
+          }
+        }
+      }
+    },
+    "Device does not support Face ID / Touch ID." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device tidak support Face ID / Touch ID"
           }
         }
       }
@@ -323,11 +350,23 @@
       }
     },
     "Password Reset" : {
+      "extractionState" : "manual",
       "localizations" : {
         "id" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reset Kata Sandi"
+          }
+        }
+      }
+    },
+    "Please Create New Task using + Button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Harap Buat Tugas Baru dengan Tombol +"
           }
         }
       }
@@ -388,6 +427,7 @@
       }
     },
     "Reset email send!" : {
+      "extractionState" : "manual",
       "localizations" : {
         "id" : {
           "stringUnit" : {
@@ -396,6 +436,9 @@
           }
         }
       }
+    },
+    "Retry" : {
+
     },
     "Save Task" : {
       "extractionState" : "manual",
@@ -450,6 +493,7 @@
       }
     },
     "Send Reset Email" : {
+      "extractionState" : "manual",
       "localizations" : {
         "id" : {
           "stringUnit" : {

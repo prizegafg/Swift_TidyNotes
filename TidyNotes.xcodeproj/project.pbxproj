@@ -55,9 +55,22 @@
 		CB2AD6482DC1223D00B9A269 /* TidyNotesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TidyNotesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		CB812AA82E28E44000850B18 /* Exceptions for "TidyNotes" folder in "TidyNotes" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = CB2AD6282DC1223B00B9A269 /* TidyNotes */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		CB2AD62B2DC1223B00B9A269 /* TidyNotes */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CB812AA82E28E44000850B18 /* Exceptions for "TidyNotes" folder in "TidyNotes" target */,
+			);
 			path = TidyNotes;
 			sourceTree = "<group>";
 		};
@@ -449,8 +462,10 @@
 				DEVELOPMENT_TEAM = NPQ6B3HGC2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TidyNotes/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Tidy Notes";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Allow Tidy Notes to use Face ID for secure login.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -481,8 +496,10 @@
 				DEVELOPMENT_TEAM = NPQ6B3HGC2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TidyNotes/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Tidy Notes";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Allow Tidy Notes to use Face ID for secure login.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

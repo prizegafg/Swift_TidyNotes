@@ -36,6 +36,8 @@ struct TaskListView: View {
                 
                 if presenter.isLoading {
                     loadingView
+                } else if presenter.tasks.isEmpty && presenter.searchQuery.isEmpty {
+                    emptyTaskView
                 } else if presenter.filteredTasks.isEmpty {
                     noSearchDataView
                 } else {
@@ -115,6 +117,23 @@ struct TaskListView: View {
                 .fontWeight(.medium)
                 .foregroundColor(.secondary)
             Text("Try search with other keyword or create a task".localizedDescription)
+                .font(.footnote)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 40)
+        }
+        .padding(.top, 40)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemGroupedBackground))
+    }
+    
+    private var emptyTaskView: some View {
+        VStack(spacing: 16) {
+            Text("No Task Found".localizedDescription)
+                .font(.title3)
+                .fontWeight(.medium)
+                .foregroundColor(.secondary)
+            Text("Please Create New Task using + Button".localizedDescription)
                 .font(.footnote)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)

@@ -31,36 +31,47 @@ struct TidyNotesApp: App {
 struct RootView: View {
     @State private var isLoggedIn: Bool = false
     @State private var checked: Bool = false
+    @State private var isFaceIDAuthenticated = false
+    @State private var showFaceIDError = false
+    @State private var faceIDErrorMsg: String?
     
     var body: some View {
         if checked {
             if isLoggedIn {
-                TaskListModule.makeTaskListView()
-                    .onAppear {
-                        if let userId = Auth.auth().currentUser?.uid {
-                            UserProfileService.fetchUserProfileFromFirestore(userId: userId) { result in
-                                if case let .success(profile) = result {
-                                    UserProfileService.saveProfileToLocal(profile)
-                                    SessionManager.shared.currentUser = profile
-                                }
-                            }
+                if UserDefaults.standard.isFaceIDEnabled && !isFaceIDAuthenticated {
+                    FaceIDGateView(
+                        onSuccess: { isFaceIDAuthenticated = true },
+                        onFail: { errorMsg in
+                            faceIDErrorMsg = errorMsg ?? "Face ID Required."
+                            showFaceIDError = true
                         }
+                    )
+                    .alert(isPresented: $showFaceIDError) {
+                        Alert(
+                            title: Text("Authentication Failed"),
+                            message: Text(faceIDErrorMsg ?? "Face ID authentication is required."),
+                            dismissButton: .default(Text("Retry")) {
+                                isFaceIDAuthenticated = false
+                            }
+                        )
                     }
+                } else {
+                    TaskListModule.makeTaskListView()
+                }
             } else {
                 LoginModule.makeLoginView()
             }
         } else {
-            ProgressView()
-                .onAppear {
-                    if let user = Auth.auth().currentUser,
-                       let profile = UserProfileService.loadProfileFromLocal(userId: user.uid) {
-                        SessionManager.shared.currentUser = profile
-                        isLoggedIn = true
-                    } else {
-                        isLoggedIn = false
-                    }
-                    checked = true
+            ProgressView().onAppear {
+                if let user = Auth.auth().currentUser,
+                   let profile = UserProfileService.loadProfileFromLocal(userId: user.uid) {
+                    SessionManager.shared.currentUser = profile
+                    isLoggedIn = true
+                } else {
+                    isLoggedIn = false
                 }
+                checked = true
+            }
         }
         
     }
