@@ -30,5 +30,17 @@ final class TaskDetailInteractor {
             })
             .eraseToAnyPublisher()
     }
+    
+    func refreshLocalTasksFromCloud(userId: String) -> AnyPublisher<Void, Error> {
+        Future { promise in
+            TaskService.shared.fetchTasksFromFirestoreAndReplaceRealm(for: userId) { success in
+                if success {
+                    promise(.success(()))
+                } else {
+                    promise(.failure(AppError.databaseWriteFailed))
+                }
+            }
+        }.eraseToAnyPublisher()
+    }
 }
 

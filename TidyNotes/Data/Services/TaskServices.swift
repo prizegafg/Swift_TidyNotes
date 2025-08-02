@@ -149,6 +149,19 @@ struct TaskService {
                 }
             }
     }
+    
+    func deleteTaskInFirestore(taskId: UUID, completion: @escaping (Bool) -> Void) {
+        db.collection("tasks").document(taskId.uuidString)
+            .delete { error in
+                if let error = error {
+                    print("Firestore delete error:", error.localizedDescription)
+                    completion(false)
+                } else {
+                    print("✅ Firestore task deleted:", taskId)
+                    completion(true)
+                }
+            }
+    }
 
     
     func clearLocalTasks() {

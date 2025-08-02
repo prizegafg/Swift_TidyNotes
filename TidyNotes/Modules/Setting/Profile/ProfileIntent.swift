@@ -50,11 +50,11 @@ final class ProfilePresenter: ObservableObject {
         guard !username.trimmed.isEmpty,
               !firstName.trimmed.isEmpty,
               !lastName.trimmed.isEmpty else {
-            showError(message: "Field tidak boleh kosong.")
+            showError(message: "Field Cannot be Empty")
             return
         }
         guard let currentUser = SessionManager.shared.currentUser else {
-            showError(message: "User tidak ditemukan.")
+            showError(message: "User Not Found")
             return
         }
 
@@ -83,11 +83,11 @@ final class ProfilePresenter: ObservableObject {
     }
 
     func onSelectPhotoTapped() {
-        router.presentImagePicker { [weak self] image in
-            if let img = image {
-                self?.profileImage = img
-            }
-        }
+//        router.presentImagePicker { [weak self] image in
+//            if let img = image {
+//                self?.profileImage = img
+//            }
+//        }
     }
 
     private func showError(message: String) {

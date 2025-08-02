@@ -54,8 +54,11 @@ final class LoginPresenter: ObservableObject {
                     case .success(let profile):
                         UserProfileService.saveProfileToLocal(profile)
                         SessionManager.shared.currentUser = profile
-                        DispatchQueue.main.async {
-                            self.router.navigateToTaskList()
+                        
+                        TaskService.shared.fetchTasksFromFirestoreAndReplaceRealm(for: userId) { success in
+                            DispatchQueue.main.async {
+                                self.router.navigateToTaskList()
+                            }
                         }
                     case .failure(let error):
                         DispatchQueue.main.async {

@@ -74,7 +74,9 @@ final class SettingsPresenter: ObservableObject {
     }
     
     func onEditProfileTapped() {
+        router.navigateToProfile()
     }
+    
     
     func onLanguageTapped() {
         showLanguageDropdown.toggle()

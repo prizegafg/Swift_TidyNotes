@@ -20,25 +20,25 @@ struct TaskDetailView: View {
 
     private var titleBinding: Binding<String> {
         Binding(
-            get: { presenter.task.title },
+            get: { presenter.taskModel.title },
             set: { presenter.onTitleChanged($0) }
         )
     }
     private var descBinding: Binding<String> {
         Binding(
-            get: { presenter.task.descriptionText },
+            get: { presenter.taskModel.descriptionText },
             set: { presenter.onDescChanged($0) }
         )
     }
     private var dueDateBinding: Binding<Date> {
         Binding(
-            get: { presenter.task.dueDate ?? Date() },
+            get: { presenter.taskModel.dueDate ?? Date() },
             set: { presenter.onDueDateChanged($0) }
         )
     }
     private var reminderDateBinding: Binding<Date> {
         Binding(
-            get: { presenter.task.reminderDate ?? Date() },
+            get: { presenter.taskModel.reminderDate ?? Date() },
             set: { presenter.onReminderChanged(true, date: $0) }
         )
     }
@@ -94,7 +94,7 @@ struct TaskDetailView: View {
 
     private var prioritySection: some View {
         Toggle("Priority Task".localizedDescription, isOn: Binding(
-            get: { presenter.task.isPriority },
+            get: { presenter.taskModel.isPriority },
             set: { presenter.onPriorityChanged($0) }
         ))
         .toggleStyle(SwitchToggleStyle(tint: .red))
@@ -103,12 +103,12 @@ struct TaskDetailView: View {
     private var dueDateSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Toggle("Set Due Date".localizedDescription, isOn: Binding(
-                get: { presenter.task.dueDate != nil },
+                get: { presenter.taskModel.dueDate != nil },
                 set: { $0 ? presenter.onDueDateChanged(presenter.task.dueDate ?? Date()) : presenter.onDueDateChanged(nil) }
             ))
             if presenter.task.dueDate != nil {
                 HStack {
-                    Text(presenter.task.dueDate?.formatted(date: .abbreviated, time: .omitted) ?? "-")
+                    Text(presenter.taskModel.dueDate?.formatted(date: .abbreviated, time: .omitted) ?? "-")
                     Spacer()
                     Button {
                         showDueDatePicker.toggle()
@@ -126,12 +126,12 @@ struct TaskDetailView: View {
     private var reminderSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Toggle("Enable Reminder".localizedDescription, isOn: Binding(
-                get: { presenter.task.isReminderOn },
+                get: { presenter.taskModel.isReminderOn },
                 set: { presenter.onReminderChanged($0, date: presenter.task.reminderDate) }
             ))
             if presenter.task.isReminderOn {
                 HStack {
-                    Text(presenter.task.reminderDate?.formatted(date: .abbreviated, time: .shortened) ?? "-")
+                    Text(presenter.taskModel.reminderDate?.formatted(date: .abbreviated, time: .shortened) ?? "-")
                     Spacer()
                     Button { showReminderDatePicker.toggle() } label: {
                         Image(systemName: "calendar.badge.clock").foregroundColor(.blue)
@@ -148,7 +148,7 @@ struct TaskDetailView: View {
 
     private var statusSection: some View {
         Picker("Status".localizedDescription, selection: Binding(
-            get: { presenter.task.status },
+            get: { presenter.taskModel.status },
             set: { presenter.onStatusChanged($0) }
         )) {
             ForEach(TaskStatus.allCases, id: \.self) {
@@ -166,7 +166,7 @@ struct TaskDetailView: View {
                     .scaledToFit()
                     .frame(height: 200)
                     .cornerRadius(12)
-            } else if let path = presenter.task.imagePath,
+            } else if let path = presenter.taskModel.imagePath,
                       let image = UIImage(contentsOfFile: path) {
                 Image(uiImage: image)
                     .resizable()

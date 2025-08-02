@@ -18,6 +18,10 @@ final class SettingsRouter {
         window?.makeKeyAndVisible()
     }
     
+    func navigateToProfile() {
+        RootNavigator.shared.replaceRoot(view: ProfileModule.makeProfileView())
+    }
+    
     func navigateToResetPassword() {
         RootNavigator.shared.replaceRoot(view: ResetPasswordModule.makeResetPasswordView())
     }

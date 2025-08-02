@@ -11,6 +11,7 @@ import SwiftUI
 
 final class TaskDetailPresenter: ObservableObject {
     @Published var task: TaskEntity
+    @Published var taskModel: TaskModel
     @Published var isLoading: Bool = false
     @Published var showError: Bool = false
     @Published var errorMessage: String = ""
@@ -35,6 +36,7 @@ final class TaskDetailPresenter: ObservableObject {
         mode: Mode
     ) {
         self.task = task
+        self.taskModel = TaskModel(entity: task)
         self.interactor = interactor
         self.router = router
         self.mode = mode
@@ -89,34 +91,34 @@ final class TaskDetailPresenter: ObservableObject {
     }
 
     func onTitleChanged(_ newValue: String) {
-        task.title = newValue
+        taskModel.title = newValue
         checkIfChanged()
     }
     func onDescChanged(_ newValue: String) {
-        task.descriptionText = newValue
+        taskModel.descriptionText = newValue
         checkIfChanged()
     }
     func onDueDateChanged(_ newValue: Date?) {
-        task.dueDate = newValue
+        taskModel.dueDate = newValue
         checkIfChanged()
     }
     func onPriorityChanged(_ newValue: Bool) {
-        task.isPriority = newValue
+        taskModel.isPriority = newValue
         checkIfChanged()
     }
     func onStatusChanged(_ newValue: TaskStatus) {
-        task.status = newValue
+        taskModel.status = newValue
         checkIfChanged()
     }
     func onReminderChanged(_ on: Bool, date: Date?) {
-        task.isReminderOn = on
-        task.reminderDate = on ? (date ?? Calendar.current.date(byAdding: .minute, value: 15, to: Date())) : nil
+        taskModel.isReminderOn = on
+        taskModel.reminderDate = on ? (date ?? Calendar.current.date(byAdding: .minute, value: 15, to: Date())) : nil
         checkIfChanged()
     }
     func setImage(_ image: UIImage) {
         selectedImage = image
         if let path = saveImageToDisk(image) {
-            task.imagePath = path
+            taskModel.imagePath = path
             checkIfChanged()
         }
     }
@@ -124,14 +126,29 @@ final class TaskDetailPresenter: ObservableObject {
     // Save ke DB
     func saveTask() {
         isLoading = true
+        let entityData = taskModel.toEntity()
         let pub: AnyPublisher<Void, Error> = (mode == .create)
-            ? interactor.createTask(task).map { _ in }.eraseToAnyPublisher()
-            : interactor.saveTask(task)
-        pub.receive(on: DispatchQueue.main)
+        ? interactor.createTask(entityData).map { _ in }.eraseToAnyPublisher()
+        : interactor.saveTask(entityData)
+        
+        pub
+            .flatMap { [weak self] _ -> AnyPublisher<Void, Error> in
+                guard let userId = self?.task.userId else {
+                    return Fail(error: AppError.userNotLoggedIn).eraseToAnyPublisher()
+                }
+                // ✅ Refresh data dari Cloud setelah save task sukses
+                return self?.interactor.refreshLocalTasksFromCloud(userId: userId) ??
+                Fail(error: AppError.unknown).eraseToAnyPublisher()
+            }
+            .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] comp in
                 self?.isLoading = false
-                if case .failure(let err) = comp { self?.showError(message: err.localizedDescription) }
-                else { self?.router.dismissAndRefreshTaskList() }
+                if case .failure(let err) = comp {
+                    self?.showError(message: err.localizedDescription)
+                } else {
+                    // ✅ Refresh task list ketika selesai
+                    self?.router.dismissAndRefreshTaskList()
+                }
             }, receiveValue: { _ in })
             .store(in: &cancellables)
     }
@@ -140,7 +157,7 @@ final class TaskDetailPresenter: ObservableObject {
         if let ori = originalTask, mode == .edit {
             isTaskChanged = !isEqual(task, ori)
         } else {
-            isTaskChanged = !task.title.trimmed.isEmpty
+            isTaskChanged = !taskModel.title.trimmed.isEmpty
         }
     }
 

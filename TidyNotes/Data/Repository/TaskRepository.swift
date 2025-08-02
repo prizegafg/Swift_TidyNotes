@@ -19,25 +19,25 @@ protocol TaskRepositoryProtocol {
 
 final class TaskRepository: TaskRepositoryProtocol {
     private let realm: Realm
-
+    
     init(realm: Realm = try! Realm()) {
         self.realm = realm
     }
-
+    
     func fetchTasks(userId: String) -> AnyPublisher<[TaskEntity], Error> {
         let results = realm.objects(TaskEntity.self).where { $0.userId == userId }
         return Just(Array(results))
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
-
+    
     func fetchTask(by id: UUID) -> AnyPublisher<TaskEntity?, Error> {
         let task = realm.object(ofType: TaskEntity.self, forPrimaryKey: id)
         return Just(task)
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
-
+    
     func saveTask(_ task: TaskEntity) -> AnyPublisher<Void, Error> {
         return Future { promise in
             do {
@@ -51,21 +51,26 @@ final class TaskRepository: TaskRepositoryProtocol {
         }
         .eraseToAnyPublisher()
     }
-
+    
     func deleteTask(_ id: UUID) -> AnyPublisher<Void, Error> {
         return Future { promise in
             guard let task = self.realm.object(ofType: TaskEntity.self, forPrimaryKey: id) else {
-                promise(.success(()))
+                TaskService.shared.deleteTaskInFirestore(taskId: id) { _ in
+                    promise(.success(()))
+                }
                 return
             }
             do {
                 try self.realm.write {
                     self.realm.delete(task)
                 }
-                promise(.success(()))
+                TaskService.shared.deleteTaskInFirestore(taskId: id) { _ in
+                    promise(.success(()))
+                }
             } catch {
                 promise(.failure(error))
             }
+            
         }
         .eraseToAnyPublisher()
     }
@@ -77,9 +82,8 @@ final class TaskRepository: TaskRepositoryProtocol {
                 return
             }
             do {
-                let realm = try Realm()
-                if let task = realm.object(ofType: TaskEntity.self, forPrimaryKey: uuid) {
-                    try realm.write {
+                if let task = self.realm.object(ofType: TaskEntity.self, forPrimaryKey: uuid) {
+                    try self.realm.write {
                         task.isReminderOn = false
                         task.reminderDate = nil
                     }

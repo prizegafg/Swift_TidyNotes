@@ -9,8 +9,8 @@ import Foundation
 import Combine
 
 final class TaskListPresenter: ObservableObject {
-    @Published var tasks: [TaskEntity] = []
-    @Published var filteredTasks: [TaskEntity] = []
+    @Published var tasks: [TaskModel] = []
+    @Published var filteredTasks: [TaskModel] = []
     @Published var searchQuery: String = "" {
         didSet { filterTasks() }
     }
@@ -50,7 +50,7 @@ final class TaskListPresenter: ObservableObject {
                     self?.errorMessage = error.localizedDescription
                 }
             }, receiveValue: { [weak self] taskList in
-                self?.tasks = taskList
+                self?.tasks = taskList.map { TaskModel(entity: $0) }
                 self?.filterTasks()
             })
             .store(in: &cancellables)
@@ -71,11 +71,19 @@ final class TaskListPresenter: ObservableObject {
             self?.loadTasks()
         })
     }
-    func onEditTaskTapped(_ task: TaskEntity) {
-        router.navigateToEditTask(task: task, onTasksUpdated: { [weak self] in
+    func onEditTaskTapped(_ task: TaskModel) {
+        router.navigateToEditTask(task: task.toEntity(), onTasksUpdated: { [weak self] in
             self?.loadTasks()
         })
     }
+    
+    func onDeleteTaskByOffsets(_ offsets: IndexSet) {
+        for index in offsets {
+            let id = filteredTasks[index].id
+            onDeleteTaskTapped(id)
+        }
+    }
+    
     func onDeleteTaskTapped(_ id: UUID) {
         showDeleteConfirmation = true
         taskToDelete = id
@@ -109,7 +117,7 @@ final class TaskListPresenter: ObservableObject {
             }, receiveValue: { })
             .store(in: &cancellables)
     }
-    func onTaskSelected(_ task: TaskEntity) {
+    func onTaskSelected(_ task: TaskModel) {
         selectedTaskId = task.id
         onEditTaskTapped(task)
     }

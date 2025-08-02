@@ -73,10 +73,6 @@ final class RealmManager {
     
     func fetchAllProjects() -> [ProjectEntity] {
         realm.objects(RealmProjectObject.self).map { $0.toEntity() }
-//        let results = realm.objects(RealmTaskObject.self).where {
-//                $0.userId == userId
-//            }
-//            return results.map { $0.toEntity() }
     }
 
     func fetchProject(by id: UUID) -> ProjectEntity? {

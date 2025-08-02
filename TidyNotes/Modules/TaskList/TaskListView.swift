@@ -54,6 +54,17 @@ struct TaskListView: View {
             presenter.viewDidAppear()
             presenter.selectedTaskId = nil
         }
+        .confirmationDialog(
+            "Are you sure you want to delete this task?",
+            isPresented: $presenter.showDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                presenter.confirmDeleteTask()
+            }
+            Button("Cancel", role: .cancel) { }
+        }
+        
         .alert(isPresented: .constant(presenter.errorMessage != nil)) {
             Alert(
                 title: Text("Error"),
@@ -103,6 +114,7 @@ struct TaskListView: View {
                     onSelect: { presenter.onTaskSelected(task) }
                 )
             }
+            .onDelete(perform: presenter.onDeleteTaskByOffsets)
         }
         .listStyle(PlainListStyle())
     }
@@ -191,7 +203,7 @@ struct TaskListView: View {
 }
 
 struct TaskRowView: View {
-    let task: TaskEntity
+    let task: TaskModel
     let isSelected: Bool
     let onSelect: () -> Void
     
