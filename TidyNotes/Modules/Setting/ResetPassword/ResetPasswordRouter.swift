@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 final class ResetPasswordRouter {
-    func navigateToLogin() {
-        RootNavigator.shared.replaceRoot(view: LoginModule.makeLoginView())
-    }
+    // Tidak perlu replaceRoot, navigasi cukup dismiss (native SwiftUI).
+    // Fungsi router bisa dikosongkan atau digunakan jika kamu ingin behavior custom.
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ResetPasswordView: View {
     @ObservedObject var presenter: ResetPasswordPresenter
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(spacing: 24) {
@@ -16,12 +17,18 @@ struct ResetPasswordView: View {
                 .font(.title)
                 .fontWeight(.bold)
                 .padding(.top, 40)
+            Text("Please input your account email to reset password".localizedDescription)
+                .font(.caption)
+                .fontWeight(.regular)
+
             TextField("Email", text: $presenter.email)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .keyboardType(.emailAddress)
                 .autocapitalization(.none)
                 .padding(.horizontal)
                 .frame(height: 50)
+                .disabled(!presenter.email.isEmpty) // Disable jika email auto-isi dari Setting
+
             Button(action: {
                 presenter.onSendTapped()
             }) {
@@ -39,22 +46,19 @@ struct ResetPasswordView: View {
             .foregroundColor(.white)
             .cornerRadius(10)
             .padding(.horizontal)
-            Button("Back to Login".localizedDescription) {
-                presenter.onLoginTapped()
-            }
-            .font(.footnote)
-            .foregroundColor(.green)
+            .disabled(presenter.email.trimmed.isEmpty) // disable kalau field kosong
+
+            Spacer()
         }
         .alert(isPresented: $presenter.showError) {
             Alert(title: Text("Error"), message: Text(presenter.errorMessage), dismissButton: .default(Text("OK")))
         }
-        .alert("Reset email send!".localizedDescription, isPresented: $presenter.showSuccess) {
+        .alert("Reset email sent!".localizedDescription, isPresented: $presenter.showSuccess) {
             Button("OK", role: .cancel) {
-                presenter.onLoginTapped()
+                dismiss()
             }
         } message: {
             Text("Check your email to reset password".localizedDescription)
         }
-        Spacer()
     }
 }

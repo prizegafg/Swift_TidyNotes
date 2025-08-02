@@ -83,6 +83,8 @@ final class TaskDetailPresenter: ObservableObject {
                         imagePath: fetched.imagePath,
                         status: fetched.status
                     )
+                    
+                    self?.taskModel = TaskModel(entity: fetched)
                 } else {
                     self?.showError(message: "Task not found")
                 }

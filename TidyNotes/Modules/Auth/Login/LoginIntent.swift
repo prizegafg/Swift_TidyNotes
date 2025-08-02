@@ -16,6 +16,8 @@ final class LoginPresenter: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var showError: Bool = false
     @Published var errorMessage: String = ""
+    @Published var isResetPasswordActive = false
+
     
     private let interactor: LoginInteractor
     private let router: LoginRouter
@@ -72,6 +74,10 @@ final class LoginPresenter: ObservableObject {
     
     func onRegisterTapped() {
         router.navigateToRegister()
+    }
+    
+    func onForgotTapped() {
+        isResetPasswordActive = true
     }
     
     private func showError(message: String) {

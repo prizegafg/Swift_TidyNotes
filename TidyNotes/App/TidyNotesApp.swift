@@ -37,29 +37,31 @@ struct RootView: View {
     
     var body: some View {
         if checked {
-            if isLoggedIn {
-                if UserDefaults.standard.isFaceIDEnabled && !isFaceIDAuthenticated {
-                    FaceIDGateView(
-                        onSuccess: { isFaceIDAuthenticated = true },
-                        onFail: { errorMsg in
-                            faceIDErrorMsg = errorMsg ?? "Face ID Required."
-                            showFaceIDError = true
-                        }
-                    )
-                    .alert(isPresented: $showFaceIDError) {
-                        Alert(
-                            title: Text("Authentication Failed"),
-                            message: Text(faceIDErrorMsg ?? "Face ID authentication is required."),
-                            dismissButton: .default(Text("Retry")) {
-                                isFaceIDAuthenticated = false
+            NavigationStack {
+                if isLoggedIn {
+                    if UserDefaults.standard.isFaceIDEnabled && !isFaceIDAuthenticated {
+                        FaceIDGateView(
+                            onSuccess: { isFaceIDAuthenticated = true },
+                            onFail: { errorMsg in
+                                faceIDErrorMsg = errorMsg ?? "Face ID Required."
+                                showFaceIDError = true
                             }
                         )
+                        .alert(isPresented: $showFaceIDError) {
+                            Alert(
+                                title: Text("Authentication Failed"),
+                                message: Text(faceIDErrorMsg ?? "Face ID authentication is required."),
+                                dismissButton: .default(Text("Retry")) {
+                                    isFaceIDAuthenticated = false
+                                }
+                            )
+                        }
+                    } else {
+                        TaskListModule.makeTaskListView()
                     }
                 } else {
-                    TaskListModule.makeTaskListView()
+                    LoginModule.makeLoginView()
                 }
-            } else {
-                LoginModule.makeLoginView()
             }
         } else {
             ProgressView().onAppear {

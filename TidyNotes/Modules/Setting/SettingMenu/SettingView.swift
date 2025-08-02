@@ -77,9 +77,11 @@ struct SettingsView: View {
                             SettingRow(
                                 icon: "lock",
                                 title: "Change Password".localizedDescription,
-//                                onTap: { presenter.onPasswordTapped() }
-                                onTap: { showFeatureInProgress = true }
+                                onTap: { presenter.isResetPasswordActive = true }
                             )
+                            .navigationDestination(isPresented: $presenter.isResetPasswordActive) {
+                                ResetPasswordModule.makeResetPasswordView(email: presenter.email)
+                            }
                             Divider().padding(.leading, 44)
                             HStack {
                                 SettingRow(

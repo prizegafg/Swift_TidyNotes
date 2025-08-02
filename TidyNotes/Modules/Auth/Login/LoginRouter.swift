@@ -15,4 +15,5 @@ final class LoginRouter {
     func navigateToRegister() {
         RootNavigator.shared.replaceRoot(view: RegisterModule.makeRegisterView())
     }
+    
 }

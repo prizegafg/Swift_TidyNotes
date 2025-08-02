@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
     @ObservedObject var presenter: LoginPresenter
+    @State private var showResetPassword = false
     
     var body: some View {
         VStack {
@@ -65,9 +66,18 @@ struct LoginView: View {
                 }
                 .font(.footnote)
                 .foregroundColor(.white)
+                
+                Button(action: { presenter.onForgotTapped() }) {
+                    Text("Forgot Password?".localizedDescription)
+                        .font(.footnote)
+                        .foregroundColor(.blue)
+                }
             }
             .padding(.horizontal, 32)
             Spacer()
+        }
+        .navigationDestination(isPresented: $presenter.isResetPasswordActive) {
+            ResetPasswordModule.makeResetPasswordView()
         }
         .padding(.top)
         .alert(isPresented: $presenter.showError) {

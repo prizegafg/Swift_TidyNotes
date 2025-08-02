@@ -28,6 +28,7 @@ final class SettingsPresenter: ObservableObject {
     @Published var showLogoutDialog = false
     @Published var showLanguageDropdown: Bool = false
     @Published var showThemeDropdown: Bool = false
+    @Published var isResetPasswordActive = false
     
     private let interactor: SettingsInteractor
     private let router: SettingsRouter
@@ -103,6 +104,7 @@ final class SettingsPresenter: ObservableObject {
     }
     
     func onPasswordTapped() {
+        isResetPasswordActive = true
     }
     
     func onFaceIDToggled(_ enabled: Bool) {
