@@ -57,13 +57,19 @@ final class TaskListPresenter: ObservableObject {
     }
     func filterTasks() {
         let query = searchQuery.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-        if query.isEmpty {
-            filteredTasks = tasks
-        } else {
-            filteredTasks = tasks.filter {
-                $0.title.lowercased().contains(query) ||
-                $0.descriptionText.lowercased().contains(query)
+        let filtered = query.isEmpty
+        ? tasks
+        : tasks.filter {
+            $0.title.lowercased().contains(query) ||
+            $0.descriptionText.lowercased().contains(query)
+        }
+        filteredTasks = filtered.sorted {
+            // Priority selalu di atas
+            if $0.isPriority != $1.isPriority {
+                return $0.isPriority && !$1.isPriority
             }
+            // Kalau priority sama, urut terbaru di atas
+            return $0.createdAt > $1.createdAt
         }
     }
     func onAddTaskTapped() {
