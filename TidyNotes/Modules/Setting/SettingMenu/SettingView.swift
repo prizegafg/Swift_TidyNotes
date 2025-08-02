@@ -10,6 +10,7 @@ import PhotosUI
 
 struct SettingsView: View {
     @StateObject var presenter: SettingsPresenter
+    @State private var showFeatureInProgress = false
     
     var body: some View {
         ScrollView {
@@ -27,7 +28,7 @@ struct SettingsView: View {
                     Text(presenter.email)
                         .font(.footnote)
                         .foregroundColor(AppColors.current.textSecondary)
-                    Button(action: { presenter.onEditProfileTapped() }) {
+                    NavigationLink(destination: ProfileModule.makeProfileView()) {
                         Text("Edit profile".localizedDescription)
                             .font(.callout)
                             .padding(.horizontal, 16)
@@ -75,8 +76,9 @@ struct SettingsView: View {
                         VStack(spacing: 0) {
                             SettingRow(
                                 icon: "lock",
-                                title: "Password".localizedDescription,
-                                onTap: { presenter.onPasswordTapped() }
+                                title: "Change Password".localizedDescription,
+//                                onTap: { presenter.onPasswordTapped() }
+                                onTap: { showFeatureInProgress = true }
                             )
                             Divider().padding(.leading, 44)
                             HStack {
@@ -124,6 +126,11 @@ struct SettingsView: View {
                 presenter.logout()
             }
         )
+        .sheet(isPresented: $showFeatureInProgress) {
+            InProgressDialog {
+                showFeatureInProgress = false
+            }
+        }
     }
 }
 

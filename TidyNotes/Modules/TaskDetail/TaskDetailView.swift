@@ -15,6 +15,7 @@ struct TaskDetailView: View {
     @State private var showDueDatePicker = false
     @State private var showReminderDatePicker = false
     @State private var selectedItem: PhotosPickerItem?
+    @State private var showFeatureInProgress = false
 
     enum FocusField { case title, notes }
 
@@ -62,6 +63,11 @@ struct TaskDetailView: View {
         .alert(isPresented: $presenter.showError) {
             Alert(title: Text("Error"), message: Text(presenter.errorMessage), dismissButton: .default(Text("OK")))
         }
+        .sheet(isPresented: $showFeatureInProgress) {
+            InProgressDialog {
+                showFeatureInProgress = false
+            }
+        }
         .overlay(
             Group {
                 if presenter.isLoading {
@@ -80,6 +86,7 @@ struct TaskDetailView: View {
             }
         }
         .onTapGesture { focusedField = nil }
+        
     }
 
     // MARK: - Subviews
@@ -174,19 +181,26 @@ struct TaskDetailView: View {
                     .frame(height: 200)
                     .cornerRadius(12)
             }
-            PhotosPicker(selection: $selectedItem, matching: .images) {
+//            PhotosPicker(selection: $selectedItem, matching: .images) {
+//                Label("Upload Picture".localizedDescription, systemImage: "photo")
+//            }
+//            .onChange(of: selectedItem) { newItem in
+//                Task {
+//                    if let data = try? await newItem?.loadTransferable(type: Data.self),
+//                       let image = UIImage(data: data) {
+////                        presenter.setImage(image)
+//                    }
+//                }
+//            }
+            Button(action: { showFeatureInProgress = true }) {
                 Label("Upload Picture".localizedDescription, systemImage: "photo")
             }
-            .onChange(of: selectedItem) { newItem in
-                Task {
-                    if let data = try? await newItem?.loadTransferable(type: Data.self),
-                       let image = UIImage(data: data) {
-                        presenter.setImage(image)
-                    }
-                }
-            }
+            
         }
+        
     }
+    
+
 
     private var descSection: some View {
         TextEditor(text: descBinding)

@@ -12,6 +12,8 @@ struct ProfileView: View {
     @ObservedObject var presenter: ProfilePresenter
     @State private var showImagePicker = false
     @State private var selectedPhoto: PhotosPickerItem?
+    
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ScrollView {
@@ -41,6 +43,7 @@ struct ProfileView: View {
                             .shadow(radius: 2)
                     }
                     .offset(x: -8, y: -8)
+                    .disabled(true)
                 }
                 .padding(.top, 32)
 

@@ -239,6 +239,9 @@
         }
       }
     },
+    "Feature in Development" : {
+
+    },
     "First Name" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -614,6 +617,9 @@
           }
         }
       }
+    },
+    "Undestood" : {
+
     },
     "Update Berhasil" : {
 

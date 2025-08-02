@@ -12,6 +12,8 @@ enum ProfileModule {
         let interactor = ProfileInteractor()
         let router = ProfileRouter()
         let presenter = ProfilePresenter(interactor: interactor, router: router)
-        return ProfileView(presenter: presenter)
+        return NavigationStack {
+            ProfileView(presenter: presenter)
+        }
     }
 }
