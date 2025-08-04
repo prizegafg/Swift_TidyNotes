@@ -68,6 +68,16 @@ struct TaskListView: View {
                     }
                 )
             }
+            
+            .navigationDestination(
+                isPresented: $navigationState.showTaskDetail,
+                destination: {
+                    if let taskId = presenter.selectedTaskId {
+                        TaskDetailRouter.makeTaskDetailView(taskId: taskId)
+                    }
+                }
+            )
+            
             .navigationBarItems(
                 trailing: NavigationLink(
                     destination: SettingsModule.makeSettingsView()
@@ -75,6 +85,7 @@ struct TaskListView: View {
                     Image(systemName: "gear")
                 }
             )
+            
             .sheet(isPresented: $navigationState.showAddTask) {
                 TaskDetailRouter.makeAddTaskView(
                     userId: presenter.userId,
@@ -133,8 +144,6 @@ private struct TaskRowView: View {
     var body: some View {
         Button(action: { onSelect() }) {
             HStack(alignment: .top, spacing: 12) {
-                Image(systemName: task.status == .done  ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(task.status == .done ? .green : .gray)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(task.title)
                         .font(.headline)
@@ -152,15 +161,24 @@ private struct TaskRowView: View {
                     }
                 }
                 Spacer()
-                if isSelected {
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(.accentColor)
+                HStack(spacing: 4) {
+                    ProgressBadge(status: task.status)
+                    if task.isPriority {
+                        Image(systemName: "star.fill")
+                            .foregroundColor(.yellow)
+                    }
+                    
                 }
+//                if isSelected {
+//                    Image(systemName: "chevron.right")
+//                        .foregroundColor(.accentColor)
+//                }
             }
             .padding(.vertical, 8)
             .padding(.horizontal, 4)
             .background(isSelected ? Color.accentColor.opacity(0.1) : Color.clear)
             .cornerRadius(8)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -300,3 +318,33 @@ private struct FloatingActionButtonSection: View {
         }
     }
 }
+
+private struct ProgressBadge: View {
+    let status: TaskStatus
+    var body: some View {
+        Text(statusDisplay)
+            .font(.caption2)
+            .fontWeight(.semibold)
+            .foregroundColor(.white)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(statusColor)
+            .cornerRadius(6)
+            .padding(.leading, 4)
+    }
+    var statusDisplay: String {
+        switch status {
+        case .todo: return "To Do"
+        case .inProgress: return "In Progress"
+        case .done: return "Done"
+        }
+    }
+    var statusColor: Color {
+        switch status {
+        case .todo: return .gray
+        case .inProgress: return .blue
+        case .done: return .green
+        }
+    }
+}
+

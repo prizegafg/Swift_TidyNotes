@@ -41,10 +41,25 @@ final class TaskRepository: TaskRepositoryProtocol {
     func saveTask(_ task: TaskEntity) -> AnyPublisher<Void, Error> {
         return Future { promise in
             do {
-                try self.realm.write {
-                    self.realm.add(task, update: .modified)
+                if let existing = self.realm.object(ofType: TaskEntity.self, forPrimaryKey: task.id) {
+                    try self.realm.write {
+                        // Update semua field
+                        existing.title = task.title
+                        existing.descriptionText = task.descriptionText
+                        existing.isPriority = task.isPriority
+                        existing.dueDate = task.dueDate
+                        existing.isReminderOn = task.isReminderOn
+                        existing.reminderDate = task.reminderDate
+                        existing.imagePath = task.imagePath
+                        existing.status = task.status
+                    }
+                    promise(.success(()))
+                } else {
+                    try self.realm.write {
+                        self.realm.add(task, update: .modified)
+                    }
+                    promise(.success(()))
                 }
-                promise(.success(()))
             } catch {
                 promise(.failure(error))
             }

@@ -12,49 +12,69 @@ struct TaskDetailView: View {
     @ObservedObject var presenter: TaskDetailPresenter
     @Environment(\.presentationMode) var presentationMode
     @FocusState private var focusedField: FocusField?
-    @State private var showDueDatePicker = false
-    @State private var showReminderDatePicker = false
-    @State private var selectedItem: PhotosPickerItem?
-    @State private var showFeatureInProgress = false
 
     enum FocusField { case title, notes }
-
-    private var titleBinding: Binding<String> {
-        Binding(
-            get: { presenter.taskModel.title },
-            set: { presenter.onTitleChanged($0) }
-        )
-    }
-    private var descBinding: Binding<String> {
-        Binding(
-            get: { presenter.taskModel.descriptionText },
-            set: { presenter.onDescChanged($0) }
-        )
-    }
-    private var dueDateBinding: Binding<Date> {
-        Binding(
-            get: { presenter.taskModel.dueDate ?? Date() },
-            set: { presenter.onDueDateChanged($0) }
-        )
-    }
-    private var reminderDateBinding: Binding<Date> {
-        Binding(
-            get: { presenter.taskModel.reminderDate ?? Date() },
-            set: { presenter.onReminderChanged(true, date: $0) }
-        )
-    }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                titleSection
-                prioritySection
-                dueDateSection
-                reminderSection
-                statusSection
-                imageSection
-                descSection
-                saveButtonSection
+                TitleSection(
+                    title: presenter.taskModel.title,
+                    onTitleChanged: presenter.onTitleChanged,
+                    focusedField: $focusedField
+                )
+                PrioritySection(
+                    isPriority: presenter.taskModel.isPriority,
+                    onPriorityChanged: presenter.onPriorityChanged
+                )
+                DueDateSection(
+                    dueDate: presenter.taskModel.dueDate,
+                    showDueDatePicker: $presenter.showDueDatePicker,
+                    onDueDateChanged: presenter.onDueDateChanged
+                )
+                ReminderSection(
+                    isReminderOn: presenter.taskModel.isReminderOn,
+                    reminderDate: presenter.taskModel.reminderDate,
+                    showReminderDatePicker: $presenter.showReminderDatePicker,
+                    onReminderChanged: presenter.onReminderChanged
+                )
+                StatusSection(
+                    status: presenter.taskModel.status,
+                    onStatusChanged: presenter.onStatusChanged
+                )
+                ImageSection(
+                    selectedImage: presenter.selectedImage,
+                    imagePath: presenter.taskModel.imagePath,
+                    onUploadTapped: { presenter.showFeatureInProgress = true }
+                )
+                DescriptionSection(
+                    descriptionText: presenter.taskModel.descriptionText,
+                    onDescChanged: presenter.onDescChanged,
+                    focusedField: $focusedField
+                )
+                
+                Spacer(minLength: 150)
+                VStack {
+                    Divider()
+                    Button(
+                        presenter.mode == .create ? "Add Task".localizedDescription : "Save Task".localizedDescription,
+                        action: {
+                            presenter.saveTask()
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                    )
+                    .disabled(!presenter.isTaskChanged)
+                    .buttonStyle(.borderedProminent)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 24)
+                }
+                .background(
+                    Color(.systemBackground)
+                        .ignoresSafeArea(edges: .bottom)
+                        .opacity(0.95)
+                )
             }
             .padding()
         }
@@ -63,9 +83,9 @@ struct TaskDetailView: View {
         .alert(isPresented: $presenter.showError) {
             Alert(title: Text("Error"), message: Text(presenter.errorMessage), dismissButton: .default(Text("OK")))
         }
-        .sheet(isPresented: $showFeatureInProgress) {
+        .sheet(isPresented: $presenter.showFeatureInProgress) {
             InProgressDialog {
-                showFeatureInProgress = false
+                presenter.showFeatureInProgress = false
             }
         }
         .overlay(
@@ -86,76 +106,116 @@ struct TaskDetailView: View {
             }
         }
         .onTapGesture { focusedField = nil }
-        
     }
+}
 
+// MARK: - Section Structs
 
-    private var titleSection: some View {
-        TextField("Type Task Title".localizedDescription, text: titleBinding)
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .focused($focusedField, equals: .title)
-            .submitLabel(.next)
-            .onSubmit { focusedField = .notes }
+struct TitleSection: View {
+    var title: String
+    var onTitleChanged: (String) -> Void
+    var focusedField: FocusState<TaskDetailView.FocusField?>.Binding
+
+    var body: some View {
+        TextField("Type Task Title".localizedDescription, text: Binding(
+            get: { title },
+            set: { onTitleChanged($0) }
+        ))
+        .textFieldStyle(RoundedBorderTextFieldStyle())
+        .focused(focusedField, equals: TaskDetailView.FocusField.title)
+        .submitLabel(.next)
+        .onSubmit { focusedField.wrappedValue = TaskDetailView.FocusField.notes }
     }
+}
 
-    private var prioritySection: some View {
+struct PrioritySection: View {
+    var isPriority: Bool
+    var onPriorityChanged: (Bool) -> Void
+
+    var body: some View {
         Toggle("Priority Task".localizedDescription, isOn: Binding(
-            get: { presenter.taskModel.isPriority },
-            set: { presenter.onPriorityChanged($0) }
+            get: { isPriority },
+            set: { onPriorityChanged($0) }
         ))
         .toggleStyle(SwitchToggleStyle(tint: .red))
     }
+}
 
-    private var dueDateSection: some View {
+struct DueDateSection: View {
+    var dueDate: Date?
+    @Binding var showDueDatePicker: Bool
+    var onDueDateChanged: (Date?) -> Void
+
+    var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Toggle("Set Due Date".localizedDescription, isOn: Binding(
-                get: { presenter.taskModel.dueDate != nil },
-                set: { $0 ? presenter.onDueDateChanged(presenter.taskModel.dueDate ?? Date()) : presenter.onDueDateChanged(nil) }
+                get: { dueDate != nil },
+                set: { $0 ? onDueDateChanged(dueDate ?? Date()) : onDueDateChanged(nil) }
             ))
-            if presenter.task.dueDate != nil {
+            if dueDate != nil {
                 HStack {
-                    Text(presenter.taskModel.dueDate?.formatted(date: .abbreviated, time: .omitted) ?? "-")
+                    Text(dueDate?.formatted(date: .abbreviated, time: .omitted) ?? "-")
                     Spacer()
                     Button {
                         showDueDatePicker.toggle()
                     } label: { Image(systemName: "calendar").foregroundColor(.blue) }
                 }
                 .sheet(isPresented: $showDueDatePicker) {
-                    DatePicker("Select Due Date".localizedDescription, selection: dueDateBinding, displayedComponents: .date)
-                        .datePickerStyle(.graphical)
-                        .padding()
+                    DatePicker(
+                        "Select Due Date".localizedDescription,
+                        selection: Binding(get: { dueDate ?? Date() }, set: { onDueDateChanged($0) }),
+                        displayedComponents: .date
+                    )
+                    .datePickerStyle(.graphical)
+                    .padding()
                 }
             }
         }
     }
+}
 
-    private var reminderSection: some View {
+struct ReminderSection: View {
+    var isReminderOn: Bool
+    var reminderDate: Date?
+    @Binding var showReminderDatePicker: Bool
+    var onReminderChanged: (Bool, Date?) -> Void
+
+    var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Toggle("Enable Reminder".localizedDescription, isOn: Binding(
-                get: { presenter.taskModel.isReminderOn },
-                set: { presenter.onReminderChanged($0, date: presenter.taskModel.reminderDate) }
+                get: { isReminderOn },
+                set: { onReminderChanged($0, reminderDate) }
             ))
-            if presenter.task.isReminderOn {
+            if isReminderOn {
                 HStack {
-                    Text(presenter.taskModel.reminderDate?.formatted(date: .abbreviated, time: .shortened) ?? "-")
+                    Text(reminderDate?.formatted(date: .abbreviated, time: .shortened) ?? "-")
                     Spacer()
                     Button { showReminderDatePicker.toggle() } label: {
                         Image(systemName: "calendar.badge.clock").foregroundColor(.blue)
                     }
                 }
                 .sheet(isPresented: $showReminderDatePicker) {
-                    DatePicker("Reminder Time".localizedDescription, selection: reminderDateBinding, displayedComponents: [.date, .hourAndMinute])
-                        .datePickerStyle(.graphical)
-                        .padding()
+                    DatePicker(
+                        "Reminder Time".localizedDescription,
+                        selection: Binding(get: { reminderDate ?? Date() }, set: { onReminderChanged(true, $0) }),
+                        displayedComponents: [.date, .hourAndMinute]
+                    )
+                    .datePickerStyle(.graphical)
+                    .padding()
                 }
             }
         }
     }
+}
 
-    private var statusSection: some View {
+struct StatusSection: View {
+    var status: TaskStatus
+    var onStatusChanged: (TaskStatus) -> Void
+
+    var body: some View {
         Picker("Status".localizedDescription, selection: Binding(
-            get: { presenter.taskModel.status },
-            set: { presenter.onStatusChanged($0) }
+            get: { status },
+            set: { onStatusChanged($0) }
         )) {
             ForEach(TaskStatus.allCases, id: \.self) {
                 Text($0.rawValue.capitalized).tag($0)
@@ -163,16 +223,22 @@ struct TaskDetailView: View {
         }
         .pickerStyle(SegmentedPickerStyle())
     }
+}
 
-    private var imageSection: some View {
+struct ImageSection: View {
+    var selectedImage: UIImage?
+    var imagePath: String?
+    var onUploadTapped: () -> Void
+
+    var body: some View {
         VStack(spacing: 8) {
-            if let image = presenter.selectedImage {
+            if let image = selectedImage {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
                     .frame(height: 200)
                     .cornerRadius(12)
-            } else if let path = presenter.taskModel.imagePath,
+            } else if let path = imagePath,
                       let image = UIImage(contentsOfFile: path) {
                 Image(uiImage: image)
                     .resizable()
@@ -180,41 +246,49 @@ struct TaskDetailView: View {
                     .frame(height: 200)
                     .cornerRadius(12)
             }
-//            PhotosPicker(selection: $selectedItem, matching: .images) {
-//                Label("Upload Picture".localizedDescription, systemImage: "photo")
-//            }
-//            .onChange(of: selectedItem) { newItem in
-//                Task {
-//                    if let data = try? await newItem?.loadTransferable(type: Data.self),
-//                       let image = UIImage(data: data) {
-////                        presenter.setImage(image)
-//                    }
-//                }
-//            }
-            Button(action: { showFeatureInProgress = true }) {
+            Button(action: onUploadTapped) {
                 Label("Upload Picture".localizedDescription, systemImage: "photo")
             }
-            
         }
-        
     }
-    
+}
 
+struct DescriptionSection: View {
+    var descriptionText: String
+    var onDescChanged: (String) -> Void
+    var focusedField: FocusState<TaskDetailView.FocusField?>.Binding
 
-    private var descSection: some View {
-        TextEditor(text: descBinding)
-            .focused($focusedField, equals: .notes)
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            TextEditor(text: Binding(
+                get: { descriptionText },
+                set: { onDescChanged($0) }
+            ))
+            .focused(focusedField, equals: TaskDetailView.FocusField.notes)
             .frame(height: 120)
             .cornerRadius(8)
-            .padding(.top, 10)
-    }
-
-    private var saveButtonSection: some View {
-        Button(presenter.mode == .create ? "Add Task".localizedDescription : "Save Task".localizedDescription) {
-            presenter.saveTask()
-            presentationMode.wrappedValue.dismiss()
+            .padding(.top, 0)
+            
+            if descriptionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                Text("Type your description here...")
+                    .foregroundColor(.secondary)
+                    .padding(.top, 12)
+                    .padding(.leading, 9)
+                    .font(.body)
+                    .allowsHitTesting(false)
+            }
         }
-        .disabled(!presenter.isTaskChanged)
-        .buttonStyle(.borderedProminent)
+    }
+}
+
+struct SaveButtonSection: View {
+    var isEnabled: Bool
+    var isCreateMode: Bool
+    var onSave: () -> Void
+
+    var body: some View {
+        Button(isCreateMode ? "Add Task".localizedDescription : "Save Task".localizedDescription, action: onSave)
+            .disabled(!isEnabled)
+            .buttonStyle(.borderedProminent)
     }
 }

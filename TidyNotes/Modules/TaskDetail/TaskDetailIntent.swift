@@ -19,6 +19,10 @@ final class TaskDetailPresenter: ObservableObject {
     @Published var showReminderPicker: Bool = false
     @Published var selectedImage: UIImage?
     @Published var isTaskChanged: Bool = false
+    @Published var showDueDatePicker = false
+    @Published var showReminderDatePicker = false
+    @Published var showFeatureInProgress = false
+    @Published var focusedField: TaskDetailView.FocusField? = nil
 
     private let interactor: TaskDetailInteractor
     private let router: TaskDetailRouter
@@ -128,17 +132,28 @@ final class TaskDetailPresenter: ObservableObject {
     func saveTask() {
         isLoading = true
         let entityData = taskModel.toEntity()
+        print("SAVE TASK ENTITY", entityData.id, entityData.userId, entityData.title, entityData.descriptionText)
         let pub: AnyPublisher<Void, Error> = (mode == .create)
         ? interactor.createTask(entityData).map { _ in }.eraseToAnyPublisher()
         : interactor.saveTask(entityData)
-        
         pub
             .flatMap { [weak self] _ -> AnyPublisher<Void, Error> in
                 guard let userId = self?.task.userId else {
                     return Fail(error: AppError.userNotLoggedIn).eraseToAnyPublisher()
                 }
-                return self?.interactor.refreshLocalTasksFromCloud(userId: userId) ??
-                Fail(error: AppError.unknown).eraseToAnyPublisher()
+//                return self?.interactor.refreshLocalTasksFromCloud(userId: userId) ??
+//                Fail(error: AppError.unknown).eraseToAnyPublisher()
+                return Future<Void, Error> { promise in
+                    TaskService.shared.syncTasksToFirestore(for: userId)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                        promise(.success(()))
+                    }
+                }
+                .flatMap { _ in
+                    self?.interactor.refreshLocalTasksFromCloud(userId: userId) ??
+                    Fail(error: AppError.unknown).eraseToAnyPublisher()
+                }
+                .eraseToAnyPublisher()
             }
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] comp in

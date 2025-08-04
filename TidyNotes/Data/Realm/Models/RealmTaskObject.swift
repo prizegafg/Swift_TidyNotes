@@ -31,7 +31,7 @@ final class RealmTaskObject: Object {
         self.id = entity.id.uuidString
         self.title = entity.title
         self.userId = entity.userId
-        self.taskDescription = entity.description
+        self.taskDescription = entity.descriptionText
         self.isPriority = entity.isPriority
         self.createdAt = entity.createdAt
         self.dueDate = entity.dueDate

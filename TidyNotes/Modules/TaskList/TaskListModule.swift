@@ -16,7 +16,7 @@ enum TaskListModule {
         let router = TaskListRouter(navigationState: navigationState)
         let userId = SessionManager.shared.currentUser?.id ?? ""
         let presenter = TaskListPresenter(interactor: interactor, router: router, userId: userId)
-        return TaskListContainerView(presenter: presenter, navigationState: navigationState)
+        return TaskListView(presenter: presenter, navigationState: navigationState)
     }
     
     static func makeTaskListView(navigationController: UINavigationController) -> UIViewController {
