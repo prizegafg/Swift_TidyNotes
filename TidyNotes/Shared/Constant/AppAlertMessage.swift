@@ -27,5 +27,7 @@ enum AppAlertMessage {
     // Face ID
     static let faceIDNotSupported = "Device does not support Face ID / Touch ID.".localizedDescription
     static let faceIDFailed = "Face ID authentication failed.".localizedDescription
-
+    
+    // Task
+    static let deleteTaskConfirm = "Are you sure you want to delete this task?".localizedDescription
 }

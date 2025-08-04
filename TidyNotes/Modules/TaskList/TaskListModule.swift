@@ -20,12 +20,13 @@ enum TaskListModule {
     }
     
     static func makeTaskListView(navigationController: UINavigationController) -> UIViewController {
+        let navigationState = TaskNavigationState()
         let repository = ServiceLocator.shared.taskRepository
         let interactor = TaskListInteractor(repository: repository)
         let router = TaskListRouter(navigationController: navigationController)
         let userId = SessionManager.shared.currentUser?.id ?? ""
         let presenter = TaskListPresenter(interactor: interactor, router: router, userId: userId)
-        let taskListView = TaskListView(presenter: presenter)
+        let taskListView = TaskListView(presenter: presenter, navigationState: navigationState)
         return UIHostingController(rootView: taskListView)
     }
 }
