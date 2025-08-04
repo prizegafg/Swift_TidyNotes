@@ -50,8 +50,8 @@ Built with SwiftUI, VIPER architecture, and Combine for reactive data handling, 
 ### Getting Started
 
 ```bash
-git clone https://github.com/your-username/tidynotes.git
-cd tidynotes
+git clone https://github.com/prizegafg/swift_TidyNotes.git
+cd TidyNotes
 ```
 
 ---
