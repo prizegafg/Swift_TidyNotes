@@ -12,10 +12,11 @@ import LocalAuthentication
 
 final class SettingsPresenter: ObservableObject {
     @Published var model: SettingsModel
+    @Published var dialogModel: DialogModel?
     
     @Published var showAlert: Bool = false
     @Published var alertMessage: String = ""
-    @Published var showLogoutDialog = false
+    @Published var logoutDialog: Bool = false
     @Published var showLanguageDropdown: Bool = false
     @Published var showThemeDropdown: Bool = false
     @Published var isResetPasswordActive = false
@@ -61,7 +62,7 @@ final class SettingsPresenter: ObservableObject {
         }
         
         self.model = model
-        loadInitialData()
+        self.loadInitialData()
     }
     
     func loadInitialData() {
@@ -109,7 +110,7 @@ final class SettingsPresenter: ObservableObject {
     func onFaceIDToggled(_ enabled: Bool) {
         if enabled {
             guard BiometricAuthHelper.shared.isBiometricAvailable() else {
-                showAlert(message: "Device does not support Face ID / Touch ID.".localizedDescription)
+                showAlert(message: AppAlertMessage.faceIDNotSupported)
                 model.account.faceIDEnabled = false
                 UserDefaults.standard.isFaceIDEnabled = false
                 return
@@ -133,7 +134,14 @@ final class SettingsPresenter: ObservableObject {
     }
     
     func onLogoutTapped() {
-        showLogoutDialog = true
+        dialogModel = DialogModel(
+            title: "Logout".localizedDescription,
+            message: AppAlertMessage.logoutConfirm,
+            confirmText: "Logout".localizedDescription,
+            cancelText: "Cancel".localizedDescription,
+            onConfirm: { [weak self] in self?.logout() }
+        )
+        logoutDialog = true
     }
     
     func logout() {
@@ -141,6 +149,9 @@ final class SettingsPresenter: ObservableObject {
             if let error = error {
                 self?.showAlert(message: error.localizedDescription)
             } else {
+                if let userId = SessionManager.shared.currentUser?.userId {
+                    UserProfileService.clearProfileFromLocal(userId: userId)
+                }
                 TaskService.shared.clearLocalTasks()
                 self?.router.navigateToLogin()
             }

@@ -88,4 +88,19 @@ final class UserProfileService {
             completion(.success(profile))
         }
     }
+    
+    static func clearProfileFromLocal(userId: String) {
+        do {
+            let realm = try Realm()
+            if let obj = realm.objects(RealmUserProfileObject.self).filter("userId == %@", userId).first {
+                try realm.write {
+                    realm.delete(obj)
+                }
+            }
+        } catch {
+            print("❌ Failed to clear user profile: \(error)")
+        }
+        SessionManager.shared.currentUser = nil
+        UserDefaults.standard.removeObject(forKey: "currentUserId")
+    }
 }

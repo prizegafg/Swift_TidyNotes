@@ -24,11 +24,11 @@ struct SettingsView: View {
         .navigationTitle("Settings".localizedDescription)
         .withAppTheme()
         .confirmationDialog(
-            isPresented: $presenter.showLogoutDialog,
-            title: "Logout".localizedDescription,
-            message: "Are you sure you want to logout?".localizedDescription,
-            confirmText: "Logout",
-            cancelText: "Cancel".localizedDescription,
+            isPresented: $presenter.logoutDialog,
+            title: presenter.dialogModel?.title ?? "",
+            message: presenter.dialogModel?.message ?? "",
+            confirmText: presenter.dialogModel?.confirmText ?? "",
+            cancelText: presenter.dialogModel?.cancelText ?? "",
             onConfirm: {
                 presenter.logout()
             }
