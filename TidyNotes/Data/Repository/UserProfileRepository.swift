@@ -13,7 +13,6 @@ final class UserProfileRepository {
     static let shared = UserProfileRepository()
     private init() {}
 
-    // Simpan user profile ke Firestore
     func saveUserProfileToCloud(_ profile: UserProfileEntity) -> AnyPublisher<Void, Error> {
         let db = Firestore.firestore()
         let data: [String: Any] = [
@@ -36,7 +35,6 @@ final class UserProfileRepository {
         .eraseToAnyPublisher()
     }
 
-    // Ambil user profile dari Firestore (opsional, untuk login/refresh data)
     func fetchUserProfileFromCloud(userId: String, completion: @escaping (Result<UserProfileEntity, Error>) -> Void) {
         let db = Firestore.firestore()
         db.collection("users").document(userId).getDocument { document, error in
@@ -44,7 +42,6 @@ final class UserProfileRepository {
                 completion(.failure(error))
             } else if let document = document, let data = document.data() {
                 do {
-                    // Manual mapping (bisa juga pakai Codable jika prefer)
                     let profile = UserProfileEntity(
                         userId: data["id"] as? String ?? userId,
                         username: data["email"] as? String ?? "",

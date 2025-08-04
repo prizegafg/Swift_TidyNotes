@@ -36,7 +36,6 @@ struct DropdownRow: View {
                 .padding(.vertical, 12)
             }
             .buttonStyle(.plain)
-            // Dropdown options
             if showDropdown {
                 VStack(spacing: 0) {
                     ForEach(options, id: \.self) { option in

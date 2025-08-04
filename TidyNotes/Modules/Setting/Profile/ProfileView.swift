@@ -18,7 +18,6 @@ struct ProfileView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                // Foto profil
                 ZStack(alignment: .bottomTrailing) {
                     Group {
                         if let image = presenter.profileImage {
@@ -47,35 +46,14 @@ struct ProfileView: View {
                 }
                 .padding(.top, 32)
 
-                // Data User
-                VStack(spacing: 16) {
-                    TextField("Username", text: $presenter.username)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .autocapitalization(.none)
-                        .frame(height: 50)
-                    TextField("First Name", text: $presenter.firstName)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .frame(height: 50)
-                    TextField("Last Name", text: $presenter.lastName)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .frame(height: 50)
-                    TextField("Profession", text: $presenter.profession)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .frame(height: 50)
-                    TextField("Email", text: .constant(presenter.email))
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .frame(height: 50)
-                        .disabled(true)
-                        .opacity(0.7)
-                }
+                ProfileFormFields(userModel: $presenter.userModel)
 
-                // Tombol simpan
                 Button(action: { presenter.onSaveTapped() }) {
                     if presenter.isLoading {
                         ProgressView()
                             .frame(maxWidth: .infinity)
                     } else {
-                        Text("Simpan")
+                        Text("Save")
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
                     }
@@ -94,7 +72,7 @@ struct ProfileView: View {
         .alert(isPresented: $presenter.showError) {
             Alert(title: Text("Error"), message: Text(presenter.errorMessage), dismissButton: .default(Text("OK")))
         }
-        .alert("Update Berhasil", isPresented: $presenter.showSuccess) {
+        .alert("Update Success", isPresented: $presenter.showSuccess) {
             Button("OK", role: .cancel) { }
         }
         .photosPicker(isPresented: $showImagePicker, selection: $selectedPhoto, matching: .images)
@@ -110,3 +88,35 @@ struct ProfileView: View {
         }
     }
 }
+
+struct ProfileFormFields: View {
+    @Binding var userModel: UserProfileModel
+
+    var body: some View {
+        VStack(spacing: 16) {
+            TextField("Username", text: $userModel.username)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .autocapitalization(.none)
+                .frame(height: 50)
+            TextField("First Name", text: $userModel.firstName)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .frame(height: 50)
+            TextField("Last Name", text: $userModel.lastName)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .frame(height: 50)
+            TextField("Profession", text: Binding(
+                get: { userModel.profession ?? "-" },
+                set: { userModel.profession = $0 }
+            ))
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .frame(height: 50)
+            TextField("Email", text: .constant(userModel.email))
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .frame(height: 50)
+                .disabled(true)
+                .opacity(0.7)
+        }
+    }
+}
+
+

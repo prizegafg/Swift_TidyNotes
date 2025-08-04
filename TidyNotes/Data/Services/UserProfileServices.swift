@@ -60,7 +60,7 @@ final class UserProfileService {
                 }
             }
         } catch {
-            print("❌ Gagal simpan profile ke local: \(error)")
+            print("❌ failed to save profile to local: \(error)")
         }
     }
     

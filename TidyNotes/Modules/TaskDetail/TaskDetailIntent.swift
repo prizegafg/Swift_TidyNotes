@@ -125,7 +125,6 @@ final class TaskDetailPresenter: ObservableObject {
         }
     }
 
-    // Save ke DB
     func saveTask() {
         isLoading = true
         let entityData = taskModel.toEntity()
@@ -138,7 +137,6 @@ final class TaskDetailPresenter: ObservableObject {
                 guard let userId = self?.task.userId else {
                     return Fail(error: AppError.userNotLoggedIn).eraseToAnyPublisher()
                 }
-                // ✅ Refresh data dari Cloud setelah save task sukses
                 return self?.interactor.refreshLocalTasksFromCloud(userId: userId) ??
                 Fail(error: AppError.unknown).eraseToAnyPublisher()
             }
@@ -148,7 +146,6 @@ final class TaskDetailPresenter: ObservableObject {
                 if case .failure(let err) = comp {
                     self?.showError(message: err.localizedDescription)
                 } else {
-                    // ✅ Refresh task list ketika selesai
                     self?.router.dismissAndRefreshTaskList()
                 }
             }, receiveValue: { _ in })
@@ -157,7 +154,7 @@ final class TaskDetailPresenter: ObservableObject {
 
     private func checkIfChanged() {
         if let ori = originalTask, mode == .edit {
-            isTaskChanged = !isEqual(task, ori)
+            isTaskChanged = !isEqual(taskModel.toEntity(), ori)
         } else {
             isTaskChanged = !taskModel.title.trimmed.isEmpty
         }

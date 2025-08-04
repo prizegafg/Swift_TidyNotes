@@ -82,14 +82,13 @@ struct TaskDetailView: View {
         )
         .onAppear {
             if presenter.mode == .edit {
-                presenter.viewDidLoad(taskId: presenter.task.id)
+                presenter.viewDidLoad(taskId: presenter.taskModel.id)
             }
         }
         .onTapGesture { focusedField = nil }
         
     }
 
-    // MARK: - Subviews
 
     private var titleSection: some View {
         TextField("Type Task Title".localizedDescription, text: titleBinding)
@@ -111,7 +110,7 @@ struct TaskDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             Toggle("Set Due Date".localizedDescription, isOn: Binding(
                 get: { presenter.taskModel.dueDate != nil },
-                set: { $0 ? presenter.onDueDateChanged(presenter.task.dueDate ?? Date()) : presenter.onDueDateChanged(nil) }
+                set: { $0 ? presenter.onDueDateChanged(presenter.taskModel.dueDate ?? Date()) : presenter.onDueDateChanged(nil) }
             ))
             if presenter.task.dueDate != nil {
                 HStack {
@@ -134,7 +133,7 @@ struct TaskDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             Toggle("Enable Reminder".localizedDescription, isOn: Binding(
                 get: { presenter.taskModel.isReminderOn },
-                set: { presenter.onReminderChanged($0, date: presenter.task.reminderDate) }
+                set: { presenter.onReminderChanged($0, date: presenter.taskModel.reminderDate) }
             ))
             if presenter.task.isReminderOn {
                 HStack {

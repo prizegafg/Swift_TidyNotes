@@ -10,17 +10,13 @@ import Combine
 import SwiftUI
 
 final class ProfilePresenter: ObservableObject {
-    @Published var username: String = ""
-    @Published var firstName: String = ""
-    @Published var lastName: String = ""
-    @Published var email: String = ""
-    @Published var profession: String = ""
     @Published var profileImage: UIImage? = nil
 
     @Published var isLoading = false
     @Published var showError = false
     @Published var errorMessage = ""
     @Published var showSuccess = false
+    @Published var userModel: UserProfileModel
 
     private let interactor: ProfileInteractor
     private let router: ProfileRouter
@@ -29,27 +25,24 @@ final class ProfilePresenter: ObservableObject {
     init(interactor: ProfileInteractor, router: ProfileRouter) {
         self.interactor = interactor
         self.router = router
+        
+        if let user = SessionManager.shared.currentUser {
+            self.userModel = UserProfileModel(entity: user)
+        } else {
+            self.userModel = UserProfileModel(entity: UserProfileEntity(userId: "", username: "", firstName: "", lastName: "", email: ""))
+        }
     }
 
     func onAppear() {
-        guard let user = SessionManager.shared.currentUser else {
-            showError(message: "User not logged in.")
-            return
-        }
-        username = user.username
-        firstName = user.firstName
-        lastName = user.lastName
-        email = user.email
-        profession = user.profession ?? ""
         if let image = interactor.loadSavedProfileImage() {
             profileImage = image
         }
     }
 
     func onSaveTapped() {
-        guard !username.trimmed.isEmpty,
-              !firstName.trimmed.isEmpty,
-              !lastName.trimmed.isEmpty else {
+        guard !userModel.username.trimmed.isEmpty,
+              !userModel.firstName.trimmed.isEmpty,
+              !userModel.lastName.trimmed.isEmpty else {
             showError(message: "Field Cannot be Empty")
             return
         }
@@ -59,14 +52,7 @@ final class ProfilePresenter: ObservableObject {
         }
 
         isLoading = true
-        let updated = UserProfileEntity(
-            userId: currentUser.userId,
-            username: username,
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            profession: profession
-        )
+        let updated = userModel.toEntity()
 
         interactor.saveUserProfile(updated, image: profileImage)
             .receive(on: DispatchQueue.main)

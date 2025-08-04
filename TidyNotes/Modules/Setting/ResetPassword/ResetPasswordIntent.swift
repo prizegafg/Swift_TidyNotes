@@ -19,7 +19,6 @@ final class ResetPasswordPresenter: ObservableObject {
     private let router: ResetPasswordRouter
     private var cancellables = Set<AnyCancellable>()
 
-    // Support default email (bisa auto-isi dari Setting)
     init(interactor: ResetPasswordInteractor, router: ResetPasswordRouter, email: String? = nil) {
         self.interactor = interactor
         self.router = router

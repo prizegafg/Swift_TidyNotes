@@ -100,7 +100,6 @@ struct TaskService {
                     return
                 }
 
-                // Inline parsing tanpa extension
                 let tasks: [TaskEntity] = documents.compactMap { doc in
                     let data = doc.data()
                     guard

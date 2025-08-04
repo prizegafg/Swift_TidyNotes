@@ -11,24 +11,17 @@ import PhotosUI
 import LocalAuthentication
 
 final class SettingsPresenter: ObservableObject {
-    @Published var username: String = ""
-    @Published var email: String = ""
-    @Published var image: UIImage? = nil
-    @Published var selectedItem: PhotosPickerItem? = nil {
-        didSet {
-            loadImage()
-        }
-    }
+    @Published var model: SettingsModel
     
     @Published var showAlert: Bool = false
     @Published var alertMessage: String = ""
-    @Published var language: String = LanguageManager.shared.currentLanguage
-    @Published var theme: ThemeMode = ThemeManager.shared.selectedThemeMode
-    @Published var faceIDEnabled: Bool = UserDefaults.standard.isFaceIDEnabled
     @Published var showLogoutDialog = false
     @Published var showLanguageDropdown: Bool = false
     @Published var showThemeDropdown: Bool = false
     @Published var isResetPasswordActive = false
+    @Published var selectedItem: PhotosPickerItem? = nil {
+        didSet { loadImage() }
+    }
     
     private let interactor: SettingsInteractor
     private let router: SettingsRouter
@@ -39,11 +32,9 @@ final class SettingsPresenter: ObservableObject {
     }
     
     var selectedLanguageLocalized: String {
-        // Ambil display name dari code, lalu localize
-        if let original = LanguageManager.shared.supportedLanguages.first(where: { $0.code == language }) {
+        if let original = LanguageManager.shared.supportedLanguages.first(where: { $0.code == model.preferences.language }) {
             return original.name.localizedDescription
         }
-        // fallback: tampilkan bahasa pertama
         return LanguageManager.shared.supportedLanguages.first?.name.localizedDescription ?? ""
     }
     
@@ -55,22 +46,30 @@ final class SettingsPresenter: ObservableObject {
         self.interactor = interactor
         self.router = router
         
+        var model = SettingsModel(
+            profile: ProfileSectionModel(username: "", email: "", image: nil),
+            preferences: PreferencesSectionModel(language: LanguageManager.shared.currentLanguage, theme: ThemeManager.shared.selectedThemeMode),
+            account: AccountSectionModel(faceIDEnabled: UserDefaults.standard.isFaceIDEnabled)
+        )
+        
         let key = "app_language"
         if let saved = UserDefaults.standard.string(forKey: key) {
-            language = saved
+            model.preferences.language = saved
         } else {
             let systemLang = Locale.current.languageCode ?? "en"
-            language = systemLang // "en" or "id"
+            model.preferences.language = systemLang
         }
+        
+        self.model = model
         loadInitialData()
     }
     
     func loadInitialData() {
         let user = interactor.getCurrentUserProfile()
-        username = user.name
-        email = user.email
+        model.profile.username = user.name
+        model.profile.email = user.email
         if let savedImage = interactor.loadSavedImage() {
-            image = savedImage
+            model.profile.image = savedImage
         }
     }
     
@@ -90,14 +89,14 @@ final class SettingsPresenter: ObservableObject {
     func selectLanguage(_ localizedName: String) {
         if let original = LanguageManager.shared.supportedLanguages.first(where: { $0.name.localizedDescription == localizedName }) {
             LanguageManager.shared.setLanguage(original.code)
-            language = original.code
+            model.preferences.language = original.code
         }
         showLanguageDropdown = false
     }
     
     func selectTheme(_ name: String) {
         if let mode = ThemeMode(rawValue: name) {
-            theme = mode
+            model.preferences.theme = mode
             ThemeManager.shared.setTheme(mode)
         }
         showThemeDropdown = false
@@ -111,16 +110,16 @@ final class SettingsPresenter: ObservableObject {
         if enabled {
             guard BiometricAuthHelper.shared.isBiometricAvailable() else {
                 showAlert(message: "Device does not support Face ID / Touch ID.".localizedDescription)
-                faceIDEnabled = false
+                model.account.faceIDEnabled = false
                 UserDefaults.standard.isFaceIDEnabled = false
                 return
             }
             BiometricAuthHelper.shared.authenticateUser { [weak self] success, errorMsg in
                 if success {
-                    self?.faceIDEnabled = true
+                    self?.model.account.faceIDEnabled = true
                     UserDefaults.standard.isFaceIDEnabled = true
                 } else {
-                    self?.faceIDEnabled = false
+                    self?.model.account.faceIDEnabled = false
                     UserDefaults.standard.isFaceIDEnabled = false
                     if let msg = errorMsg {
                         self?.showAlert(message: msg)
@@ -128,7 +127,7 @@ final class SettingsPresenter: ObservableObject {
                 }
             }
         } else {
-            faceIDEnabled = false
+            model.account.faceIDEnabled = false
             UserDefaults.standard.isFaceIDEnabled = false
         }
     }
@@ -154,7 +153,7 @@ final class SettingsPresenter: ObservableObject {
             if let data = try? await item.loadTransferable(type: Data.self),
                let uiImage = UIImage(data: data) {
                 await MainActor.run {
-                    self.image = uiImage
+                    self.model.profile.image = uiImage
                 }
             }
         }

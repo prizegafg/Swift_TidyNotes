@@ -27,7 +27,7 @@ struct ResetPasswordView: View {
                 .autocapitalization(.none)
                 .padding(.horizontal)
                 .frame(height: 50)
-                .disabled(!presenter.email.isEmpty) // Disable jika email auto-isi dari Setting
+                .disabled(!presenter.email.isEmpty)
 
             Button(action: {
                 presenter.onSendTapped()
@@ -46,7 +46,7 @@ struct ResetPasswordView: View {
             .foregroundColor(.white)
             .cornerRadius(10)
             .padding(.horizontal)
-            .disabled(presenter.email.trimmed.isEmpty) // disable kalau field kosong
+            .disabled(presenter.email.trimmed.isEmpty)
 
             Spacer()
         }
