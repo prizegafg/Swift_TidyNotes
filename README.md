@@ -8,23 +8,31 @@ Built with SwiftUI, VIPER architecture, and Combine for reactive data handling, 
 
 ## ✨ Features
 
-  - ✅ **Task CRUD** — Create, read, update, and delete tasks with ease.
-  - 🖼️ **Attach Images** — Add photos to any task for better visual context.
-  - 🛎️ **Deadline Reminders (Coming Soon)** — Get notified before your tasks are due.
-  - ☁️ **iCloud Sync (Coming Soon)** — Access your tasks across devices via iCloud.
-  - 🗂️ **Additional Properties (Planned)** — Add labels, tags, or completion checkboxes like in Notion.
-  - 🔍 **Quick Search (Planned)** — Instantly filter and locate tasks.
-  - 🧱 **Modular Architecture** — Built using VIPER for scalable module-by-module development.
+  - ✅ **Task CRUD** — Create, edit, delete, and view detailed tasks.
+  - 🔐 **Multi-User Login** — Supports register/login and secure user sessions.
+  - 👤 **Profile Management** — Edit profile & upload profile photos.
+  - 🏷️ **Priority & Sorting** — Auto-sort by priority and most recent tasks.
+  - 🔎 **Search** — Instant filtering by title or description.
+  - 📷 **Attach Images** — Add photos to tasks and user profiles (Soon).
+  - 🛡️ **Face ID / Touch ID** — Enhanced security with biometric authentication.
+  - 🎨 **App Theme** — Light/dark mode toggling from settings.
+  - 🌐 **Localization** — Multi-language UI support.
+  - 🛎️ **Reminders** — Task notifications and reminders.
+  - ☁️ **Cloud Sync** — Automatic data sync to the cloud.
+  - ⚡ **Offline First** — All features work seamlessly without internet.
 
 ---
 
 ## 📱 Tech Stack
 
-  - **SwiftUI** — Declarative UI for Apple platforms.
-  - **VIPER Architecture** — Clean separation of concerns and testable design.
-  - **Combine** — Apple-native reactive programming framework.
-  - **Realm** — Fast, lightweight database for local data persistence.
-  - **iCloud** — CloudKit support for cross-device syncing (in progress).
+  - **SwiftUI** — Modern, declarative UI for iOS.
+  - **VIPER** — Modular architecture (View, Presenter, Interactor, Router, Model).
+  - **Combine** — Native Apple reactive data flow.
+  - **Realm** — Fast, lightweight local database.
+  - **Firebase Auth** — User authentication (optional/replaceable).
+  - **Firebase Firestore** — Tasks and user data are stored and synced using Firestore, enabling access across devices (optional/replaceable).
+  - **Supabase/MongoDB** — Planned for cloud image & data sync.
+  - **Face ID / Touch ID** — Integrated with LocalAuthentication.
 
 ---
 
@@ -57,14 +65,23 @@ cd tidynotes
 
 ---
 
-## 🌐 API & Future Backend Options
-While currently offline-first with Core Data, the app is designed to be backend-ready. Potential free-tier services to enable remote storage or sync:
+## 🌐 API & Backend
 
-- **MongoDB Realm Cloud** — Sync Realm databases across devices
-- **Supabase** — Firebase alternative with PostgreSQL backend
-- **Appwrite** — Self-hosted or cloud backend-as-a-service
-- **Firebase** — Push notifications, Firestore, and storage
+Tidy Notes is designed as an offline-first app, but is fully ready for cloud and backend integration.  
+The main API and backend options include:
 
+- **Firebase Auth & Firestore**  
+  User authentication and **cloud storage for tasks, notes, and user profiles**.  
+  - **Auth:** Secure login and multi-user management.
+  - **Firestore:** All tasks, notes, and profile info are stored in Firestore collections, allowing instant backup and real-time cross-device sync.
+  - **How it works:** Tasks and user data are saved both locally (Realm) and synced to Firestore in the background.  
+    Changes made on any device are automatically reflected everywhere after sync.
+
+- **Supabase** *(planned)*  
+  Alternative to Firebase, with PostgreSQL backend.  
+  Used for image storage and task data sync in future updates.
+
+ 
 ---
 
 ## 📸 Screenshots
