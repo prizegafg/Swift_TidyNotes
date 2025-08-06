@@ -1,7 +1,7 @@
 # 📝 Tidy Notes
 <p align="justify">
 Tidy Notes is a lightweight and flexible task management app for iOS designed with simplicity and extensibility in mind. Whether you're tracking personal to-dos, project deadlines, or daily reminders, Tidy Notes provides a clean and intuitive interface to help you stay organized across all your Apple devices.
-Built with SwiftUI, VIPER architecture, and Combine for reactive data handling, this app is structured for scalability and long-term maintainability. Upcoming features include notification reminders, cloud syncing via iCloud, and rich metadata similar to Notion’s block-based approach.
+Built with SwiftUI, VIPER architecture, and Combine for reactive data handling, this app is structured for scalability and long-term maintainability. Upcoming features include notification reminders, cloud syncing via firebase, and rich metadata similar to Notion’s block-based approach.
 </p>
 
 ---
