@@ -88,10 +88,16 @@ The main API and backend options include:
 <table>
   <tr>
     <td>
-      <img src="https://github.com/user-attachments/assets/7b2c46ec-44d8-41f6-af90-b33056ad1e04" width="300"/>
+      <img src="https://github.com/user-attachments/assets/7b2c46ec-44d8-41f6-af90-b33056ad1e04" width="250"/>
     </td>
     <td>
-      <img src="https://github.com/user-attachments/assets/c6cac9e6-f2fa-4a3a-8741-2295f242dd01" width="300"/>
+      <img src="https://github.com/user-attachments/assets/c6cac9e6-f2fa-4a3a-8741-2295f242dd01" width="250"/>
+    </td>
+    <td>
+      <img src="https://github.com/user-attachments/assets/014c2631-ea29-4e84-a5e2-8d43f1e89d5f" width="250"/>
+    </td>
+    <td>
+      <img src="https://github.com/user-attachments/assets/9b6e86e1-a0bd-4107-9b0d-f7f5fc96d9d6" width="250"/>
     </td>
   </tr>
 </table>
