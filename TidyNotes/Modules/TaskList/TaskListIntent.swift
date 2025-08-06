@@ -38,6 +38,7 @@ final class TaskListPresenter: ObservableObject {
     
     func viewDidAppear() {
         selectedTaskId = nil
+        self.userProfile = UserProfileService.loadProfileFromLocal(userId: userId)
         loadTasks()
     }
     func loadTasks() {

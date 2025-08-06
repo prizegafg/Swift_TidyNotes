@@ -60,7 +60,6 @@ struct TaskDetailView: View {
                         presenter.mode == .create ? "Add Task".localizedDescription : "Save Task".localizedDescription,
                         action: {
                             presenter.saveTask()
-                            presentationMode.wrappedValue.dismiss()
                         }
                     )
                     .disabled(!presenter.isTaskChanged)
@@ -287,7 +286,8 @@ struct SaveButtonSection: View {
     var onSave: () -> Void
 
     var body: some View {
-        Button(isCreateMode ? "Add Task".localizedDescription : "Save Task".localizedDescription, action: onSave)
+        Button(isCreateMode ? "Add Task".localizedDescription : "Save Task".localizedDescription,
+               action: onSave)
             .disabled(!isEnabled)
             .buttonStyle(.borderedProminent)
     }

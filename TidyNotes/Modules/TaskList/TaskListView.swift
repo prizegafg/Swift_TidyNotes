@@ -91,12 +91,17 @@ struct TaskListView: View {
                     userId: presenter.userId,
                     onTasksUpdated: {
                         presenter.viewDidAppear()
-                    }
+                    },
+                    onDismiss: { navigationState.showAddTask = false }
                 )
             }
             .sheet(isPresented: $navigationState.showEditTask) {
                 if let task = navigationState.selectedTaskForEdit {
-                    TaskDetailRouter.makeTaskDetailView(taskId: task.id)
+                    TaskDetailRouter.makeTaskDetailView(
+                        taskId: task.id,
+                        onTasksUpdated: navigationState.onTasksUpdatedForEdit,
+                        onDismiss: { navigationState.showEditTask = false } 
+                    )
                 }
             }
         }
@@ -169,10 +174,7 @@ private struct TaskRowView: View {
                     }
                     
                 }
-//                if isSelected {
-//                    Image(systemName: "chevron.right")
-//                        .foregroundColor(.accentColor)
-//                }
+
             }
             .padding(.vertical, 8)
             .padding(.horizontal, 4)
@@ -342,7 +344,7 @@ private struct ProgressBadge: View {
     var statusColor: Color {
         switch status {
         case .todo: return .gray
-        case .inProgress: return .blue
+        case .inProgress: return .yellow
         case .done: return .green
         }
     }

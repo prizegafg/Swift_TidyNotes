@@ -23,6 +23,7 @@ final class TaskListRouter {
     }
     func navigateToEditTask(task: TaskEntity, onTasksUpdated: (() -> Void)? = nil) {
         navigationState?.selectedTaskForEdit = task
+        navigationState?.onTasksUpdatedForEdit = onTasksUpdated
         navigationState?.showEditTask = true
     }
     func navigateToTaskDetail(_ taskId: UUID) {
@@ -34,6 +35,7 @@ class TaskNavigationState: ObservableObject {
     @Published var showAddTask: Bool = false
     @Published var showEditTask: Bool = false
     @Published var showTaskDetail: Bool = false
+    @Published var onTasksUpdatedForEdit: (() -> Void)? = nil
     @Published var selectedTaskForEdit: TaskEntity?
     deinit { print("TaskNavigationState deinit") }
 }

@@ -10,8 +10,12 @@ import Combine
 
 final class TaskDetailRouter {
     var onTasksUpdated: (() -> Void)?
+    var onDismiss: (() -> Void)?
 
-    static func makeTaskDetailView(taskId: UUID) -> some View {
+    static func makeTaskDetailView(taskId: UUID,
+                                   onTasksUpdated: (() -> Void)? = nil,
+                                   onDismiss: (() -> Void)? = nil
+    ) -> some View {
         let interactor = TaskDetailInteractor(repository: ServiceLocator.shared.taskRepository)
         let router = TaskDetailRouter()
         let dummyTask = TaskEntity( 
@@ -22,10 +26,16 @@ final class TaskDetailRouter {
             router: router,
             mode: .edit
         )
+        
+        router.onTasksUpdated = onTasksUpdated
+        router.onDismiss = onDismiss
         return TaskDetailView(presenter: presenter)
     }
 
-    static func makeAddTaskView(userId: String, onTasksUpdated: (() -> Void)? = nil) -> some View {
+    static func makeAddTaskView(userId: String,
+                                onTasksUpdated: (() -> Void)? = nil,
+                                onDismiss: (() -> Void)? = nil
+    ) -> some View {
         let interactor = TaskDetailInteractor(repository: ServiceLocator.shared.taskRepository)
         let router = TaskDetailRouter()
         let newTask = TaskEntity(userId: userId, title: "", descriptionText: "")
@@ -36,12 +46,12 @@ final class TaskDetailRouter {
             mode: .create
         )
         router.onTasksUpdated = onTasksUpdated
+        router.onDismiss = onDismiss
         return NavigationStack { TaskDetailView(presenter: presenter) }
     }
 
-    func dismissTaskDetail() {}
     func dismissAndRefreshTaskList() {
         onTasksUpdated?()
-        dismissTaskDetail()
+        onDismiss?()
     }
 }

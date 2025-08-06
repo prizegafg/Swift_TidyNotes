@@ -38,6 +38,9 @@ struct SettingsView: View {
                 showFeatureInProgress = false
             }
         }
+        .onAppear {
+            presenter.loadInitialData()
+        }
     }
 }
 
