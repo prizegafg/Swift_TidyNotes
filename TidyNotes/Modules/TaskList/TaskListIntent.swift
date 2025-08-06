@@ -17,6 +17,7 @@ final class TaskListPresenter: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
     @Published var selectedTaskId: UUID?
+    @Published var pendingDeleteTaskId: UUID? = nil
     @Published var showDeleteConfirmation: Bool = false
     @Published var taskToDelete: UUID?
     @Published var isSearchVisible: Bool = false
@@ -83,10 +84,13 @@ final class TaskListPresenter: ObservableObject {
     }
     
     func onDeleteTaskByOffsets(_ offsets: IndexSet) {
-        for index in offsets {
-            let id = filteredTasks[index].id
-            onDeleteTaskTapped(id)
-        }
+        let index = offsets.first!
+        let task = filteredTasks[index]
+        pendingDeleteTaskId = task.id
+        
+        tasks.removeAll { $0.id == task.id }
+        filterTasks()
+        showDeleteConfirmation = true
     }
     
     func onDeleteTaskTapped(_ id: UUID) {
@@ -94,7 +98,7 @@ final class TaskListPresenter: ObservableObject {
         taskToDelete = id
     }
     func confirmDeleteTask() {
-        guard let id = taskToDelete else { return }
+        guard let id = pendingDeleteTaskId else { return }
         isLoading = true
         interactor.deleteTask(id)
             .receive(on: DispatchQueue.main)
@@ -107,6 +111,14 @@ final class TaskListPresenter: ObservableObject {
                 }
             }, receiveValue: { })
             .store(in: &cancellables)
+    }
+    
+    func cancelDeleteTask() {
+        if let id = pendingDeleteTaskId {
+            loadTasks()
+        }
+        pendingDeleteTaskId = nil
+        showDeleteConfirmation = false
     }
     func onSetAsPriorityTapped(_ task: TaskEntity) {
         isLoading = true

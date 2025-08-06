@@ -57,7 +57,9 @@ struct TaskListView: View {
                 Button("Delete", role: .destructive) {
                     presenter.confirmDeleteTask()
                 }
-                Button("Cancel", role: .cancel) { }
+                Button("Cancel", role: .cancel) {
+                    presenter.cancelDeleteTask()
+                }
             }
             .alert(isPresented: .constant(presenter.errorMessage != nil)) {
                 Alert(
