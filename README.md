@@ -85,9 +85,16 @@ The main API and backend options include:
 ---
 
 ## 📸 Screenshots
-<img width="1284" height="2778" alt="Simulator Screenshot - iPhone 14 Plus - 2025-08-06 at 15 59 58" src="https://github.com/user-attachments/assets/7b2c46ec-44d8-41f6-af90-b33056ad1e04" />  
-<img width="1284" height="2778" alt="Simulator Screenshot - iPhone 14 Plus - 2025-08-06 at 16 00 16" src="https://github.com/user-attachments/assets/c6cac9e6-f2fa-4a3a-8741-2295f242dd01" />
-
+<table>
+  <tr>
+    <td>
+      <img src="https://github.com/user-attachments/assets/7b2c46ec-44d8-41f6-af90-b33056ad1e04" width="300"/>
+    </td>
+    <td>
+      <img src="https://github.com/user-attachments/assets/c6cac9e6-f2fa-4a3a-8741-2295f242dd01" width="300"/>
+    </td>
+  </tr>
+</table>
 
 ---
 
